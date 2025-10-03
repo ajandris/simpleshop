@@ -1,0 +1,103 @@
+*{
+    margin: 0;
+    padding:0;
+    background-color: #fafafa;
+}
+
+strong{
+    background-color: inherit;
+}
+
+.logo{
+    width:200px;
+    height: 200px;
+    background-color: #F5F0E6;
+}
+
+.no-padding-margin{
+    padding: 0;
+    margin: 0;
+}
+
+.no-padding{
+    padding: 0;
+}
+
+.padding-bottom-small{
+    padding-bottom: 6px;
+}
+
+.wide{
+    width: 100%;
+}
+
+.page-content{
+    max-width: 1290px;
+    margin: auto;
+}
+
+.allauth-page{
+    padding-top: 25px;
+    width: 300px;
+    margin: auto;
+}
+.allauth-page h1{
+    font-family: 'Lucida Grande', Arial, sans-serif;
+    font-size: 1.4em;
+    font-weight: 800;
+    margin: auto;
+}
+
+.allauth-page p{
+    padding: 5px;
+}
+
+.allauth-page label{
+    font-weight: 700;
+}
+
+.allauth-page
+    input[type=text],
+    input[type=password]
+    {
+    width:100%;
+}
+
+.allauth-page button[type=submit]{
+    background-color: lightgreen;
+    font-size: 1.1em;
+    margin: auto;
+    border: solid 1px grey;
+}
+
+/* messages*/
+.success{
+    max-width: 1290px;
+    margin: 5px auto 0 auto;
+    background-color: green;
+    color: #fafafa;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.success li{
+    text-decoration: none;
+}
+
+.main_menu{
+    background-color: #795548;
+}
+
+.main_menu div{
+    background-color: inherit;
+    color: #fafafa;
+    font-weight: 800;
+}
+
+.main_menu a{
+    text-decoration: none;
+}
+
+
+#logo-header{
+    background-color: #F5F0E6;
+}
