@@ -24,6 +24,7 @@
     {% endblock %}
 
     {% block corejs %}
+        <script src="{% static 'js/main.js' %}"></script>
     {% endblock %}
 
     {% block extra_js %}
@@ -36,7 +37,7 @@
 
   </head>
 <body>
- <header class="wide">
+<header class="wide">
      <div id="logo-header" class="w3-center">
         <img src="{% static 'images/logo_transparent.png' %}" class="logo">
      </div>
@@ -44,9 +45,9 @@
          <div class="w3-right w3-padding-small">
              {% if user.is_authenticated %}
                  <div class="dropdown">
-                  <p class="dropbtn"><i class="fa-regular fa-user" id="profile-fa"></i> Profile</p>
+                  <p class="dropbtn"><i class="fa-regular fa-user" id="profile-fa"></i> {{ user.username }}, your profile</p>
                   <div class="dropdown-content">
-                    <a href="#">Profile</a>
+                    <a href="{% url 'profile' %}">Profile</a>
                     <a href="#">Orders</a>
                     <a href="{% url 'account_logout' %}">Logout</a>
                   </div>

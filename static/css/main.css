@@ -104,6 +104,30 @@ strong{
     text-decoration: none;
 }
 
+.main_menu_bgcolor{
+    background-color: #795548;
+}
+
+.tablink{
+    background-color: #795548;
+    border: 4px;
+    border-style: solid;
+    border-color: #795548;
+    color: #fafafa;
+    font-weight: bold;
+}
+
+.tablink_active{
+    background-color: green !important;
+    color: #fafafa !important;
+    font-weight: bold;
+}
+
+.tablink:hover{
+    background-color: darkslategrey !important;
+    color: #fafafa !important;
+    font-weight: bold;
+}
 
 #logo-header{
     background-color: #F5F0E6;
@@ -156,3 +180,4 @@ strong{
     font-size: 14px;
     background-color: inherit;
 }
+

@@ -1,0 +1,40 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <h1 class="w3-center">Profile</h1>
+
+    <div class="w3-container w3-row">
+        <div class="w3-col l2 m2 s3">
+            <p>&nbsp;</p>
+            <div class="w3-bar-block">
+              <button id="general_info_link" class="w3-bar-item w3-button w3-border tablink">General info</button>
+              <button id="security_link"  class="w3-bar-item w3-button w3-border tablink">Security</button>
+            </div>
+        </div>
+        <div class="w3-col l10 m10 s9">
+          <div id="general_info" class="w3-container tab" style="display:none">
+            <h2>General info</h2>
+            <p>London is the capital city of England.</p>
+            <p>It is the most populous city in the United Kingdom, with a metropolitan area of over 13 million inhabitants.</p>
+          </div>
+
+          <div id="security" class="w3-container tab" style="display:none">
+            <h2>Security</h2>
+            <p>Paris is the capital of France.</p>
+            <p>The Paris area is one of the largest population centers in Europe, with more than 12 million inhabitants.</p>
+          </div>
+        </div>
+    </div>
+
+
+{% endblock content %}
+
+{% block postloadjs %}
+    <script src="{% static 'js/postload.js' %}"></script>
+    <script>
+        profileListeners();
+    </script>
+
+{% endblock postloadjs %}
