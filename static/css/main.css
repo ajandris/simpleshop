@@ -41,6 +41,13 @@ strong{
     max-width: 600px;
     margin: auto;
 }
+
+.allauth-page-embedded{
+    max-width: 600px;
+    margin-left: 0;
+    padding-top: 0;
+}
+
 .allauth-page h1{
     font-family: 'Lucida Grande', Arial, sans-serif;
     font-size: 1.4em;
@@ -127,6 +134,10 @@ strong{
     background-color: darkslategrey !important;
     color: #fafafa !important;
     font-weight: bold;
+}
+
+.tab-menu{
+    margin-top: 20px;
 }
 
 #logo-header{

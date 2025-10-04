@@ -10,8 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
-from pathlib import Path
 import os
+from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -148,11 +148,21 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_USERNAME_MIN_LENGTH = 4
-LOGIN_URL = '/accounts/login/'
+LOGIN_URL = 'account_login'
 LOGIN_REDIRECT_URL = '/'
 
 ACCOUNT_LOGIN_METHODS = {'username', 'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'email2*', 'username*', 'password1*', 'password2*']
+
+ACCOUNT_LOGOUT_REDIRECT_URL = '/'
+ACCOUNT_LOGIN_REDIRECT_URL = LOGIN_REDIRECT_URL
+ACCOUNT_SIGNUP_REDIRECT = '/'
+ACCOUNT_PASSWORD_RESET_REDIRECT_URL = LOGIN_URL
+
+ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL = '/'
+# ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = True
+
+EMAIL_CONFIRMATION_DAYS = 1
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
