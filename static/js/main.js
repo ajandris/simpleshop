@@ -17,5 +17,6 @@ function openTab(elem) {
   }
 
   elem.classList.add("tablink_active");
-  document.getElementById(tabs[elem.id]).style.display = "block";
+  const tab = elem.getAttribute("data-tab")
+  document.getElementById(tab).style.display = "block";
 }
