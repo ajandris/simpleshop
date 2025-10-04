@@ -36,6 +36,18 @@ strong{
     margin: auto;
 }
 
+.main-banner{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    resize: both;
+}
+
+.banner-wrapper{
+    width: 100%;
+    overflow: hidden;
+}
+
 .allauth-page{
     padding-top: 25px;
     max-width: 600px;
@@ -99,6 +111,8 @@ strong{
 
 .main_menu{
     background-color: #795548;
+    max-width: 1290px;
+    margin: auto;
 }
 
 .main_menu div{
@@ -115,6 +129,7 @@ strong{
     background-color: #795548;
 }
 
+/*Profile tabs*/
 .tablink{
     background-color: #795548;
     border: 4px;
@@ -191,4 +206,5 @@ strong{
     font-size: 14px;
     background-color: inherit;
 }
+
 

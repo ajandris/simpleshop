@@ -24,7 +24,6 @@ def profile(request):
     user = Auser.objects.filter(username=request.user.username).values().first()
     email = EmailAddress.objects.filter(user_id=request.user.id).values().first()
 
-
     context = {
         "user_data": user,
         "email": email

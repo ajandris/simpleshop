@@ -39,12 +39,16 @@
 <body>
 <header class="wide">
      <div id="logo-header" class="w3-center">
-        <img src="{% static 'images/logo_transparent.png' %}" class="logo">
+         <a href="{% url 'index' %}"><img src="{% static 'images/logo_transparent.png' %}" class="logo"></a>
      </div>
-     <nav class="w3-container main_menu">
-         <div class="w3-right w3-padding-small">
+    <div class="wide main_menu_bgcolor">
+     <nav class="w3-container w3-row main_menu">
+         <div class="w3-col l8 m8 s8 w3-left w3-padding-small">
+             <a href="{% url 'index' %}">Home</a>
+         </div>
+         <div class="w3-col l4 m4 s4 w3-padding-small">
              {% if user.is_authenticated %}
-                 <div class="dropdown">
+                 <div class="dropdown w3-right">
                   <p class="dropbtn"><i class="fa-regular fa-user" id="profile-fa"></i> {{ user.username }}, your profile</p>
                   <div class="dropdown-content">
                     <a href="{% url 'profile' %}">Profile</a>
@@ -53,13 +57,14 @@
                   </div>
                 </div>
              {% else %}
-                 <div>
+                 <div class="w3-right">
                     <a href="{% url 'account_login' %}">Login</a> |
                     <a href="{% url 'account_signup' %}">Sign Up</a>
                  </div>
              {% endif %}
-         </div>
+            </div>
      </nav>
+    </div>
  </header>
 
     {% if messages %}
@@ -75,7 +80,7 @@
     {% block page_header %}
     {% endblock %}
 
-    <div class="page-content">
+    <div class="w3-container page-content">
     {% block content %}
     {% endblock %}
     </div>

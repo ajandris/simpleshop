@@ -1,7 +1,10 @@
 {% extends '_base.html' %}
-
+{% load static %}
 {% block content %}
 
+    <div class="banner-wrapper">
+        <img src="{% static 'images/banner.png' %}" class="main-banner">
+    </div>
     <h1>Welcome, Stranger</h1>
 
 {% endblock content %}
