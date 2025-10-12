@@ -9,6 +9,7 @@ env.py
 /media/
 /*.log
 .venv
+migrations/
 
 ZZZZ/
 w3v5.css

@@ -72,7 +72,7 @@ class ProductDimensions(models.Model):
     class Meta:
         verbose_name = 'Product'
         verbose_name_plural = 'Products'
-        db_table = 'products'
+        db_table = 'product_dimensions'
         db_table_comment = 'Available Product Dimensions list'
 
 
