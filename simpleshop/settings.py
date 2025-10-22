@@ -27,10 +27,16 @@ except ImportError:
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY')
+if 'SECRET_KEY' in os.environ:
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+else:
+    raise Exception('Secret Key is not configured')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get('DEBUG', "False"))
+if os.environ.get('DEBUG', 'False').upper() == 'TRUE':
+    DEBUG = True
+else:
+    DEBUG = False
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', "127.0.0.1").split(",")
 
@@ -53,8 +59,13 @@ INSTALLED_APPS = [
     'products',
 ]
 
+if not DEBUG:
+    # only for development
+    INSTALLED_APPS.append('whitenoise.runserver_nostatic')
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -145,7 +156,17 @@ USE_TZ = True
 # Allauth settings
 SITE_ID = 1
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', '')  # or your provider's SMTP server
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', '0'))  # 465 for SSL, 587 for TLS
+EMAIL_USE_TLS = False if os.environ.get('EMAIL_USE_TLS').upper() \
+                         == 'FALSE' else True  # True for TLS, False if using SSL
+EMAIL_USE_SSL = False if os.environ.get('EMAIL_USE_SSL').upper() \
+                         == 'FALSE' else True  # True if using SSL
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')  # Use app password for Gmail
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_USERNAME_MIN_LENGTH = 4
@@ -169,7 +190,6 @@ EMAIL_CONFIRMATION_DAYS = 1
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
 if DEBUG:
     STATICFILES_DIRS = [
         BASE_DIR / 'static'
@@ -187,3 +207,14 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Security for deployment uncomment upon deployment
+if DEBUG:
+    # development server uses HTTP only, no SSL as it should be in production
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+else:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
