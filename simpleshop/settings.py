@@ -59,7 +59,7 @@ INSTALLED_APPS = [
     'products',
 ]
 
-if not DEBUG:
+if DEBUG:
     # only for development
     INSTALLED_APPS.append('whitenoise.runserver_nostatic')
 
@@ -209,12 +209,15 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Security for deployment uncomment upon deployment
+# print('DEBUG: ', DEBUG, type(DEBUG))
+# print(INSTALLED_APPS)
 if DEBUG:
+    # print('DEBUG: ', DEBUG, type(DEBUG))
     # development server uses HTTP only, no SSL as it should be in production
     SECURE_SSL_REDIRECT = False
     SESSION_COOKIE_SECURE = False
     CSRF_COOKIE_SECURE = False
-else:
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
+# else:
+#     SECURE_SSL_REDIRECT = True
+#     SESSION_COOKIE_SECURE = True
+#     CSRF_COOKIE_SECURE = True
