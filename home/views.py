@@ -20,8 +20,8 @@ def profile(request):
             user.save()
 
     template = 'home/profile.html'
-    Auser = get_user_model()
-    user = Auser.objects.filter(username=request.user.username).values().first()
+    a_user = get_user_model()
+    user = a_user.objects.filter(username=request.user.username).values().first()
     email = EmailAddress.objects.filter(user_id=request.user.id).values().first()
 
     context = {

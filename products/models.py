@@ -1,5 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
+from home.utils import unique_slugify
+from django.utils.text import slugify
+
 
 # Create your models here.
 
@@ -30,6 +33,7 @@ class Category(models.Model):
     title = models.CharField(max_length=100, unique=True, verbose_name='Category Title')
     slug = models.SlugField(unique=True, verbose_name='Slug')
     image = models.ForeignKey(Images, on_delete=models.CASCADE)
+    is_featured = models.BooleanField(default=False, verbose_name='Is Featured')
     description = models.TextField(verbose_name='Description')
     inserted_at = models.DateTimeField(auto_now_add=True, verbose_name='DateTime when record inserted')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='DateTime when record updated')
@@ -37,6 +41,11 @@ class Category(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slugify(self, slugify(self.title))
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Category'
@@ -58,13 +67,21 @@ class Product(models.Model):
                                 max_digits=10, default=0, null=True, blank=True)
     sales_price = models.DecimalField(verbose_name='Sales Price', decimal_places=2, max_digits=10, default=0)
     sku = models.CharField(max_length=25, unique=True, verbose_name='SKU')
-    image = models.ForeignKey(Images, on_delete=models.CASCADE)
+    is_featured = models.BooleanField(default=False, verbose_name='Is Featured',
+                                      db_comment='Is this product featured?')
+    image = models.ForeignKey(Images, on_delete=models.CASCADE, verbose_name='Images', related_name='product_images')
     inserted_at = models.DateTimeField(auto_now_add=True, verbose_name='DateTime when record inserted')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='DateTime when record updated')
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = unique_slugify(self, slugify(self.title))
+        super().save(*args, **kwargs)
+
 
     class Meta:
         verbose_name = 'Product'
