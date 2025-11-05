@@ -207,18 +207,22 @@ strong{
     background-color: inherit;
 }
 
+/* Home page Gallery */
 .scroll-container {
-  display: flex;
-  overflow-x: auto;
-  gap: 16px;
-  padding: 8px 0;
+    display: flex;
+    overflow-x: auto;
+    gap: 16px;
+    padding: 8px 0;
+    scrollbar-color: #4CAF50 #F5F0E6;
 }
+
 .product-card {
-  min-width: 200px;
-  flex: 0 0 auto;
+    min-width: 200px;
+    flex: 0 0 auto;
 }
+
 .category-section {
-  margin-bottom: 48px;
+    margin-bottom: 48px;
 }
 
 .product-image-carousel{

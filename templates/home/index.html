@@ -12,11 +12,13 @@
       <h2 class="w3-border-bottom w3-padding-small">{{ cat.title }}</h2>
       <div class="scroll-container">
         <!-- Repeat for 8 products -->
-        <div class="w3-card product-card w3-padding">
-          <img src="/media/images/000_product_placeholder.png" alt="Product" class="w3-image product-image-carousel">
-          <h5>Smartphone</h5>
-          <p>£299.99</p>
-        </div>
+        {% for prod in cat.top_products %}
+            <div class="w3-card product-card w3-padding">
+              <img src="/media/images/000_product_placeholder.png" alt="Product" class="w3-image product-image-carousel">
+              <h6>{{ prod.title }}</h6>
+              <p>£{{ prod.sales_price }}</p>
+            </div>
+        {% endfor %}
         <!-- Add 7 more product cards similarly -->
       </div>
     </section>

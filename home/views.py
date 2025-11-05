@@ -2,8 +2,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from allauth.account.models import EmailAddress
-
-from products.models import Category
+from collections import defaultdict
+from products.models import Category, Product
 
 
 # Create your views here.
@@ -11,7 +11,20 @@ from products.models import Category
 def index(request):
     template = 'home/index.html'
 
-    categories = Category.objects.filter(is_featured=True).order_by('title')
+    categories = list(Category.objects.filter(is_featured=True).order_by('title'))
+    products = Product.objects.filter(category__in=categories).order_by('category__title', '-inserted_at')
+
+    top_by_cat = defaultdict(list)
+    for p in products:
+        bucket = top_by_cat[p.category_id]
+        if len(bucket) < 8:
+            bucket.append(p)
+
+    # attach for template convenience (no extra queries)
+    cat_map = {c.id: c for c in categories}
+    for cid, items in top_by_cat.items():
+        setattr(cat_map[cid], 'top_products', items)
+
     cont = {'categories': categories}
 
     return render(request, template, context=cont)
