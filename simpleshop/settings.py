@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
 
+    'import_export',
+
     # user apps
     'home',
     'products',

@@ -3,12 +3,18 @@ from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from allauth.account.models import EmailAddress
 
+from products.models import Category
+
 
 # Create your views here.
 
 def index(request):
     template = 'home/index.html'
-    return render(request, template)
+
+    categories = Category.objects.filter(is_featured=True).order_by('title')
+    cont = {'categories': categories}
+
+    return render(request, template, context=cont)
 
 @login_required
 def profile(request):

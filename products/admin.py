@@ -1,10 +1,41 @@
 from django.contrib import admin
 from products.models import Product, Images, Category, ProductDimensions, ProductVariants
+from django.contrib.auth.models import User
+from import_export import resources, fields
+from import_export.admin import ImportExportModelAdmin
+from import_export.widgets import ForeignKeyWidget
 
 # Register your models here.
 
+
+class ProductResource(resources.ModelResource):
+
+    sku = fields.Field(attribute='sku', column_name='sku')
+    title = fields.Field(attribute='title', column_name='Product Title')
+    category = fields.Field(attribute='category', column_name='Category',
+                            widget=ForeignKeyWidget(Category, "title"))
+    description = fields.Field(attribute='description', column_name='Description (HTML)')
+    short_description = fields.Field(attribute='short_description', column_name='Description (HTML)')
+    tags = fields.Field(attribute='tags', column_name='tags')
+    price = fields.Field(attribute='price', column_name='generated_price')
+    sales_price = fields.Field(attribute='sales_price', column_name='Sales_price')
+    image = fields.Field(attribute='image', column_name='image',
+                         widget=ForeignKeyWidget(Images, "name"))
+    stock = fields.Field(attribute='stock', column_name='stock')
+    user = fields.Field(attribute='user', column_name='username',
+                        widget=ForeignKeyWidget(User, 'username'))
+
+    class Meta:
+        model = Product
+        # optional: list fields explicitly
+        fields = ("sku", "title", "category", "description", "short_description", "tags", "price",
+                  "sales_price", "image", "stock", "user")
+        import_id_fields = ("sku",)  # prevents duplicates
+
+
 @admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ImportExportModelAdmin):
+    resource_class = ProductResource
     list_display = ('title', 'short_description', 'description', 'slug', 'stock', 'price', 'sales_price',
                     'sku', 'tags', 'inserted_at', 'updated_at', 'user')
     readonly_fields = ['inserted_at', 'updated_at']
@@ -17,11 +48,12 @@ class ImagesAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('image', 'title', 'slug', 'is_featured', 'inserted_at', 'updated_at', 'user')
+    readonly_fields = ['inserted_at', 'updated_at']
 
 @admin.register(ProductDimensions)
 class ProductDimensionAdmin(admin.ModelAdmin):
-    pass
+    list_display = ('name',)
 
 @admin.register(ProductVariants)
 class ProductVariantsAdmin(admin.ModelAdmin):

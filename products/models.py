@@ -11,7 +11,7 @@ class Images(models.Model):
     Image Model for storing product and category images
     """
     name = models.CharField(max_length=100, unique=True, verbose_name='Image Name')
-    url = models.ImageField()
+    url = models.ImageField(upload_to='images/', verbose_name='Image')
     inserted_at = models.DateTimeField(auto_now_add=True, verbose_name='DateTime when record inserted')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='DateTime when record updated')
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
@@ -31,9 +31,9 @@ class Category(models.Model):
     Product Category Model
     """
     title = models.CharField(max_length=100, unique=True, verbose_name='Category Title')
-    slug = models.SlugField(unique=True, verbose_name='Slug')
+    slug = models.SlugField(unique=True, verbose_name='Slug', null=True, blank=True)
     image = models.ForeignKey(Images, on_delete=models.CASCADE)
-    is_featured = models.BooleanField(default=False, verbose_name='Is Featured')
+    is_featured = models.BooleanField(default=False, verbose_name='Is Featured', db_comment='Is featured')
     description = models.TextField(verbose_name='Description')
     inserted_at = models.DateTimeField(auto_now_add=True, verbose_name='DateTime when record inserted')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='DateTime when record updated')
@@ -61,7 +61,7 @@ class Product(models.Model):
     short_description = models.TextField(verbose_name='Short Description')
     description = models.TextField(verbose_name='Description')
     tags = models.TextField(verbose_name='Tags', null=True, blank=True)
-    slug = models.SlugField(unique=True, verbose_name='Slug')
+    slug = models.SlugField(unique=True, verbose_name='Slug', null=True, blank=True)
     stock = models.IntegerField(verbose_name='Stock', blank=False, null=False, default=0)
     price = models.DecimalField(verbose_name='Price', decimal_places=2,
                                 max_digits=10, default=0, null=True, blank=True)
@@ -69,7 +69,8 @@ class Product(models.Model):
     sku = models.CharField(max_length=25, unique=True, verbose_name='SKU')
     is_featured = models.BooleanField(default=False, verbose_name='Is Featured',
                                       db_comment='Is this product featured?')
-    image = models.ForeignKey(Images, on_delete=models.CASCADE, verbose_name='Images', related_name='product_images')
+    image = models.ForeignKey(Images, on_delete=models.CASCADE, verbose_name='Images')
+    category = models.ForeignKey(Category, on_delete=models.PROTECT, verbose_name='Category')
     inserted_at = models.DateTimeField(auto_now_add=True, verbose_name='DateTime when record inserted')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='DateTime when record updated')
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)

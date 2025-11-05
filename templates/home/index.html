@@ -5,46 +5,21 @@
     <div class="banner-wrapper">
         <img src="{% static 'images/banner.png' %}" class="main-banner">
     </div>
-    <h1>Welcome, Stranger</h1>
 
-        <!-- Category 1 -->
+    {% for cat in categories %}
+    <!-- Category loop -->
     <section class="category-section">
-      <h2 class="w3-border-bottom w3-padding-small">Electronics</h2>
+      <h2 class="w3-border-bottom w3-padding-small">{{ cat.title }}</h2>
       <div class="scroll-container">
         <!-- Repeat for 8 products -->
         <div class="w3-card product-card w3-padding">
-          <img src="https://via.placeholder.com/200x150" alt="Product" class="w3-image">
+          <img src="/media/images/000_product_placeholder.png" alt="Product" class="w3-image product-image-carousel">
           <h5>Smartphone</h5>
           <p>£299.99</p>
         </div>
         <!-- Add 7 more product cards similarly -->
       </div>
     </section>
-
-    <!-- Category 2 -->
-    <section class="category-section">
-      <h2 class="w3-border-bottom w3-padding-small">Home & Garden</h2>
-      <div class="scroll-container">
-        <div class="w3-card product-card w3-padding">
-          <img src="https://via.placeholder.com/200x150" alt="Product" class="w3-image">
-          <h5>Garden Chair</h5>
-          <p>£49.99</p>
-        </div>
-        <!-- Add 7 more product cards similarly -->
-      </div>
-    </section>
-
-    <!-- Category 3 -->
-    <section class="category-section">
-      <h2 class="w3-border-bottom w3-padding-small">Fashion</h2>
-      <div class="scroll-container">
-        <div class="w3-card product-card w3-padding">
-          <img src="https://via.placeholder.com/200x150" alt="Product" class="w3-image">
-          <h5>Men’s Jacket</h5>
-          <p>£89.99</p>
-        </div>
-        <!-- Add 7 more product cards similarly -->
-      </div>
-    </section>
+    {% endfor %}
 
 {% endblock content %}
