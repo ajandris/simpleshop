@@ -114,7 +114,6 @@ class ProductVariants(models.Model):
     price = models.DecimalField(verbose_name='Variant Price', decimal_places=2, max_digits=10, default=0)
     sales_price = models.DecimalField(verbose_name='Variant Sales Price', decimal_places=2,
                                       max_digits=10, default=0, null=True, blank=True)
-    image = models.ForeignKey(Images, on_delete=models.CASCADE)
     dimension_name_1 = models.ForeignKey(ProductDimensions, on_delete=models.CASCADE,
                                          related_name='dimension_1', verbose_name='Dimension 1 Name',
                                          blank=True, null=False, db_comment='Dimension 1 Name')
@@ -172,3 +171,21 @@ class ProductVariants(models.Model):
         verbose_name = 'Product Variant'
         verbose_name_plural = 'Product Variants'
         db_table = 'product_variants'
+
+
+class ProductImages(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.RESTRICT)
+    image = models.ForeignKey(Images, on_delete=models.RESTRICT)
+    number_in_gallery = models.IntegerField(null=False, blank=False, default=1000)
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='DateTime when record created')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='DateTime when record was updated')
+    user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
+
+    class Meta:
+        db_table = 'product_images'
+        verbose_name = 'Product Image'
+        verbose_name_plural = 'Product Images'
+        ordering = ('product__title', 'number_in_gallery',)
+
+    def __str__(self):
+        return f"{self.product.title} - {self.number_in_gallery}"

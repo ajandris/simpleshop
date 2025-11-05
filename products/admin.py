@@ -1,5 +1,5 @@
 from django.contrib import admin
-from products.models import Product, Images, Category, ProductDimensions, ProductVariants
+from products.models import Product, Images, Category, ProductDimensions, ProductVariants, ProductImages
 from django.contrib.auth.models import User
 from import_export import resources, fields
 from import_export.admin import ImportExportModelAdmin
@@ -42,9 +42,23 @@ class ProductAdmin(ImportExportModelAdmin):
     search_fields = ('sku', 'title', 'description', 'tags')
     # list_filter = ('supplier__code', 'tags',)
 
+
+class ImagesResource(resources.ModelResource):
+    name = fields.Field(attribute='name', column_name='Name')
+    url = fields.Field(attribute='url', column_name='url')
+    user = fields.Field(attribute='user', column_name='username',
+                        widget=ForeignKeyWidget(User, 'username'))
+
+    class Meta:
+        model = Images
+        fields = ('name', 'url', 'inserted_at', 'updated_at', 'user')
+        readonly_fields = ['inserted_at', 'updated_at']
+        import_id_fields = ("name",)  # prevents duplicates
+
+
 @admin.register(Images)
-class ImagesAdmin(admin.ModelAdmin):
-    pass
+class ImagesAdmin(ImportExportModelAdmin):
+    resource_class = ImagesResource
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -79,3 +93,26 @@ class ProductVariantsAdmin(admin.ModelAdmin):
                    'dimension_name_9', 'dimension_value_9'
                    )
 
+
+class ProductImagesResource(resources.ModelResource):
+    product = fields.Field(attribute='product', column_name='Product Name',
+                        widget=ForeignKeyWidget(Product, 'title'))
+
+    image = fields.Field(attribute='image', column_name='Name',
+                        widget=ForeignKeyWidget(Images, 'name'))
+
+    number_in_gallery = fields.Field(attribute='number_in_gallery', column_name='Sequence')
+
+    user = fields.Field(attribute='user', column_name='username',
+                        widget=ForeignKeyWidget(User, 'username'))
+
+    class Meta:
+        model = ProductImages
+        fields = ('product', 'image', 'number_in_gallery','inserted_at', 'updated_at', 'user')
+        readonly_fields = ['inserted_at', 'updated_at']
+        import_id_fields = ("image", "product",)  # prevents duplicates
+        verbose_name = 'Product Image'
+        verbose_name_plural = 'Product Images'
+@admin.register(ProductImages)
+class ProductImageAdmin(ImportExportModelAdmin):
+    resource_class = ProductImagesResource

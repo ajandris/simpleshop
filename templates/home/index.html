@@ -14,7 +14,7 @@
         <!-- Repeat for 8 products -->
         {% for prod in cat.top_products %}
             <div class="w3-card product-card w3-padding">
-              <img src="/media/images/000_product_placeholder.png" alt="Product" class="w3-image product-image-carousel">
+              <img src="{{ prod.image.url.url }}" alt="{{ prod.image.name }}" class="w3-image product-image-carousel">
               <h6>{{ prod.title }}</h6>
               <p>£{{ prod.sales_price }}</p>
             </div>
