@@ -41,12 +41,26 @@
      <div id="logo-header" class="w3-center">
          <a href="{% url 'index' %}"><img src="{% static 'images/logo_transparent.png' %}" class="logo"></a>
      </div>
-    <div class="wide main_menu_bgcolor">
-     <nav class="w3-container w3-row main_menu">
+    <div class="wide main-menu-bgcolor">
+     <nav class="w3-container w3-row main-menu">
          <div class="w3-col l8 m8 s8 w3-left w3-padding-small">
-             <a href="{% url 'index' %}">Home</a>
+             <a href="{% url 'index' %}">Home</a>&nbsp;&nbsp;
+             <div class="dropdown">
+              <p class="dropbtn"> Products</p>
+                  <div class="dropdown-content">
+                    <a href="#">All products</a>
+                    <a href="#">Category 1</a>
+                    <a href="#">Category 2</a>
+                    <a href="#">Category 3</a>
+                    <a href="#">Category 4</a>
+                  </div>
+            </div>
+             <a href="{% url 'index' %}">About</a>
          </div>
          <div class="w3-col l4 m4 s4 w3-padding-small">
+             <div class="w3-right w3-padding-small">
+                 <a href="{% url 'index' %}"> Basket</a>
+             </div>
              {% if user.is_authenticated %}
                  <div class="dropdown w3-right">
                   <p class="dropbtn"><i class="fa-regular fa-user" id="profile-fa"></i> {{ user.username }}, your profile</p>

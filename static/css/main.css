@@ -109,23 +109,23 @@ strong{
     text-decoration: none;
 }
 
-.main_menu{
+.main-menu{
     background-color: #795548;
     max-width: 1290px;
     margin: auto;
 }
 
-.main_menu div{
+.main-menu div{
     background-color: inherit;
     color: #fafafa;
     font-weight: 800;
 }
 
-.main_menu a{
+.main-menu a{
     text-decoration: none;
 }
 
-.main_menu_bgcolor{
+.main-menu-bgcolor{
     background-color: #795548;
 }
 
@@ -139,7 +139,7 @@ strong{
     font-weight: bold;
 }
 
-.tablink_active{
+.tablink-active{
     background-color: green !important;
     color: #fafafa !important;
     font-weight: bold;
