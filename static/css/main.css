@@ -8,14 +8,6 @@ strong{
     background-color: inherit;
 }
 
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  background: #123456;        /* change background */
-  /*border-radius: 4px;         !* round corners *!*/
-  /*width: 14px;*/
-  /*height: 14px;*/
-}
-
 .logo{
     width:200px;
     height: 200px;
@@ -343,4 +335,8 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 .desc {
     line-height: 1.6;
+}
+
+.no-text-decoration{
+    text-decoration: none;
 }

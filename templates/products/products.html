@@ -47,14 +47,18 @@
             <div class="w3-card w3-white product-card">
               <figure class="w3-image">
                   <a href="{% url 'product-detail' slug=product.slug %}">
-                      <img src="{{ product.image.url.url }}" alt="{{ product.title }}">
+                          <img src="{{ product.image.url.url }}" alt="{{ product.title }}">
                   </a>
               </figure>
               <div class="w3-container card-under-image">
-                <h6 class="w3-margin-top w3-margin-bottom">{{ product.title }}</h6>
+                  <h6 class="w3-margin-top w3-margin-bottom">
+                      <a href="{% url 'product-detail' slug=product.slug %}"
+                         class="no-text-decoration">{{ product.title }}</a>
+                  </h6>
                 <div class="w3-section">
                   <span class="price">£{{ product.price }}</span>
-                  <button class="w3-button w3-border w3-round w3-right">Add to cart</button>
+                  <a href="{% url 'add-to-cart' slug=product.slug %}"
+                          class="w3-button w3-border w3-round w3-right">Add to cart</a>
                 </div>
               </div>
             </div>
