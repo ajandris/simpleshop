@@ -1,0 +1,101 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block content %}
+
+  <div class="w3-row-padding w3-padding-16">
+
+    <!-- Sidebar -->
+    <aside class="w3-col l3 m12 s12">
+      <div class="w3-card w3-white sidebar">
+        <header class="w3-container w3-padding">
+          <h4 class="w3-margin-0"><i class="fa-solid fa-filter"></i> Filters</h4>
+        </header>
+        <div class="w3-container w3-padding">
+          <form method="get" class="w3-small">
+            <label>Min price</label>
+            <input class="w3-input w3-border w3-round" type="number" name="min" step="0.1" value="{{ min_price }}">
+
+            <div class="w3-margin-top"></div>
+
+            <label>Max price</label>
+            <input class="w3-input w3-border w3-round" type="number" name="max" step="0.1" value="{{ max_price }}">
+
+            <div class="w3-section">
+              <button class="w3-button w3-black w3-round w3-margin-right" type="submit">
+                <i class="fa-solid fa-magnifying-glass background-color-inherit"></i> Apply
+              </button>
+              <a class="w3-button w3-white w3-border w3-round" href="{% url 'products' %}">Clear</a>
+            </div>
+          </form>
+          <div class="w3-text-grey">
+            {{ page_obj.paginator.count }} items match
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Grid -->
+    <div  class="w3-center cat-header-box">
+{#      <h2>{{ category.title }}</h2>#}
+      <p>Unwrap the joy of the season!</p>
+    </div>
+    <main class="w3-col l9 m12 s12">
+      <div class="w3-row-padding" id="grid">
+        {% for product in page_obj.object_list %}
+          <div class="w3-col l4 m6 s12 w3-margin-bottom">
+            <div class="w3-card w3-white product-card">
+              <figure class="w3-image">
+                  <a href="{% url 'product-detail' slug=product.slug %}">
+                      <img src="{{ product.image.url.url }}" alt="{{ product.title }}">
+                  </a>
+              </figure>
+              <div class="w3-container card-under-image">
+                <h6 class="w3-margin-top w3-margin-bottom">{{ product.title }}</h6>
+                <div class="w3-section">
+                  <span class="price">£{{ product.price }}</span>
+                  <button class="w3-button w3-border w3-round w3-right">Add to cart</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div class="w3-panel w3-white w3-padding">No products found.</div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if page_obj.paginator.num_pages > 1 %}
+      <div class="w3-center w3-section">
+        <div class="w3-bar">
+          {% with qs=qs_without_page %}
+            {% if page_obj.has_previous %}
+              <a class="w3-button w3-border w3-round w3-margin-right"
+                 href="?{% if qs %}{{ qs }}&{% endif %}page={{ page_obj.previous_page_number }}">« Prev</a>
+            {% else %}
+              <span class="w3-button w3-border w3-round w3-margin-right w3-disabled">« Prev</span>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+              {% if num == page_obj.number %}
+                <span class="w3-button w3-round w3-black w3-text-white w3-margin-right">{{ num }}</span>
+              {% elif num >= page_obj.number|add:"-2" and num <= page_obj.number|add:"2" %}
+                <a class="w3-button w3-border w3-round w3-margin-right"
+                   href="?{% if qs %}{{ qs }}&{% endif %}page={{ num }}">{{ num }}</a>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+              <a class="w3-button w3-border w3-round w3-margin-right"
+                 href="?{% if qs %}{{ qs }}&{% endif %}page={{ page_obj.next_page_number }}">Next »</a>
+            {% else %}
+              <span class="w3-button w3-border w3-round w3-margin-right w3-disabled">Next »</span>
+            {% endif %}
+          {% endwith %}
+        </div>
+      </div>
+      {% endif %}
+    </main>
+
+  </div>
+{% endblock content %}

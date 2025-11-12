@@ -59,6 +59,8 @@ INSTALLED_APPS = [
     # user apps
     'home',
     'products',
+    'cart',
+    'orders',
 ]
 
 if DEBUG:

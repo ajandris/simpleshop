@@ -48,11 +48,11 @@
              <div class="dropdown">
               <p class="dropbtn"> Products</p>
                   <div class="dropdown-content">
-                    <a href="#">All products</a>
-                    <a href="#">Category 1</a>
-                    <a href="#">Category 2</a>
-                    <a href="#">Category 3</a>
-                    <a href="#">Category 4</a>
+                    <a href="{% url 'products' %}">All products</a>
+                    <a href="{% url 'catalogue' 'christmas-decorations' %}">Christmas Decorations</a>
+                    <a href="{% url 'catalogue' 'toys-gifts' %}">Toys & Gifts</a>
+                    <a href="{% url 'catalogue' 'festive-homeware' %}">Festive Homeware</a>
+                    <a href="{% url 'catalogue' 'holiday-apparel' %}">Holiday Apparel</a>
                   </div>
             </div>
              <a href="{% url 'index' %}">About</a>
