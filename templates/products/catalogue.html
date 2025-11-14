@@ -55,11 +55,14 @@
                       <a href="{% url 'product-detail' slug=product.slug %}"
                          class="no-text-decoration">{{ product.title }}</a>
                   </h6>
-                <div class="w3-section">
-                  <span class="price">£{{ product.price }}</span>
-                  <a href="{% url 'add-to-cart' slug=product.slug %}"
-                          class="w3-button w3-border w3-round w3-right">Add to cart</a>
-                </div>
+                  <form method="post" action="{% url 'add-to-cart'%}">
+                      <input type="hidden" name="sku" value="{{ product.sku }}">
+                      {% csrf_token %}
+                    <div class="w3-section">
+                      <span class="price">£{{ product.price }}</span>&nbsp;&nbsp;
+                          <button class="w3-button w3-border w3-round w3-right">Add to cart</button>
+                    </div>
+                  </form>
               </div>
             </div>
           </div>

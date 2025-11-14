@@ -19,10 +19,14 @@
                     <img src="{{ prod.image.url.url }}" alt="{{ prod.image.name }}"
                          class="w3-image product-image-carousel">
                     <h6>{{ prod.title }}</h6></a>
-              <p>£{{ prod.sales_price }}&nbsp;&nbsp;&nbsp;
-                  <a href="{% url 'add-to-cart' slug=prod.slug %}"
-                          class="w3-button w3-border w3-green w3-round w3-right">Add to cart</a>
-              </p>
+                  <form method="post" action="{% url 'add-to-cart'%}">
+                      <input type="hidden" name="sku" value="{{ prod.sku }}">
+                      {% csrf_token %}
+                    <div class="w3-section">
+                      <span class="price">£{{ prod.price }}</span>&nbsp;&nbsp;
+                          <button class="w3-button w3-border w3-round w3-right">Add to cart</button>
+                    </div>
+                  </form>
             </div>
         {% endfor %}
         <!-- Add 7 more product cards similarly -->

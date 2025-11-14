@@ -1,0 +1,37 @@
+
+.cart-item img {
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+.thumb {
+    width: 84px;
+    height: 84px;
+    border-radius: 6px;
+    overflow:hidden;
+}
+.qty {
+    max-width: 120px;
+}
+.sticky-summary {
+    position: sticky;
+    top: 16px;
+}
+.strike {
+    text-decoration: line-through;
+}
+.coupon-ok {
+    color: #2e7d32;
+}
+.coupon-bad {
+    color: #c62828;
+}
+/* nicer number input */
+input[type="number"] {
+    -moz-appearance:textfield;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance:none;
+    margin:0;
+}

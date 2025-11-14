@@ -1,0 +1,295 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+{% endblock extra_css %}
+
+{% block content %}
+
+<header class="w3-bar w3-border-bottom">
+  <a href="{% url 'products' %}" class="w3-bar-item w3-button">
+      <i class="fa-solid fa-arrow-left background-color-inherit"></i> Continue shopping</a>
+  <span class="w3-bar-item w3-right w3-large"><i class="fa-solid fa-cart-shopping"></i> Your Cart</span>
+</header>
+
+    {% if not cart_items %}
+        <div class="w3-panel">
+              <h3 class="w3-margin-0 w3-center">Cart is empty</h3>
+        </div>
+    {% else %}
+
+<div class="w3-content page w3-padding-16">
+  <div class="w3-row-padding">
+
+    <!-- Cart items -->
+    <section class="w3-col l8 m12 s12">
+      <div class="w3-card w3-white">
+        <header class="w3-container w3-padding">
+          <h3 class="w3-margin-0">Items</h3>
+        </header>
+
+        <div id="cartBody" class="w3-container">
+        {% csrf_token %}
+          <!-- Row -->
+          <!-- Repeat this block per item (in Django: for product in cart) -->
+
+          {% for prod in cart_items %}
+
+          <div class="w3-row w3-padding cart-item" data-sku="{{ prod.product.sku }}" data-price="18.99" data-qty="1">
+            <div class="w3-col s3 m2 l2">
+              <div class="thumb w3-border">
+                <img src="{{ prod.product.image.url.url }}" alt="{{ prod.product.title }}">
+              </div>
+            </div>
+            <div class="w3-col s9 m10 l10">
+              <div class="w3-row">
+                <form method="post" action="{% url 'remove-from-cart' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="sku" value="{{ prod.product.sku }}">
+                    <div class="w3-col s12 m7 l7">
+                      <strong>{{ prod.product.title }}</strong>
+                      <div class="w3-small w3-text-grey">{{ prod.product.category.title }}</div>
+                      <button class="w3-button w3-small w3-border w3-round w3-margin-top">
+                        <i class="fa-regular fa-trash-can background-color-inherit"></i> Remove
+                      </button>
+                    </div>
+                </form>
+                <div class="w3-col s7 m3 l3 w3-margin-top">
+                  <label class="w3-small">Quantity</label>
+                  <div class="w3-row qty">
+                    <div class="w3-col s4">
+                      <button class="w3-button w3-border w3-round w3-block" onclick="decQty(this)">−</button>
+                    </div>
+                    <div class="w3-col s4">
+                      <input class="w3-input w3-border w3-center" type="number" min="1" value="{{ prod.qty }}" oninput="qtyChanged(this)">
+                    </div>
+                    <div class="w3-col s4">
+                      <button class="w3-button w3-border w3-round w3-block" onclick="incQty(this)">+</button>
+                    </div>
+                  </div>
+                </div>
+                <div class="w3-col s5 m2 l2 w3-right-align w3-margin-top">
+                  <div class="w3-small w3-text-grey">Unit</div>
+                  <div>£<span class="unit">18.99</span></div>
+                  <div class="w3-small w3-text-grey">Line</div>
+                  <div><strong>£<span class="line">18.99</span></strong></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr>
+            {% endfor %}
+          <!-- /Repeat rows -->
+        </div>
+
+        <!-- Coupon -->
+        <div class="w3-container w3-padding">
+          <form onsubmit="applyCoupon(event)" class="w3-row">
+            <input type="hidden" id="cart_number" name="cart_number" value="{{ cart.cart_number }}">
+            <div class="w3-col s8 m6 l6">
+              <label class="w3-small">Coupon code</label>
+              <input id="couponInput" class="w3-input w3-border w3-round" placeholder="e.g. WELCOME10">
+              <div id="couponMsg" class="w3-small"></div>
+            </div>
+            <div class="w3-col s4 m3 l3 w3-padding-16">
+              <button class="w3-button w3-black w3-round w3-block" type="submit">
+                  <i class="fa-solid fa-tag background-color-inherit"></i> Apply</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Summary -->
+    <aside class="w3-col l4 m12 s12">
+      <div class="w3-card w3-white sticky-summary">
+        <header class="w3-container w3-padding">
+          <h3 class="w3-margin-0">Order Summary</h3>
+        </header>
+        <div class="w3-container">
+          <div class="w3-row">
+            <div class="w3-col s6">Subtotal</div>
+            <div class="w3-col s6 w3-right-align">£<span id="subtotal">0.00</span></div>
+          </div>
+
+          <div class="w3-row w3-margin-top">
+            <div class="w3-col s6">
+              Shipping
+              <div class="w3-small w3-text-grey">Free over £50</div>
+            </div>
+            <div class="w3-col s6 w3-right-align">
+              <select id="shipping" class="w3-select w3-border w3-round" onchange="recalc()">
+                <option value="0">Standard (3–5d) – £0.00</option>
+                <option value="4.99">Tracked (2–3d) – £4.99</option>
+                <option value="8.99">Express (1–2d) – £8.99</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="w3-row w3-margin-top">
+            <div class="w3-col s6">Discount</div>
+            <div class="w3-col s6 w3-right-align">−£<span id="discount">0.00</span></div>
+          </div>
+
+          <div class="w3-row w3-margin-top">
+            <div class="w3-col s6">VAT (20%)</div>
+            <div class="w3-col s6 w3-right-align">£<span id="vat">0.00</span></div>
+          </div>
+
+          <hr>
+
+          <div class="w3-row w3-xlarge">
+            <div class="w3-col s6"><strong>Total</strong></div>
+            <div class="w3-col s6 w3-right-align"><strong>£<span id="total">0.00</span></strong></div>
+          </div>
+
+          <div class="w3-section">
+            <input type="hidden" id="cart_number" name="cart_number" value="{{ cart.cart_number }}">
+            <a href="#" class="w3-button w3-black w3-round w3-block">
+                <i class="fa-solid fa-cart-arrow-down background-color-inherit"></i> Update basket</a>
+            <a href="#" class="w3-button w3-red w3-round w3-block w3-margin-top">
+                <i class="fa-solid fa-credit-card background-color-inherit"></i> Checkout</a>
+          </div>
+
+          <div class="w3-small w3-text-grey w3-margin-bottom">
+            <i class="fa-solid fa-lock"></i> Secure payment • <i class="fa-solid fa-rotate"></i> 30-day returns
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+    {% endif %}
+
+{#<script>#}
+{#  /* ===== Config ===== */#}
+{#  const VAT_RATE = 0.20;#}
+{#  const FREE_SHIPPING_THRESHOLD = 50.00;#}
+{#  // Demo coupon: WELCOME10 => 10% off#}
+{#  const COUPONS = { "WELCOME10": { type: "percent", value: 10 } };#}
+{##}
+{#  let appliedCoupon = null;#}
+{##}
+{#  /* ===== Helpers ===== */#}
+{#  const £ = sel => document.querySelector(sel);#}
+{#  const ££ = sel => Array.from(document.querySelectorAll(sel));#}
+{#  const money = n => Number(n).toFixed(2);#}
+{##}
+{#  function lineTotal(row) {#}
+{#    const price = parseFloat(row.dataset.price);#}
+{#    const qty = parseInt(row.querySelector('input[type=number]').value || "1", 10);#}
+{#    return price * qty;#}
+{#  }#}
+{##}
+{#  function recalc() {#}
+{#    const rows = ££('.cart-item');#}
+{#    // subtotal#}
+{#    let subtotal = 0;#}
+{#    rows.forEach(row => {#}
+{#      const line = lineTotal(row);#}
+{#      row.querySelector('.line').textContent = money(line);#}
+{#      row.querySelector('.unit').textContent = money(parseFloat(row.dataset.price));#}
+{#      subtotal += line;#}
+{#    });#}
+{##}
+{#    // shipping (auto free over threshold for Standard only)#}
+{#    const shipSelect = £('#shipping');#}
+{#    let shipping = parseFloat(shipSelect.value);#}
+{#    if (subtotal >= FREE_SHIPPING_THRESHOLD && shipping === 0) {#}
+{#      shipping = 0;#}
+{#    }#}
+{##}
+{#    // discount#}
+{#    let discount = 0;#}
+{#    if (appliedCoupon) {#}
+{#      if (appliedCoupon.type === 'percent') {#}
+{#        discount = subtotal * (appliedCoupon.value / 100);#}
+{#      } else if (appliedCoupon.type === 'fixed') {#}
+{#        discount = appliedCoupon.value;#}
+{#      }#}
+{#      // clamp#}
+{#      discount = Math.min(discount, subtotal);#}
+{#    }#}
+{##}
+{#    const taxable = Math.max(subtotal - discount, 0);#}
+{#    const vat = taxable * VAT_RATE;#}
+{#    const total = taxable + vat + shipping;#}
+{##}
+{#    // write#}
+{#    £('#subtotal').textContent = money(subtotal);#}
+{#    £('#discount').textContent = money(discount);#}
+{#    £('#vat').textContent = money(vat);#}
+{#    £('#total').textContent = money(total);#}
+{#  }#}
+{##}
+{#  /* ===== Qty controls ===== */#}
+{#  function parentRow(el) {#}
+{#    return el.closest('.cart-item');#}
+{#  }#}
+{#  function qtyInput(el) {#}
+{#    return parentRow(el).querySelector('input[type=number]');#}
+{#  }#}
+{#  function decQty(btn) {#}
+{#    const input = qtyInput(btn);#}
+{#    const n = Math.max(1, parseInt(input.value || "1", 10) - 1);#}
+{#    input.value = n;#}
+{#    recalc();#}
+{#  }#}
+{#  function incQty(btn) {#}
+{#    const input = qtyInput(btn);#}
+{#    const n = Math.max(1, parseInt(input.value || "1", 10) + 1);#}
+{#    input.value = n;#}
+{#    recalc();#}
+{#  }#}
+{#  function qtyChanged(input) {#}
+{#    const n = Math.max(1, parseInt(input.value || "1", 10));#}
+{#    input.value = n;#}
+{#    recalc();#}
+{#  }#}
+{##}
+{#  /* ===== Remove item ===== */#}
+{#  function removeItem(btn) {#}
+{#    const row = parentRow(btn);#}
+{#    row.parentNode.removeChild(row);#}
+{#    // remove separator <hr> if any right after#}
+{#    const hr = row.nextElementSibling;#}
+{#    if (hr && hr.tagName === 'HR') hr.remove();#}
+{#    recalc();#}
+{#  }#}
+{##}
+{#  /* ===== Coupon ===== */#}
+{#  function applyCoupon(e) {#}
+{#    e.preventDefault();#}
+{#    const code = (£('#couponInput').value || '').trim().toUpperCase();#}
+{#    const msg = £('#couponMsg');#}
+{#    if (!code) {#}
+{#      appliedCoupon = null;#}
+{#      msg.textContent = "";#}
+{#      recalc();#}
+{#      return;#}
+{#    }#}
+{#    if (COUPONS[code]) {#}
+{#      appliedCoupon = COUPONS[code];#}
+{#      msg.className = "w3-small coupon-ok";#}
+{#      msg.textContent = `Coupon applied: ${code} (${appliedCoupon.value}${appliedCoupon.type === 'percent' ? '%' : '£'} off)`;#}
+{#      recalc();#}
+{#    } else {#}
+{#      appliedCoupon = null;#}
+{#      msg.className = "w3-small coupon-bad";#}
+{#      msg.textContent = "Invalid coupon code";#}
+{#      recalc();#}
+{#    }#}
+{#  }#}
+{##}
+{#  // Initial calc#}
+{#  recalc();#}
+{#</script>#}
+{% endblock content %}
+
+{% block postloadjs %}
+        <script src="{% static 'js/cart.js' %}"></script>
+{% endblock postloadjs %}

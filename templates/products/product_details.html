@@ -72,7 +72,7 @@
             <div class="w3-section desc">{{ product.description|safe }}</div>
           {% endif %}
 
-          <form method="post" action="{% url 'add-to-cart' slug=product.slug %}" class="w3-section">
+          <form method="post" action="{% url 'add-to-cart' sku=product.sku %}" class="w3-section">
             {% csrf_token %}
             <label class="w3-small">Quantity</label>
             <input class="w3-input w3-border w3-round qty-input" type="number" name="quantity"
@@ -83,7 +83,7 @@
                 <i class="fa-solid fa-cart-plus background-color-inherit"></i> Add to cart
               </button>
 
-              <button formaction="{% url 'pay-now' slug=product.slug %}"
+              <button formaction="{% url 'pay-now' sku=product.sku %}"
                       class="w3-button w3-red w3-round" type="submit">
                 <i class="fa-solid fa-bolt background-color-inherit"></i> Pay now
               </button>
