@@ -2,7 +2,9 @@ import uuid
 
 from django.shortcuts import render, redirect
 from cart.models import Cart, CartItem
-from products.models import Product, Images
+from products.models import Product
+from django.contrib import messages
+
 
 
 # Create your views here.
@@ -38,6 +40,8 @@ def remove_from_cart(request):
             request.session.pop('cart_number', None)
             request.session.modified = True
 
+    messages.success(request, "Item removed from cart successfully!")
+
     return view_cart(request)
 
 
@@ -48,7 +52,6 @@ def add_product(request):
     if request.method == 'POST':
         sku = request.POST['sku']
         quantity = int(request.POST.get('quantity')) if request.POST.get('quantity') is not None else 1
-        print(sku, quantity)
         cart_no = request.session.get('cart_number')
         if cart_no is None:
             uuid_str = str(uuid.uuid4())
@@ -62,20 +65,25 @@ def add_product(request):
         cart.save()
 
         product = Product.objects.get(sku=sku)
-        cart_items = CartItem.objects.filter(id=cart.id, product=product)
+        cart_items = CartItem.objects.filter(cart=cart, product=product)
 
         quantity = int(request.POST.get('quantity')) if request.POST.get('quantity') is not None else 1
 
-        if not cart_items:
+        if cart_items.count() == 0:
             cart_item = CartItem.objects.create(cart=cart, product=product, qty=quantity, price=product.price)
             cart_item.save()
         else:
             cart_item = cart_items[0]
-            cart_item.qty = cart_item.qty + quantity
+            if cart_item.product == product:
+                cart_item.qty = cart_item.qty + quantity
+            else:
+                cart_item.qty = quantity
             cart_item.save()
 
         request.session['cart_number'] = cart_no
         request.session.modified = True  # optional, ensures session is saved
+
+        messages.success(request, "Item added to cart successfully!")
 
     return redirect(request.META.get('HTTP_REFERER', '/cart/'))
 
