@@ -108,6 +108,30 @@ strong{
     text-decoration: none;
 }
 
+.error{
+    max-width: 1290px;
+    margin: 5px auto 0 auto;
+    background-color: red;
+    color: #fafafa;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.error li{
+    text-decoration: none;
+}
+
+.info{
+    max-width: 1290px;
+    margin: 5px auto 0 auto;
+    background-color: yellow;
+    color: #000000;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+.info li{
+    text-decoration: none;
+}
+
 .main-menu{
     background-color: #795548;
     max-width: 1290px;
@@ -339,4 +363,8 @@ strong{
 
 .no-text-decoration{
     text-decoration: none;
+}
+
+#coupon-apply-bt-wrapper{
+    padding-top: 24px;
 }
