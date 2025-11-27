@@ -12,21 +12,22 @@ from django.contrib import messages
 
 def view_cart(request):
     template = 'cart/cart.html'
-    cart_no = request.session['cart_number']
-    carts = Cart.objects.filter(cart_number=cart_no)
+    cart_no = request.session.get('cart_number')
     ctxt = dict()
-    shipping = Shipping.objects.all().order_by('price')
-    if carts is not None:
-        cart_items = CartItem.objects.filter(cart=carts[0])
-        coupon = None
-        if carts[0].discount is not None:
-            coupon = Coupon.objects.filter(id=carts[0].discount.id).first()
-        ctxt = {
-            'cart': carts[0],
-            'cart_items': cart_items,
-            'coupon': coupon,
-            'shipping': shipping
-        }
+    if cart_no:
+        carts = Cart.objects.filter(cart_number=cart_no)
+        shipping = Shipping.objects.all().order_by('price')
+        if carts is not None:
+            cart_items = CartItem.objects.filter(cart=carts[0])
+            coupon = None
+            if carts[0].discount is not None:
+                coupon = Coupon.objects.filter(id=carts[0].discount.id).first()
+            ctxt = {
+                'cart': carts[0],
+                'cart_items': cart_items,
+                'coupon': coupon,
+                'shipping': shipping
+            }
 
     return render(request, template, context=ctxt)
 
