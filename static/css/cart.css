@@ -1,37 +1,75 @@
-
 .cart-item img {
-    width:100%;
-    height:100%;
-    object-fit:cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
+
 .thumb {
     width: 84px;
     height: 84px;
     border-radius: 6px;
-    overflow:hidden;
+    overflow: hidden;
 }
+
 .qty {
     max-width: 120px;
 }
+
 .sticky-summary {
     position: sticky;
     top: 16px;
 }
+
 .strike {
     text-decoration: line-through;
 }
+
 .coupon-ok {
     color: #2e7d32;
 }
+
 .coupon-bad {
     color: #c62828;
 }
+
 /* nicer number input */
 input[type="number"] {
-    -moz-appearance:textfield;
+    -moz-appearance: textfield;
 }
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-    -webkit-appearance:none;
-    margin:0;
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Pay Button Style from Checkout */
+:root {
+    --accent-color: #e67e22;
+    --radius: 8px;
+}
+
+.pay-button {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.pay-button:hover {
+    background-color: #d35400;
+}
+
+.pay-button:active {
+    transform: scale(0.98);
 }
