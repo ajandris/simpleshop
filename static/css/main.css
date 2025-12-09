@@ -283,6 +283,18 @@ strong{
     background-color: inherit; !important;
 }
 
+.cart-count {
+  background: green;
+  color: yellow;
+  border-radius: 50%;
+  padding: 0.15em 0.45em;
+  font-size: 0.7em;
+  position: relative;
+
+  /* elevation like <sup> */
+  vertical-align: super;
+}
+
 .main-figure {
     position: relative; width: 100%;
 }

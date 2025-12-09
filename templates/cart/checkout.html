@@ -7,173 +7,208 @@
 
 {% block content %}
 
-<div class="checkout-container">
-    <header class="checkout-header">
-        <a href="{% url 'cart' %}" class="back-link">
-            <i class="fa-solid fa-arrow-left"></i> Back to Cart
-        </a>
-        <div class="checkout-title">Checkout</div>
-        <div style="width: 100px;"></div> <!-- Spacer for centering if needed -->
-    </header>
+<header class="w3-bar w3-border-bottom">
+    <a href="{% url 'cart' %}" class="w3-bar-item w3-button">
+        <i class="fa-solid fa-arrow-left background-color-inherit"></i> Back to Cart</a>
+    <span class="w3-bar-item w3-right w3-large"><i class="fa-solid fa-credit-card"></i> Checkout</span>
+</header>
 
-    <div class="checkout-grid">
-        <!-- Left Column: Forms -->
-        <div class="checkout-form-section">
+{% if not cart_items %}
+<div class="w3-panel">
+    <h3 class="w3-margin-0 w3-center">Cart is empty</h3>
+</div>
+{% else %}
 
-            <!-- Contact Info -->
-            <div class="checkout-card">
-                <h3 class="card-title">Contact Information</h3>
-                <form id="checkout-form">
-                    <div class="form-group">
-                        <label class="form-label">Email Address</label>
-                        <input type="email" class="form-input" placeholder="you@example.com" value="test@user.com">
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label">First Name</label>
-                            <input type="text" class="form-input" placeholder="John" value="John">
+<div class="w3-content page w3-padding-16">
+    <div class="w3-row-padding">
+
+        <!-- Checkout Form Section -->
+        <section class="w3-col l8 m12 s12">
+
+            <!-- Contact Information -->
+            <div class="w3-card w3-white w3-margin-bottom">
+                <header class="w3-container w3-padding">
+                    <h3 class="w3-margin-0">Contact Information</h3>
+                </header>
+                <div class="w3-container w3-padding">
+                    <form id="checkout-form">
+                        <div class="w3-row-padding">
+                            <div class="w3-col s12 m6 w3-margin-bottom">
+                                <label for="first-name" class="w3-small">First Name</label>
+                                <input id="first-name" type="text" class="w3-input w3-border w3-round"
+                                    placeholder="John" value="">
+                            </div>
+                            <div class="w3-col s12 m6 w3-margin-bottom">
+                                <label for="last-name" class="w3-small">Last Name</label>
+                                <input id="last-name" type="text" class="w3-input w3-border w3-round" placeholder="Doe"
+                                    value="">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Last Name</label>
-                            <input type="text" class="form-input" placeholder="Doe" value="Doe">
-                        </div>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Shipping Info -->
-            <div class="checkout-card">
-                <h3 class="card-title">Shipping Address</h3>
-                <div class="form-group">
-                    <label class="form-label">Address</label>
-                    <input type="text" class="form-input" placeholder="123 Main St" value="123 Christmas Lane">
-                </div>
-                <div class="form-row three-col">
-                    <div class="form-group">
-                        <label class="form-label">City</label>
-                        <input type="text" class="form-input" placeholder="City" value="North Pole">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">State/Province</label>
-                        <input type="text" class="form-input" placeholder="State" value="Arctic">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Zip Code</label>
-                        <input type="text" class="form-input" placeholder="Zip" value="H0H 0H0">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Country</label>
-                    <select class="form-select">
-                        <option>United Kingdom</option>
-                        <option>United States</option>
-                        <option>Canada</option>
-                    </select>
+                    </form>
                 </div>
             </div>
 
-            <!-- Payment Info -->
-            <div class="checkout-card">
-                <h3 class="card-title">Payment Details</h3>
-
-                <!-- Fake Credit Card Visual -->
-                <div class="credit-card-mockup">
-                    <div class="cc-chip"></div>
-                    <div class="cc-number">**** **** **** 4242</div>
-                    <div class="cc-info">
-                        <span>John Doe</span>
-                        <span>12/25</span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Card Number</label>
-                    <input type="text" class="form-input" placeholder="0000 0000 0000 0000">
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label class="form-label">Expiry Date</label>
-                        <input type="text" class="form-input" placeholder="MM/YY">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">CVC</label>
-                        <input type="text" class="form-input" placeholder="123">
+            <!-- Shipping Address -->
+            <div class="w3-card w3-white w3-margin-bottom">
+                <header class="w3-container w3-padding">
+                    <h3 class="w3-margin-0">Shipping Address</h3>
+                </header>
+                <div class="w3-container w3-padding">
+                    <div class="w3-row-padding">
+                        <div class="w3-col s12 w3-margin-bottom">
+                            <label for="address" class="w3-small">Address</label>
+                            <input id="address" type="text" class="w3-input w3-border w3-round"
+                                placeholder="123 Main St" value="123 Christmas Lane">
+                        </div>
+                        <div class="w3-col s12 m4 w3-margin-bottom">
+                            <label for="city" class="w3-small">City</label>
+                            <input id="city" type="text" class="w3-input w3-border w3-round" placeholder="City"
+                                value="North Pole">
+                        </div>
+                        <div class="w3-col s12 m4 w3-margin-bottom">
+                            <label for="state" class="w3-small">State/Province</label>
+                            <input id="state" type="text" class="w3-input w3-border w3-round" placeholder="State"
+                                value="Arctic">
+                        </div>
+                        <div class="w3-col s12 m4 w3-margin-bottom">
+                            <label for="zip" class="w3-small">Zip Code</label>
+                            <input id="zip" type="text" class="w3-input w3-border w3-round" placeholder="Zip"
+                                value="H0H 0H0">
+                        </div>
+                        <div class="w3-col s12 w3-margin-bottom">
+                            <label for="country" class="w3-small">Country</label>
+                            <select id="country" class="w3-select w3-border w3-round">
+                                <option>United Kingdom</option>
+                                <option>United States</option>
+                                <option>Canada</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <button class="pay-button">
-                <i class="fa-solid fa-lock"></i> Pay £145.00
-            </button>
-
-        </div>
-
-        <!-- Right Column: Order Summary -->
-        <aside class="order-summary">
-            <div class="checkout-card">
-                <h3 class="card-title">Order Summary</h3>
-
-                <!-- Fake Items -->
-                <div class="summary-item">
-                    <div class="item-info">
-                        <img src="https://via.placeholder.com/60" alt="Product" class="item-image">
-                        <div class="item-details">
-                            <h4>Premium Christmas Tree</h4>
-                            <p>Qty: 1</p>
+            <!-- Payment Details -->
+            <div class="w3-card w3-white w3-margin-bottom">
+                <header class="w3-container w3-padding">
+                    <h3 class="w3-margin-0">Payment Details</h3>
+                </header>
+                <div class="w3-container w3-padding">
+                    <div class="w3-row-padding">
+                        <div class="w3-col s12 w3-margin-bottom">
+                            <label for="card-number" class="w3-small">Card Number</label>
+                            <input id="card-number" type="text" class="w3-input w3-border w3-round"
+                                placeholder="0000 0000 0000 0000">
+                        </div>
+                        <div class="w3-col s12 m6 w3-margin-bottom">
+                            <label for="expiry" class="w3-small">Expiry Date</label>
+                            <input id="expiry" type="text" class="w3-input w3-border w3-round" placeholder="MM/YY">
+                        </div>
+                        <div class="w3-col s12 m6 w3-margin-bottom">
+                            <label for="cvc" class="w3-small">CVC</label>
+                            <input id="cvc" type="text" class="w3-input w3-border w3-round" placeholder="123">
                         </div>
                     </div>
-                    <div class="item-price">£80.00</div>
                 </div>
+            </div>
 
-                <div class="summary-item">
-                    <div class="item-info">
-                        <img src="https://via.placeholder.com/60" alt="Product" class="item-image">
-                        <div class="item-details">
-                            <h4>Golden Star Topper</h4>
-                            <p>Qty: 1</p>
+        </section>
+
+        <!-- Order Summary -->
+        <aside class="w3-col l4 m12 s12">
+            <div class="w3-card w3-white sticky-summary">
+                <header class="w3-container w3-padding">
+                    <h3 class="w3-margin-0">Order Summary</h3>
+                </header>
+
+                <!-- Cart Items -->
+                <div class="w3-container" id="cartBody">
+                    {% csrf_token %}
+                    {% for prod in cart_items %}
+                    <div class="w3-row w3-padding-small">
+                        <div class="w3-col s3">
+                            <div class="thumb w3-border">
+                                <img src="{{ prod.product.image.url.url }}" alt="{{ prod.product.title }}">
+                            </div>
+                        </div>
+                        <div class="w3-col s6">
+                            <strong class="w3-small">{{ prod.product.title }}</strong>
+                            <div class="w3-tiny w3-text-grey">Price: <span class="item-price">
+                                £{{ prod.product.price }}</span></div>
+                            <div class="w3-tiny w3-text-grey">Qty: <span class="item-qty">{{ prod.qty }}</span></div>
+                        </div>
+                        <div class="w3-col s3 w3-right-align">
+                            <div class="w3-small">£<span class="prod-line"
+                                data-qty="{{ prod.qty }}" data-price="{{ prod.product.price }}">
+                            </span></div>
                         </div>
                     </div>
-                    <div class="item-price">£25.00</div>
+                    <hr class="w3-margin-0">
+                    {% endfor %}
                 </div>
 
-                <div class="summary-item">
-                    <div class="item-info">
-                        <img src="https://via.placeholder.com/60" alt="Product" class="item-image">
-                        <div class="item-details">
-                            <h4>Festive Lights (20m)</h4>
-                            <p>Qty: 2</p>
+                <!-- Summary Totals -->
+                <div class="w3-container">
+                    <div class="w3-row w3-margin-top">
+                        <div class="w3-col s6">Subtotal</div>
+                        <div class="w3-col s6 w3-right-align">£<span id="subtotal">{{ subtotal }}</span></div>
+                    </div>
+
+                    <div class="w3-row w3-margin-top">
+                        <div class="w3-col s6">Discount</div>
+                        <div class="w3-col s6 w3-right-align">−£<span id="discount">{{ discount_value }}</span></div>
+                    </div>
+
+
+                    <!-- Shipping Data -->
+
+                    <div class="w3-row w3-margin-top">
+                        <div class="w3-col s6">
+                            Shipping <br><span class="w3-small">{{ shipping_method_html }}</span>
+                            {% if shipping_price == 0.00 %}
+                                <div class="w3-small w3-text-grey">Free over £50</div>
+                            {% endif %}
+                        </div>
+                        <div class="w3-col s6 w3-right-align">
+                            £{{ shipping_price }}
                         </div>
                     </div>
-                    <div class="item-price">£30.00</div>
-                </div>
 
-                <!-- Totals -->
-                <div class="summary-totals">
-                    <div class="total-row">
-                        <span>Subtotal</span>
-                        <span>£135.00</span>
+                    <div class="w3-row w3-margin-top">
+                        <div class="w3-col s6">incl. VAT<div class="w3-small w3-text-grey">{{ vat_percent }}%</div>
+                                </div>
+                        <div class="w3-col s6 w3-right-align">£<span id="vat">{{ vat_amount }}</span></div>
                     </div>
-                    <div class="total-row">
-                        <span>Discount</span>
-                        <span>£10.00</span>
+
+                    <hr>
+
+                    <div class="w3-row w3-xlarge">
+                        <div class="w3-col s6"><strong>Total</strong></div>
+                        <div class="w3-col s6 w3-right-align"><strong>£<span id="total">{{ total }}</span>
+                            </strong></div>
                     </div>
-                    <div class="total-row">
-                        <span>Shipping</span>
-                        <span>£10.00</span>
+
+                    <div class="w3-section">
+                        <input type="hidden" id="pay-action" value="{% url 'pay-now' %}">
+                        <button type="button" class="w3-button w3-red w3-round w3-block pay-button" id="pay-button">
+                            <i class="fa-solid fa-lock background-color-inherit"></i> Pay Now</button>
                     </div>
-                    <div class="total-row">
-                        <span>Tax (VAT)</span>
-                        <span>Included</span>
-                    </div>
-                    <div class="total-row final">
-                        <span>Total</span>
-                        <span>£155.00</span>
+
+                    <div class="w3-small w3-text-grey w3-margin-bottom">
+                        <i class="fa-solid fa-lock"></i> Secure payment • <i class="fa-solid fa-rotate"></i> 30-day
+                        returns
                     </div>
                 </div>
             </div>
         </aside>
+
     </div>
 </div>
+
+{% endif %}
+
+<form id="form-template">
+    {% csrf_token %}
+</form>
 
 {% endblock content %}
 

@@ -10,7 +10,7 @@ class Coupon(models.Model):
     code = models.CharField(max_length=30, verbose_name="Coupon")
     value = models.DecimalField(verbose_name="Coupon value", max_digits=20, decimal_places=2)
     # percent or amount
-    type = models.CharField(max_length=30, verbose_name="Coupon type")
+    type = models.CharField(max_length=30, verbose_name="Coupon type", db_comment='amount or percent')
     # null -> no restriction
     effective_from = models.DateField(verbose_name="Coupon start date", null=True, blank=True)
     # null -> no restriction

@@ -59,7 +59,8 @@
          </div>
          <div class="w3-col l4 m4 s4 w3-padding-small">
              <div class="w3-right w3-padding-small">
-                 <a href="{% url 'cart' %}"> Basket</a>
+                 <a href="{% url 'cart' %}"><i class="fa-solid fa-cart-shopping background-color-inherit w3-large"></i>
+                    <span class="cart-count w3-badge w3-border w3-border-white">{{ cart_item_count }}</span></a>
              </div>
              {% if user.is_authenticated %}
                  <div class="dropdown w3-right">
