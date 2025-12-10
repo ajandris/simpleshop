@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import stripe
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -227,3 +228,10 @@ if DEBUG:
 #     SECURE_SSL_REDIRECT = True
 #     SESSION_COOKIE_SECURE = True
 #     CSRF_COOKIE_SECURE = True
+
+
+STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+
+stripe.api_key = STRIPE_SECRET_KEY

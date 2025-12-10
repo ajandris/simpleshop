@@ -9,28 +9,28 @@ from import_export.widgets import ForeignKeyWidget
 
 
 class ProductResource(resources.ModelResource):
-
+    id = fields.Field(attribute='id', column_name='id')
     sku = fields.Field(attribute='sku', column_name='sku')
-    title = fields.Field(attribute='title', column_name='Product Title')
-    category = fields.Field(attribute='category', column_name='Category',
-                            widget=ForeignKeyWidget(Category, "title"))
-    description = fields.Field(attribute='description', column_name='Description (HTML)')
-    short_description = fields.Field(attribute='short_description', column_name='Description (HTML)')
+    title = fields.Field(attribute='title', column_name='title')
+    category = fields.Field(attribute='category', column_name='category_id',
+                            widget=ForeignKeyWidget(Category, "id"))
+    description = fields.Field(attribute='description', column_name='description')
+    short_description = fields.Field(attribute='short_description', column_name='short_description')
     tags = fields.Field(attribute='tags', column_name='tags')
-    price = fields.Field(attribute='price', column_name='generated_price')
-    sales_price = fields.Field(attribute='sales_price', column_name='Sales_price')
-    image = fields.Field(attribute='image', column_name='image',
-                         widget=ForeignKeyWidget(Images, "name"))
+    price = fields.Field(attribute='price', column_name='price')
+    sales_price = fields.Field(attribute='sales_price', column_name='sales_price')
+    image = fields.Field(attribute='image', column_name='image_id',
+                         widget=ForeignKeyWidget(Images, "id"))
     stock = fields.Field(attribute='stock', column_name='stock')
-    user = fields.Field(attribute='user', column_name='username',
-                        widget=ForeignKeyWidget(User, 'username'))
+    user = fields.Field(attribute='user', column_name='user_id',
+                        widget=ForeignKeyWidget(User, 'id'))
 
     class Meta:
         model = Product
         # optional: list fields explicitly
-        fields = ("sku", "title", "category", "description", "short_description", "tags", "price",
+        fields = ('id', "sku", "title", "category", "description", "short_description", "tags", "price",
                   "sales_price", "image", "stock", "user")
-        import_id_fields = ("sku",)  # prevents duplicates
+        import_id_fields = ('id',)  # prevents duplicates
 
 
 @admin.register(Product)
@@ -44,26 +44,55 @@ class ProductAdmin(ImportExportModelAdmin):
 
 
 class ImagesResource(resources.ModelResource):
-    name = fields.Field(attribute='name', column_name='Name')
+    id = fields.Field(attribute='id', column_name='id')
+    name = fields.Field(attribute='name', column_name='name')
     url = fields.Field(attribute='url', column_name='url')
-    user = fields.Field(attribute='user', column_name='username',
-                        widget=ForeignKeyWidget(User, 'username'))
+    user = fields.Field(attribute='user', column_name='user_id',
+                widget=ForeignKeyWidget(User, 'id'),
+                )
+    inserted_at = fields.Field(attribute='inserted_at', column_name='inserted_at')
+    updated_at = fields.Field(attribute='updated_at', column_name='updated_at')
 
     class Meta:
         model = Images
-        fields = ('name', 'url', 'inserted_at', 'updated_at', 'user')
+        fields = ('id', 'name', 'url', 'user', 'inserted_at', 'updated_at',)
         readonly_fields = ['inserted_at', 'updated_at']
-        import_id_fields = ("name",)  # prevents duplicates
+        import_id_fields = ('id',)  # prevents duplicates
 
 
 @admin.register(Images)
 class ImagesAdmin(ImportExportModelAdmin):
     resource_class = ImagesResource
 
+
+class CategoryResource(resources.ModelResource):
+    id = fields.Field(attribute='id', column_name='id')
+    title = fields.Field(attribute='title', column_name='title')
+    slug = fields.Field(attribute='slug', column_name='slug')
+    image = fields.Field(attribute='image', column_name='image_id',
+                widget=ForeignKeyWidget(Images, 'id'),
+                )
+    is_featured = fields.Field(attribute='is_featured', column_name='is_featured')
+    description = fields.Field(attribute='description', column_name='description')
+    user = fields.Field(attribute='user', column_name='user_id',
+                widget=ForeignKeyWidget(User, 'id'),
+                )
+    inserted_at = fields.Field(attribute='inserted_at', column_name='inserted_at')
+    updated_at = fields.Field(attribute='updated_at', column_name='updated_at')
+
+    class Meta:
+        model = Category
+        fields = ('id', 'title', 'image', 'is_featured', 'user',
+            'inserted_at', 'updated_at',)
+        list_display = ('image', 'title', 'slug', 'is_featured', 'inserted_at',
+            'updated_at', 'user')
+        readonly_fields = ['inserted_at', 'updated_at']
+        import_id_fields = ('id',)  # prevents duplicates
+
+
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('image', 'title', 'slug', 'is_featured', 'inserted_at', 'updated_at', 'user')
-    readonly_fields = ['inserted_at', 'updated_at']
+class CategoryAdmin(ImportExportModelAdmin):
+    resource_class = CategoryResource
 
 @admin.register(ProductDimensions)
 class ProductDimensionAdmin(admin.ModelAdmin):
@@ -95,24 +124,28 @@ class ProductVariantsAdmin(admin.ModelAdmin):
 
 
 class ProductImagesResource(resources.ModelResource):
-    product = fields.Field(attribute='product', column_name='Product Name',
-                        widget=ForeignKeyWidget(Product, 'title'))
+    id = fields.Field(attribute='id', column_name='id')
+    product = fields.Field(attribute='product', column_name='product_id',
+                        widget=ForeignKeyWidget(Product, 'id'))
 
-    image = fields.Field(attribute='image', column_name='Name',
-                        widget=ForeignKeyWidget(Images, 'name'))
+    image = fields.Field(attribute='image', column_name='image_id',
+                        widget=ForeignKeyWidget(Images, 'id'))
 
     number_in_gallery = fields.Field(attribute='number_in_gallery', column_name='Sequence')
 
-    user = fields.Field(attribute='user', column_name='username',
-                        widget=ForeignKeyWidget(User, 'username'))
+    user = fields.Field(attribute='user', column_name='user_id',
+                        widget=ForeignKeyWidget(User, 'id'))
+    inserted_at = fields.Field(attribute='inserted_at', column_name='inserted_at')
+    updated_at = fields.Field(attribute='updated_at', column_name='updated_at')
 
     class Meta:
         model = ProductImages
-        fields = ('product', 'image', 'number_in_gallery','inserted_at', 'updated_at', 'user')
+        fields = ('id', 'product', 'image', 'number_in_gallery','inserted_at', 'updated_at', 'user')
         readonly_fields = ['inserted_at', 'updated_at']
         import_id_fields = ("image", "product",)  # prevents duplicates
         verbose_name = 'Product Image'
         verbose_name_plural = 'Product Images'
+
 @admin.register(ProductImages)
 class ProductImageAdmin(ImportExportModelAdmin):
     resource_class = ProductImagesResource
