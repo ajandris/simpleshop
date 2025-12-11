@@ -203,7 +203,11 @@ def calculate_order(cart_no):
     except Cart.DoesNotExist:
         return {}
 
-    shipping = Shipping.objects.filter(code=cart.shipping_method).first()
+    shipping = None
+    if cart.shipping_method is None:
+        shipping = Shipping.objects.order_by('discount_threshold').first()
+    else:
+        shipping = Shipping.objects.filter(code=cart.shipping_method).first()
 
     cart_sub_total = CartItem.objects.filter(cart=cart).aggregate(
         total=Sum(F('price') * F('qty'))
