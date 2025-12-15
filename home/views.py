@@ -1,8 +1,11 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
+from django.contrib import messages
 from allauth.account.models import EmailAddress
 from collections import defaultdict
+
+from home.models import Profile, Address
 from products.models import Category, Product
 
 
@@ -31,20 +34,254 @@ def index(request):
 
 @login_required
 def profile(request):
-    if request.method == 'POST':
-        if request.POST.get('action') == 'general_info':
-            user = get_user_model().objects.get(username=request.user.username)
-            user.first_name = request.POST.get('name')
-            user.last_name = request.POST.get('surname')
-            user.save()
+    return redirect(request, 'profile_generalinfo')
 
-    template = 'home/profile.html'
+@login_required
+def profile_generalinfo(request):
+    """
+    Profile General info tab
+    """
+    user = get_user_model().objects.get(username=request.user.username)
+    user_profile, created = Profile.objects.\
+        get_or_create(owner=user,
+                      defaults={
+                          'name': user.first_name,
+                          'surname': user.last_name,
+                          'email': user.email,
+                          'user': user,
+                      })
+    if created:
+        user_profile.save()
+    if request.method == 'POST':
+        user.first_name = request.POST.get('name')
+        user.last_name = request.POST.get('surname')
+        user.save()
+        user_profile.name = request.POST.get('name')
+        user_profile.surname = request.POST.get('surname')
+        user_profile.save()
+    template = 'home/profile_generalinfo.html'
     a_user = get_user_model()
     user = a_user.objects.filter(username=request.user.username).values().first()
     email = EmailAddress.objects.filter(user_id=request.user.id).values().first()
 
     context = {
+        "active_menu": 'general-info',
         "user_data": user,
-        "email": email
+        "email": email['email']
     }
-    return render(request, template, context=context)
+    return render(request, template, context)
+
+@login_required
+def profile_security(request):
+    """
+    Profile Security tab
+    """
+    template = 'home/profile_security.html'
+    context = {
+        "active_menu": 'profile-security',
+    }
+
+    return render(request, template, context)
+
+@login_required
+def profile_addresses(request):
+    """
+    Profile Address management tab
+    """
+    user = get_user_model().objects.get(username=request.user.username)
+    user_profile, created = Profile.objects.\
+        get_or_create(owner=user,
+                      defaults={
+                          'name': user.first_name,
+                          'surname': user.last_name,
+                          'email': user.email,
+                          'user': user,
+                      })
+    if created:
+        user_profile.save()
+
+    addresses = Address.objects.filter(profile=user_profile).order_by('-is_default')
+    template = 'home/profile_addresses.html'
+    context = {
+        "active_menu": 'profile-addresses',
+        "addresses": addresses,
+    }
+
+    return render(request, template, context)
+
+@login_required
+def profile_addresses_new(request):
+    """
+    New Address in Profile
+    """
+    user = get_user_model().objects.get(username=request.user.username)
+    user_profile, created = Profile.objects.\
+        get_or_create(owner=user,
+                      defaults={
+                          'name': user.first_name,
+                          'surname': user.last_name,
+                          'email': user.email,
+                          'user': user,
+                      })
+    if created:
+        user_profile.save()
+
+    template = 'home/profile_addresses_new.html'
+    context = {
+        "active_menu": 'profile-addresses',
+    }
+    return render(request, template, context)
+
+@login_required
+def profile_addresses_add(request):
+    """
+    Add Address in Profile
+    """
+    user = get_user_model().objects.get(username=request.user.username)
+    user_profile, created = Profile.objects.\
+        get_or_create(owner=user,
+                      defaults={
+                          'name': user.first_name if not None else '',
+                          'surname': user.last_name if not None else '',
+                          'email': user.email,
+                          'user': user,
+                      })
+    if created:
+        user_profile.save()
+
+    if request.method == 'POST':
+        address_count = Address.objects.filter(profile=user_profile).count()
+        print('Address Count', address_count)
+        address = Address.objects.create(
+            profile=user_profile,
+            is_default=(address_count == 0),
+            address_line1=request.POST.get('address_line1'),
+            address_line2=request.POST.get('address_line2'),
+            city=request.POST.get('city'),
+            state=request.POST.get('state'),
+            postal_code=request.POST.get('postcode'),
+            country=request.POST.get('country'),
+            user=user
+        )
+        address.save()
+        messages.success(request, 'Address Created')
+
+    return redirect('profile_addresses')
+
+@login_required
+def profile_addresses_edit_show(request):
+    """
+    Edit form for Address in Profile
+    """
+    user = get_user_model().objects.get(username=request.user.username)
+    user_profile, created = Profile.objects.\
+        get_or_create(owner=user,
+                      defaults={
+                          'name': user.first_name,
+                          'surname': user.last_name,
+                          'email': user.email,
+                          'user': user,
+                      })
+    if created:
+        user_profile.save()
+
+    address = get_object_or_404(Address, id=int(request.POST.get('address_id', 0)),profile=user_profile)
+    template = 'home/profile_addresses_edit.html'
+    context = {
+        "active_menu": 'profile-addresses',
+        "address": address,
+    }
+    return render(request, template, context)
+
+@login_required
+def profile_addresses_edit(request):
+    """
+    Edit Address in Profile
+    """
+    if request.method == 'POST':
+        user = get_user_model().objects.get(username=request.user.username)
+        user_profile, created = Profile.objects.\
+            get_or_create(owner=user,
+                          defaults={
+                              'name': user.first_name,
+                              'surname': user.last_name,
+                              'email': user.email,
+                              'user': user,
+                          })
+        if created:
+            user_profile.save()
+
+        address_id = int(request.POST.get('address_id'))
+        addr = get_object_or_404(Address, id=address_id, profile=user_profile)
+
+        addr.address_line1 = request.POST.get('address_line1')
+        addr.address_line2 = request.POST.get('address_line2')
+        addr.city = request.POST.get('city')
+        addr.state = request.POST.get('state')
+        addr.postal_code = request.POST.get('postcode')
+        addr.country = request.POST.get('country')
+        addr.user = user
+        addr.save()
+
+        messages.success(request, "Address Updated")
+
+    return redirect('profile_addresses')
+
+
+@login_required
+def profile_addresses_delete(request):
+    """
+    Edit Address in Profile
+    """
+    if request.method == 'POST':
+        user = get_user_model().objects.get(username=request.user.username)
+        user_profile, created = Profile.objects.\
+            get_or_create(owner=user,
+                          defaults={
+                              'name': user.first_name,
+                              'surname': user.last_name,
+                              'email': user.email,
+                              'user': user,
+                          })
+        if created:
+            user_profile.save()
+
+        address_id = int(request.POST.get('address_id'))
+        addr = get_object_or_404(Address, id=address_id, profile=user_profile)
+        addr.delete()
+
+        messages.success(request, "Address deleted")
+
+    return redirect('profile_addresses')
+
+
+
+@login_required
+def profile_addresses_make_default(request):
+    """
+    Make Default Address in Profile
+    """
+    if request.method == 'POST':
+        user = get_user_model().objects.get(username=request.user.username)
+        user_profile, created = Profile.objects.\
+            get_or_create(owner=user,
+                          defaults={
+                              'name': user.first_name,
+                              'surname': user.last_name,
+                              'email': user.email,
+                              'user': user,
+                          })
+        if created:
+            user_profile.save()
+
+        address_id = int(request.POST.get('address_id'))
+        addr = get_object_or_404(Address, id=address_id, profile=user_profile)
+        addresses = Address.objects.filter(profile=user_profile)
+
+        for address in addresses:
+            address.is_default = (address == addr)
+            address.save()
+
+        messages.success(request, 'Default address changed')
+
+    return redirect('profile_addresses')

@@ -1,0 +1,57 @@
+{% extends 'home/profile_template.html' %}
+{% load static %}
+
+{% block profile-content %}
+<div id="profile-addresses" class="w3-container">
+      <form action="{% url 'profile_addresses_edit' %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="address_id" value="{{ address.id }}">
+        <h2>Add New Address</h2>
+          <div class="w3-card w3-white w3-margin-bottom">
+                <div class="w3-container w3-padding">
+                    <div class="w3-row-padding">
+                        <div class="w3-col s12 w3-margin-bottom">
+                            <label for="address_line1" class="w3-small"><strong>Address Line 1</strong></label>
+                            <input id="address_line1" type="text" class="w3-input w3-border w3-round"
+                                placeholder="" value="{{ address.address_line1 }}" required
+                                name="address_line1">
+                        </div>
+                        <div class="w3-col s12 w3-margin-bottom">
+                            <label for="address_line2" class="w3-small">Address Line 2</label>
+                            <input id="address_line2" type="text" class="w3-input w3-border w3-round"
+                                placeholder="" value="{{ address.address_line2 }}" name="address_line2" minlength="3">
+                        </div>
+                        <div class="w3-col s12 m4 w3-margin-bottom">
+                            <label for="state" class="w3-small">State/Province</label>
+                            <input id="state" type="text" class="w3-input w3-border w3-round" placeholder=""
+                                value="{{ address.state }}" name="state" minlength="3">
+                        </div>
+                        <div class="w3-col s12 m4 w3-margin-bottom">
+                            <label for="city" class="w3-small"><strong>City</strong></label>
+                            <input id="city" type="text" class="w3-input w3-border w3-round" placeholder=""
+                                value="{{ address.city }}" required name="city" minlength="3" maxlength="">
+                        </div>
+                        <div class="w3-col s12 m4 w3-margin-bottom">
+                            <label for="postcode-id" class="w3-small"><strong>Post Code</strong></label>
+                            <input id="postcode-id" type="text" class="w3-input w3-border w3-round" placeholder=""
+                                value="{{ address.postal_code }}" name="postcode" required minlength="3" maxlength="10">
+                        </div>
+                        <div class="w3-col s12 w3-margin-bottom">
+                            <label for="country" class="w3-small"><strong>Country</strong></label>
+                            <select id="country" name="country" class="w3-select w3-border w3-round">
+                                <option value="GB"
+                                        {% if address.country == 'GB' %}selected{% endif %}>United Kingdom</option>
+                                <option value="US"
+                                        {% if address.country == 'US' %}selected{% endif %}>United States</option>
+                                <option value="CA"
+                                        {% if address.country == 'CA' %}selected{% endif %}>Canada</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+          </div>
+      <button type="submit" class="w3-button w3-dark-gray w3-round w3-block"> Ok </button>
+      </form>
+</div>
+
+{% endblock profile-content %}

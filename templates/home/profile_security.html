@@ -1,0 +1,10 @@
+{% extends 'home/profile_template.html' %}
+{% load static %}
+
+{% block profile-content %}
+<div id="profile-security" class="w3-container">
+    <h2>Security</h2>
+    <p>Change your password <a href="{% url 'account_change_password' %}?next={% url 'profile' %}">here</a>.</p>
+</div>
+
+{% endblock profile-content %}

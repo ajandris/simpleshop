@@ -1,0 +1,32 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block content %}
+
+    <h1 class="w3-center">Profile</h1>
+
+    <div  class="w3-container w3-row">
+        <div class="w3-col l2 m2 s3 tab-menu">
+            <div class="w3-bar-block">
+              <a href="{% url 'profile_generalinfo' %}" data-tab="general_info"
+                      class="w3-bar-item w3-button w3-border tab-menu-item
+                      {% if active_menu == 'general-info' %}tablink-active{% else %}tablink{% endif %}">General info</a>
+              <a href="{% url 'profile_addresses' %}" data-tab="addresses"
+                      class="w3-bar-item w3-button w3-border tab-menu-item
+                        {% if active_menu == 'profile-addresses' %}tablink-active{% else %}tablink{% endif %}">Addresses</a>
+              <a href="{% url 'profile_security' %}" data-tab="security"
+                      class="w3-bar-item w3-button w3-border tab-menu-item
+                        {% if active_menu == 'profile-security' %}tablink-active{% else %}tablink{% endif %}">Security</a>
+            </div>
+        </div>
+        <div class="w3-col l10 m10 s9">
+            {% block profile-content %}
+
+            {% endblock profile-content %}
+        </div>
+    </div>
+{% endblock content %}
+
+{% block postloadjs %}
+    <script src="{% static 'js/profile.js' %}"></script>
+{% endblock postloadjs %}

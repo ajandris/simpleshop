@@ -28,7 +28,7 @@ class ProductResource(resources.ModelResource):
     class Meta:
         model = Product
         # optional: list fields explicitly
-        fields = ('id', "sku", "title", "category", "description", "short_description", "tags", "price",
+        fields = ('id', "sku", "title", "category", "slug", "description", "short_description", "tags", "price",
                   "sales_price", "image", "stock", "user")
         import_id_fields = ('id',)  # prevents duplicates
 
@@ -83,7 +83,7 @@ class CategoryResource(resources.ModelResource):
     class Meta:
         model = Category
         fields = ('id', 'title', 'image', 'is_featured', 'user',
-            'inserted_at', 'updated_at',)
+            'inserted_at', 'updated_at', 'slug', 'description',)
         list_display = ('image', 'title', 'slug', 'is_featured', 'inserted_at',
             'updated_at', 'user')
         readonly_fields = ['inserted_at', 'updated_at']

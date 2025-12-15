@@ -1,0 +1,36 @@
+{% extends 'home/profile_template.html' %}
+{% load static %}
+
+{% block profile-content %}
+<div id="profile-generalinfo" class="w3-container">
+      <form action="{% url 'profile_generalinfo' %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <h2>General Info</h2>
+      <div class="w3-card w3-white w3-margin-bottom">
+         <div class="w3-container w3-padding">
+            <div class="w3-col s12 w3-margin-bottom">
+                 <div><strong>Username:</strong> {{ user_data.username }}</div>
+            </div>
+            <div class="w3-col s12 w3-margin-bottom">
+                 <div><strong>Email:</strong> {{ email }}</div>
+            </div>
+            <div class="w3-col s12 w3-margin-bottom">
+                <label for="name_id" class="w3-small"><strong>Name:</strong></label>
+                <input type="text" name="name" id="name_id"
+                           class="w3-input w3-border w3-round" required
+                           value="{{ user_data.first_name }}">
+            </div>
+            <div class="w3-col s12 w3-margin-bottom">
+                <label for="surname_id" class="w3-small"><strong>Surname:</strong></label>
+                <input type="text" name="surname" id="surname_id" required
+                           class="w3-input w3-border w3-round"
+                           value="{{ user_data.last_name }}">
+            </div>
+         </div>
+      </div>
+      <input type="hidden" name="action" value="edit-name">
+      <button type="submit" class="w3-button w3-dark-gray w3-round w3-block"> Ok </button>
+      </form>
+</div>
+
+{% endblock profile-content %}

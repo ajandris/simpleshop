@@ -34,14 +34,14 @@
                     <form id="checkout-form">
                         <div class="w3-row-padding">
                             <div class="w3-col s12 m6 w3-margin-bottom">
-                                <label for="first-name" class="w3-small">First Name</label>
+                                <label for="first-name" class="w3-small"><strong>First Name</strong></label>
                                 <input id="first-name" type="text" class="w3-input w3-border w3-round"
-                                    placeholder="John" value="">
+                                    placeholder="John" value="" required>
                             </div>
                             <div class="w3-col s12 m6 w3-margin-bottom">
-                                <label for="last-name" class="w3-small">Last Name</label>
+                                <label for="last-name" class="w3-small"><strong>Last Name</strong></label>
                                 <input id="last-name" type="text" class="w3-input w3-border w3-round" placeholder="Doe"
-                                    value="">
+                                    value="" required>
                             </div>
                         </div>
                     </form>
@@ -51,34 +51,39 @@
             <!-- Shipping Address -->
             <div class="w3-card w3-white w3-margin-bottom">
                 <header class="w3-container w3-padding">
-                    <h3 class="w3-margin-0">Shipping Address</h3>
+                    <h3 class="w3-margin-0">Shipping and Billing Address</h3>
                 </header>
                 <div class="w3-container w3-padding">
                     <div class="w3-row-padding">
                         <div class="w3-col s12 w3-margin-bottom">
-                            <label for="address" class="w3-small">Address</label>
-                            <input id="address" type="text" class="w3-input w3-border w3-round"
-                                placeholder="123 Main St" value="123 Christmas Lane">
+                            <label for="address_line1" class="w3-small"><strong>Address Line 1</strong></label>
+                            <input id="address_line1" type="text" class="w3-input w3-border w3-round"
+                                placeholder="123 Christmas Lane" value="" required>
                         </div>
-                        <div class="w3-col s12 m4 w3-margin-bottom">
-                            <label for="city" class="w3-small">City</label>
-                            <input id="city" type="text" class="w3-input w3-border w3-round" placeholder="City"
-                                value="North Pole">
+                        <div class="w3-col s12 w3-margin-bottom">
+                            <label for="address_line2" class="w3-small">Address Line 2</label>
+                            <input id="address_line2" type="text" class="w3-input w3-border w3-round"
+                                placeholder="" value="">
                         </div>
                         <div class="w3-col s12 m4 w3-margin-bottom">
                             <label for="state" class="w3-small">State/Province</label>
-                            <input id="state" type="text" class="w3-input w3-border w3-round" placeholder="State"
-                                value="Arctic">
+                            <input id="state" type="text" class="w3-input w3-border w3-round" placeholder="Arctic"
+                                value="">
                         </div>
                         <div class="w3-col s12 m4 w3-margin-bottom">
-                            <label for="zip" class="w3-small">Zip Code</label>
-                            <input id="zip" type="text" class="w3-input w3-border w3-round" placeholder="Zip"
-                                value="H0H 0H0">
+                            <label for="city" class="w3-small"><strong>City</strong></label>
+                            <input id="city" type="text" class="w3-input w3-border w3-round" placeholder="North Pole"
+                                value="" required>
+                        </div>
+                        <div class="w3-col s12 m4 w3-margin-bottom">
+                            <label for="zip" class="w3-small"><strong>Post Code</strong></label>
+                            <input id="zip" type="text" class="w3-input w3-border w3-round" placeholder="H0H 0H0"
+                                value="">
                         </div>
                         <div class="w3-col s12 w3-margin-bottom">
-                            <label for="country" class="w3-small">Country</label>
+                            <label for="country" class="w3-small"><strong>Country</strong></label>
                             <select id="country" class="w3-select w3-border w3-round">
-                                <option>United Kingdom</option>
+                                <option selected>United Kingdom</option>
                                 <option>United States</option>
                                 <option>Canada</option>
                             </select>
@@ -97,15 +102,17 @@
                         <div class="w3-col s12 w3-margin-bottom">
                             <label for="card-number" class="w3-small">Card Number</label>
                             <input id="card-number" type="text" class="w3-input w3-border w3-round"
-                                placeholder="0000 0000 0000 0000">
+                                placeholder="" required>
                         </div>
                         <div class="w3-col s12 m6 w3-margin-bottom">
-                            <label for="expiry" class="w3-small">Expiry Date</label>
-                            <input id="expiry" type="text" class="w3-input w3-border w3-round" placeholder="MM/YY">
+                            <label for="expiry" class="w3-small"><strong>Expiry Date</strong></label>
+                            <input id="expiry" type="text" class="w3-input w3-border w3-round" placeholder="MM/YY"
+                            required maxlength="5">
                         </div>
                         <div class="w3-col s12 m6 w3-margin-bottom">
-                            <label for="cvc" class="w3-small">CVC</label>
-                            <input id="cvc" type="text" class="w3-input w3-border w3-round" placeholder="123">
+                            <label for="cvc" class="w3-small"><strong>CVC</strong></label>
+                            <input id="cvc" type="text" class="w3-input w3-border w3-round" placeholder="123"
+                                   required maxlength="3">
                         </div>
                     </div>
                 </div>

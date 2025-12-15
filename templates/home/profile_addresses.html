@@ -1,0 +1,48 @@
+{% extends 'home/profile_template.html' %}
+{% load static %}
+
+{% block profile-content %}
+<div id="profile-addresses" class="w3-container">
+    <h2>Addresses</h2>
+    <div class="w3-card w3-white w3-margin-bottom">
+        {% if not addresses %}
+            No address found.
+        {% endif %}
+    </div>
+        {% for addr in addresses %}
+            <div class="w3-card w3-margin-bottom background-color-inherit w3-padding">
+                {{ addr.id }}
+                {{ addr.address_line1 }}
+                {{ addr.address_line2 }},
+                {{ addr.city }},
+                {% if addr.state %}
+                    {{ addr.state }},
+                {% endif %}
+                {{ addr.postal_code }},
+                {{ addr.country }}
+                {% if addr.is_default %}
+                    (default)
+                {% endif %}
+                <div class="w3-padding">
+                        <button id="edit-address" name="action" type="button" data-id="{{ addr.id }}"
+                                data-url="{% url 'profile_addresses_edit_show' %}"
+                                class="w3-button w3-dark-gray w3-round address-action">Edit</button>
+                        {% if not addr.is_default %}
+                            <button id="make-default" name="action" type="button" data-id="{{ addr.id }}"
+                                data-url="{% url 'profile_addresses_make_default' %}"
+                                class="w3-button w3-dark-gray w3-round address-action">Make Default</button>
+                            <button id="delete_address" name="action" type="button" data-id="{{ addr.id }}"
+                                data-url="{% url 'profile_addresses_delete' %}"
+                                class="w3-button w3-dark-gray w3-round address-action">Delete Address</button>
+                        {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <form id="form-template">
+        {% csrf_token %}
+    </form>
+    <a href="{% url 'profile_addresses_new' %}" class="w3-button w3-dark-gray w3-round w3-block"> Add New Address </a>
+</div>
+
+{% endblock profile-content %}
