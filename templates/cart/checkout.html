@@ -35,13 +35,13 @@
                         <div class="w3-row-padding">
                             <div class="w3-col s12 m6 w3-margin-bottom">
                                 <label for="first-name" class="w3-small"><strong>First Name</strong></label>
-                                <input id="first-name" type="text" class="w3-input w3-border w3-round"
-                                    placeholder="John" value="" required>
+                                <input id="first-name" name="first_name" type="text" class="w3-input w3-border w3-round"
+                                    placeholder="John" value="{{ profile.name }}" required>
                             </div>
                             <div class="w3-col s12 m6 w3-margin-bottom">
                                 <label for="last-name" class="w3-small"><strong>Last Name</strong></label>
                                 <input id="last-name" type="text" class="w3-input w3-border w3-round" placeholder="Doe"
-                                    value="" required>
+                                    value="{{ profile.surname }}" required>
                             </div>
                         </div>
                     </form>
@@ -53,39 +53,71 @@
                 <header class="w3-container w3-padding">
                     <h3 class="w3-margin-0">Shipping and Billing Address</h3>
                 </header>
+                {% if addresses|length >= 2 %}
+                <div class="w3-container">
+                    <div class="w3-row-padding">
+                    <form action="{%  url 'checkout' %}" method="post">
+                    {% csrf_token %}
+                        <select name="active_address_id" class="wide">
+                            {% for addr in addresses %}
+                                <option value="{{ addr.id}}"{% if addr.id == active_address.id %} selected{% endif %}>
+                                    {{ addr.address_line1 }}
+                                    {{ addr.address_line2 }},
+                                    {{ addr.city }},
+                                    {% if addr.state %}
+                                        {{ addr.state }},
+                                    {% endif %}
+                                    {{ addr.postal_code }},
+                                    {{ addr.country }}
+                                    {% if addr.is_default %}
+                                        (default)
+                                    {% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="w3-button w3-dark-gray w3-round w3-block">
+                            Use this address</button>
+                    </form>
+                    </div>
+                </div>
+{#                    End of address choice#}
+                {% endif %}
                 <div class="w3-container w3-padding">
                     <div class="w3-row-padding">
                         <div class="w3-col s12 w3-margin-bottom">
                             <label for="address_line1" class="w3-small"><strong>Address Line 1</strong></label>
                             <input id="address_line1" type="text" class="w3-input w3-border w3-round"
-                                placeholder="123 Christmas Lane" value="" required>
+                                placeholder="" value="{{ active_address.address_line1 }}" required>
                         </div>
                         <div class="w3-col s12 w3-margin-bottom">
                             <label for="address_line2" class="w3-small">Address Line 2</label>
                             <input id="address_line2" type="text" class="w3-input w3-border w3-round"
-                                placeholder="" value="">
+                                placeholder="" value="{{ active_address.address_line2 }}">
                         </div>
                         <div class="w3-col s12 m4 w3-margin-bottom">
                             <label for="state" class="w3-small">State/Province</label>
-                            <input id="state" type="text" class="w3-input w3-border w3-round" placeholder="Arctic"
-                                value="">
+                            <input id="state" type="text" class="w3-input w3-border w3-round" placeholder=""
+                                value="{{ active_address.state }}">
                         </div>
                         <div class="w3-col s12 m4 w3-margin-bottom">
                             <label for="city" class="w3-small"><strong>City</strong></label>
-                            <input id="city" type="text" class="w3-input w3-border w3-round" placeholder="North Pole"
-                                value="" required>
+                            <input id="city" type="text" class="w3-input w3-border w3-round" placeholder=""
+                                value="{{ active_address.city }}" required>
                         </div>
                         <div class="w3-col s12 m4 w3-margin-bottom">
                             <label for="zip" class="w3-small"><strong>Post Code</strong></label>
-                            <input id="zip" type="text" class="w3-input w3-border w3-round" placeholder="H0H 0H0"
-                                value="">
+                            <input id="zip" type="text" class="w3-input w3-border w3-round" placeholder=""
+                                value="{{ active_address.postal_code }}">
                         </div>
                         <div class="w3-col s12 w3-margin-bottom">
                             <label for="country" class="w3-small"><strong>Country</strong></label>
-                            <select id="country" class="w3-select w3-border w3-round">
-                                <option selected>United Kingdom</option>
-                                <option>United States</option>
-                                <option>Canada</option>
+                            <select id="country" name="country" class="w3-select w3-border w3-round">
+                                <option value="GB"
+                                        {% if active_address.country == 'GB' %}selected{% endif %}>United Kingdom</option>
+                                <option value="US"
+                                        {% if active_address.country == 'US' %}selected{% endif %}>United States</option>
+                                <option value="CA"
+                                        {% if active_address.country == 'CA' %}selected{% endif %}>Canada</option>
                             </select>
                         </div>
                     </div>
@@ -105,9 +137,13 @@
                                 placeholder="" required>
                         </div>
                         <div class="w3-col s12 m6 w3-margin-bottom">
-                            <label for="expiry" class="w3-small"><strong>Expiry Date</strong></label>
-                            <input id="expiry" type="text" class="w3-input w3-border w3-round" placeholder="MM/YY"
-                            required maxlength="5">
+                            <label for="expiry-month" class="w3-small"><strong>Expiry Date</strong></label><br>
+                            <input id="expiry-month" name="expiry_month" type="text"
+                                   class="w3-input w3-border w3-round w3-show-inline-block" placeholder="MM"
+                            required maxlength="2"> /
+                            <input id="expiry-year" type="text" name="expiry_year"
+                                   class="w3-input w3-border w3-round w3-show-inline-block" placeholder="YY"
+                            required maxlength="2">
                         </div>
                         <div class="w3-col s12 m6 w3-margin-bottom">
                             <label for="cvc" class="w3-small"><strong>CVC</strong></label>

@@ -1,8 +1,10 @@
 import uuid
 
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from cart.models import Cart, CartItem, Coupon, Shipping
+from home.models import Profile, Address
 from products.models import Product
 from django.contrib import messages
 from django.db.models import Sum, F
@@ -257,6 +259,25 @@ def checkout(request):
 
     template = 'cart/checkout.html'
 
+    user = get_user_model().objects.get(username=request.user.username)
+    user_profile = get_object_or_404(Profile, owner=user)
+
+    active_address = None
+    active_address_id = None
+    addresses = Address.objects.filter(profile=user_profile).order_by('-is_default')
+    if request.method == 'POST':
+        active_address_id = int(request.POST.get('active_address_id', '0'))
+
+    print('aaa => ',active_address_id)
+
+    if active_address_id:
+        for address in addresses:
+            if address.id == active_address_id:
+                active_address = address
+                break
+    else:
+        active_address = addresses[0]
+
     cart_no = request.session.get('cart_number')
     ctxt = dict()
     if cart_no:
@@ -265,16 +286,19 @@ def checkout(request):
         if cart is not None:
             cart_items = CartItem.objects.filter(cart=cart)
             ord = calculate_order(cart_no)
-            ctxt = {
-                'cart': cart,
-                'cart_items': cart_items,
-                'shipping_price': ord['shipping_price'],
-                'shipping_method_html': ord['shipping_method_html'],
-                'discount_value': ord['discount_value'],
-                'subtotal': ord['subtotal'],
-                'vat_percent': ord['vat_percent'],
-                'vat_amount': ord['vat_amount'],
-                'total': ord['total']
-            }
+            ctxt = dict(
+                cart=cart,
+                cart_items=cart_items,
+                shipping_price=ord['shipping_price'],
+                shipping_method_html=ord['shipping_method_html'],
+                discount_value=ord['discount_value'],
+                subtotal=ord['subtotal'],
+                vat_percent=ord['vat_percent'],
+                vat_amount=ord['vat_amount'],
+                total=ord['total'],
+                profile=user_profile,
+                addresses=addresses,
+                active_address=active_address
+            )
 
     return render(request, template, context=ctxt)

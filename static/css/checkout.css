@@ -73,3 +73,7 @@
 .pay-button:active {
     transform: scale(0.98);
 }
+
+#expiry-month, #expiry-year{
+    width: 100px;
+}
