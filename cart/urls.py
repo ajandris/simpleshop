@@ -1,5 +1,5 @@
 """
-Product URLs configuration
+Cart URLs configuration
 """
 
 from django.urls import path

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 import os
+import sys
 import stripe
 from pathlib import Path
 
@@ -118,16 +119,24 @@ AUTHENTICATION_BACKENDS = [
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.environ.get("PG_DB", ""),
-        'USER': os.environ.get("PG_USER", ""),
-        'PASSWORD': os.environ.get("PG_PASSWORD", ""),
-        'HOST': os.environ.get("PG_HOST", ""),
-        'PORT': int(os.environ.get("PG_PORT", 0)),
+if 'test' in sys.argv or 'pytest' in sys.modules:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': os.environ.get("PG_DB", ""),
+            'USER': os.environ.get("PG_USER", ""),
+            'PASSWORD': os.environ.get("PG_PASSWORD", ""),
+            'HOST': os.environ.get("PG_HOST", ""),
+            'PORT': int(os.environ.get("PG_PORT", 0)),
+        }
+    }
 
 
 # Password validation
