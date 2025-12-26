@@ -40,3 +40,16 @@ class Address(models.Model):
         db_table_comment = 'User Addresses'
         verbose_name = 'Address'
         verbose_name_plural = 'Addresses'
+
+
+class BaseLog(models.Model):
+    LEVEL_CHOICES = [('INFO', 'Info'), ('WARN', 'Warning'), ('ERR', 'Error')]
+
+    inserted_at = models.DateTimeField(auto_now_add=True, verbose_name='DateTime when record inserted')
+    level = models.CharField(max_length=10, choices=LEVEL_CHOICES, default='INFO')
+    action = models.CharField(max_length=255)
+    order_reference = models.CharField(max_length=100, null=True, blank=True)
+    data = models.JSONField(null=True, blank=True)  # Stores request/response snippets
+
+    class Meta:
+        abstract = True

@@ -28,9 +28,9 @@ class Order(models.Model):
     billing_surname = models.CharField(max_length=50, null=False, blank=False)
     shipping_name = models.CharField(max_length=50, null=False, blank=False)
     shipping_surname = models.CharField(max_length=50, null=False, blank=False)
-    shipping_method = models.CharField(max_length=30, decimal_places=2, null=False, blank=False)
-    shipping_price = models.DecimalField(max_length=10, decimal_places=2, null=False, blank=False)
-    discount_amount = models.DecimalField(max_length=10, decimal_places=2, null=False, blank=False, default=0)
+    shipping_method = models.CharField(max_length=30, null=False, blank=False)
+    shipping_price = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
+    discount_amount = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False, default=0)
     status = models.ForeignKey(OrderStatuses, on_delete=models.DO_NOTHING)
 
     inserted_at = models.DateTimeField(auto_now_add=True, verbose_name='DateTime when record inserted')
