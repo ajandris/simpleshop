@@ -10,6 +10,7 @@ class ProductFactory(factory.django.DjangoModelFactory):
         model = Product
 
     title = factory.Sequence(lambda n: f"Product {n}")
+    sku = factory.Sequence(lambda n: f"SKU-{n}")
     category = factory.SubFactory(CategoryFactory, title="Default Category")
     image = factory.SubFactory(ImagesFactory, name="Placeholder")
     user = factory.SubFactory(UserFactory, username="testuser")
