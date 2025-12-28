@@ -9,4 +9,4 @@ class CategoryFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ('title',)
 
     title = "Default Category"
-    user = factory.SubFactory(UserFactory(username="testuser"))
+    user = factory.SubFactory(UserFactory, username="testuser")
