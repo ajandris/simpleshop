@@ -1,8 +1,6 @@
 import pytest
-from django.contrib.auth.models import User
+from test.factories.user_factories import UserFactory
 
 @pytest.fixture
 def user(db):
-    """Creates a test user."""
-    return User.objects.create_user(username='testuser', password='password123')
-
+    return UserFactory.create(username='testuser')

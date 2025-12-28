@@ -4,8 +4,9 @@ from django.urls import reverse
 # Note: Will need to import your models once they exist
 # from orders.services import OrderService
 
+
 @pytest.mark.django_db
-def test_order_fails_if_stock_insufficient(client, user, product_out_of_stock):
+def test_order_fails_if_stock_insufficient(db, client, user):
     """
     RED: Test that the order process stops and redirects if stock is low.
     """
