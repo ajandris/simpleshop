@@ -8,6 +8,8 @@ from products.models import Product
 
 class Coupon(models.Model):
     code = models.CharField(max_length=30, verbose_name="Coupon")
+    min_subtotal = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Minimum Subtotal",
+                                       default=0, null=False, blank=False)
     value = models.DecimalField(verbose_name="Coupon value", max_digits=20, decimal_places=2)
     # percent or amount
     type = models.CharField(max_length=30, verbose_name="Coupon type", db_comment='amount or percent')
