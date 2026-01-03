@@ -51,3 +51,24 @@ def cart_products_with_price_change(
     products['prod1'].price = 15
     products['prod1'].save()
     return products
+
+
+@pytest.fixture
+def cart_products_55_amount(
+        db):
+    products = dict()
+    prod1 = ProductFactory(price=5.50, stock=10)
+    products['prod1'] = prod1
+    return products
+
+@pytest.fixture
+def products_subtotal_100(db):
+    """
+    Products to be in a base cart to test against
+    """
+    products = dict()
+    prod1 = ProductFactory(price=2.50, stock=10)
+    prod2 = ProductFactory(price=7.50, stock=10)
+    products['prod1'] = prod1
+    products['prod2'] = prod2
+    return products

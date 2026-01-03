@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import Sum, F, DecimalField
@@ -53,13 +55,6 @@ class Cart(models.Model):
 
     def __str__(self):
         return self.cart_number
-
-    def get_subtotal(self):
-        result = self.cartitem_set.aggregate(
-            total=Sum(F('qty') * F('price'), output_field=DecimalField())
-        )
-        return result['total'] or 0
-
 
     class Meta:
         db_table = 'cart'

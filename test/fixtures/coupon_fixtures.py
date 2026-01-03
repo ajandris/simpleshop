@@ -90,7 +90,7 @@ def coupon_expired(db):
     )
 
 @pytest.fixture
-def coupon_future(db):
+def coupon_in_future(db):
     # Discounts
     today = datetime.now().date()
     offset = timedelta(days=100)

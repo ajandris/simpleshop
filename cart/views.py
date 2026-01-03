@@ -118,7 +118,7 @@ def add_coupon(request):
     """
     Adds a coupon to cart
     """
-    success = False
+    from .services import is_coupon_active_with_cart_minimum_value
     if request.method == "POST":
         if request.POST.get('coupon'):
             coupon = request.POST.get('coupon').strip().upper()
@@ -128,13 +128,12 @@ def add_coupon(request):
                 cart = Cart.objects.filter(cart_number=cart_no).first()
                 if cart is not None and coup is not None:
                     cart.discount = coup
-                    cart.save()
-                    success = True
-
-    if success:
-        messages.success(request, "Coupon added to cart")
-    else:
-        messages.error(request, "Coupon is not added to cart")
+                    rez, msg = is_coupon_active_with_cart_minimum_value(cart)
+                    if rez:
+                        cart.save()
+                        messages.success(request, "Coupon added to cart")
+                    else:
+                        messages.error(request, msg)
 
     return redirect('cart')
 
@@ -244,8 +243,6 @@ def calculate_order(cart_no):
 
     ord['total'] = Decimal(str(ord.get('subtotal') - ord.get('discount_value') + ord.get('shipping_price'))).quantize(
                                     Decimal("0.01"), rounding=ROUND_HALF_UP)
-
-    print(ord)
 
     return ord
 

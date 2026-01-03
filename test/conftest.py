@@ -4,6 +4,7 @@ Defining fixtures
 import pytest
 
 pytest_plugins = [
+    "test.fixtures.coupon_fixtures",
     "test.fixtures.cart_fixtures",
     "test.fixtures.product_fixtures",
     "test.fixtures.user_fixtures",

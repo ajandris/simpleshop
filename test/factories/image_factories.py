@@ -8,5 +8,5 @@ class ImagesFactory(factory.django.DjangoModelFactory):
         django_get_or_create = ('name',)
 
     name = "Placeholder"
-    url = 'images/000_product_placeholder.png',
-    user = factory.SubFactory(UserFactory, username="testuser"),
+    url = 'images/000_product_placeholder.png'
+    user = factory.SubFactory(UserFactory, username="testuser")

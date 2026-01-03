@@ -16,7 +16,7 @@ class CartItemAdmin(admin.ModelAdmin):
 
 @admin.register(Coupon)
 class CouponAdmin(admin.ModelAdmin):
-    list_display = ('code', 'type', 'value', 'effective_from', 'effective_to', 'created_at', 'updated_at', 'user')
+    list_display = ('code', 'type', 'min_subtotal', 'value', 'effective_from', 'effective_to', 'created_at', 'updated_at', 'user')
     readonly_fields = ('created_at', 'updated_at')
 
 @admin.register(Shipping)
