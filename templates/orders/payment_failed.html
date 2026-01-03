@@ -1,0 +1,13 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+{% endblock extra_css %}
+
+{% block content %}
+<div class="w3-center">
+<h1>Payment failed</h1>
+    <p class="w3-margin-bottom">Please review payment method and address and try again</p>
+    <a href="{% url 'checkout' %}" class="w3-button w3-green">Go To Checkout</a>
+</div>
+{% endblock content %}
