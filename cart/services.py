@@ -6,14 +6,25 @@ from decimal import Decimal
 from cart.models import Cart, CartItem
 
 
-def check_cart_stock(cart):
+def check_cart_stock(cart: Cart):
     """
     Checks stock levels and prices.
     Returns: (bool: is_valid, dict: errors)
     """
     failed_items = dict()
+    for item in cart.cartitem_set.all():
+        if item.product.stock == 0:
+            failed_items["error"] = "Out of stock"
+            return False, failed_items
+        elif item.qty > item.product.stock:
+            failed_items["error"] = "Not enough products"
+            return False, failed_items
 
-    return len(failed_items) != 0, failed_items
+        if Decimal(str(item.price)) != Decimal(str(item.product.price)):
+            failed_items["error"] = "Price has changed"
+            return False, failed_items
+
+    return True, {}
 
 def is_discount_valid(coupon):
     """

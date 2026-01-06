@@ -22,7 +22,7 @@ def add_cart_items(cart, items):
     """
     from cart.models import CartItem
 
-    for prod in items.values():
+    for prod in items:
         CartItem.objects.create(
             cart=cart,
             user=prod.user,
@@ -41,12 +41,57 @@ def base_cart(db, base_cart_products):
     return cart
 
 @pytest.fixture
+def base_cart_with_out_of_stock_product(db, base_cart_products):
+    """
+    Base cart fixture for a cart to compare with
+    """
+    cart = CartFactory()
+    add_cart_items(cart, base_cart_products)
+    item = cart.cartitem_set.all()[0]
+    item.product.title = "Out of stock"
+    item.product.stock = 0
+    item.save()
+    item.product.save()
+    return cart
+
+
+@pytest.fixture
+def base_cart_products_with_less_qty(db, base_cart_products):
+    """
+    Base cart fixture for a cart to compare with
+    """
+    cart = CartFactory()
+    add_cart_items(cart, base_cart_products)
+    item = cart.cartitem_set.all()[1]
+    item.product.title = "Too few items in stock"
+    item.qty = 100
+    item.save()
+    item.product.save()
+    return cart
+
+
+@pytest.fixture
+def base_cart_products_with_price_change(db, base_cart_products):
+    """
+    Base cart fixture with changed product price
+    """
+    cart = CartFactory()
+    add_cart_items(cart, base_cart_products)
+    item = cart.cartitem_set.all()[1]
+    item.product.title = "Price has changed"
+    item.product.price = 1000
+    item.product.save()
+    return cart
+
+
+@pytest.fixture
 def base_cart_with_discount(db, base_cart_products, coupon_no_end_date_amount):
     """
     Base cart with discount coupon
     """
     cart = CartFactory(discount=coupon_no_end_date_amount)
     add_cart_items(cart, base_cart_products)
+
     return cart
 
 @pytest.fixture
