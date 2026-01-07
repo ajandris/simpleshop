@@ -222,13 +222,13 @@ def checkout(request):
                 active_address = address
                 break
     else:
-        active_address = addresses[0]
+        if len(addresses) > 0:
+            active_address = addresses[0]
 
     cart_no = request.session.get('cart_number')
     ctxt = dict()
     if cart_no:
         cart = Cart.objects.filter(cart_number=cart_no).first()
-        shipping = Shipping.objects.filter(code=cart.shipping_method).first()
         if cart is not None:
             cart_items = CartItem.objects.filter(cart=cart)
             ord = get_order_summary(cart_no)
