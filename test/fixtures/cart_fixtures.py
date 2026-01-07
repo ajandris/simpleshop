@@ -121,3 +121,16 @@ def cart_with_100_subtotal_and_percent_discount(db, products_subtotal_100, coupo
     cart = CartFactory(discount=coupon_no_end_date_percent)
     add_cart_items(cart, products_subtotal_100)
     return cart
+
+
+@pytest.fixture
+def cart_with_expired_coupon(db, products_subtotal_100, coupon_expired):
+    """
+    Base cart with discount coupon and cart subtotal of GBP 55.00
+    """
+    coupon = coupon_expired
+    cart = CartFactory(discount=coupon)
+    add_cart_items(cart, products_subtotal_100)
+    cart.discount = coupon
+    cart.save()
+    return cart

@@ -1,9 +1,10 @@
 """
 Cart service functions
 """
+from datetime import datetime, date
 from decimal import Decimal
 
-from cart.models import Cart, CartItem
+from cart.models import Cart, CartItem, Coupon
 
 
 def check_cart_stock(cart: Cart):
@@ -26,14 +27,6 @@ def check_cart_stock(cart: Cart):
 
     return True, {}
 
-def is_discount_valid(coupon):
-    """
-    Checks if the attached discount is still active.
-    Returns: (bool: is_valid, dict: fail_info)
-    """
-    fail_info = dict()
-
-    return len(fail_info) == 0, fail_info
 
 def calculate_cart_amounts(cart) -> dict:
     """
@@ -65,14 +58,24 @@ def get_cart_subtotal(cart: Cart) -> Decimal:
     return result
 
 
-def is_coupon_active_with_cart_minimum_value(cart: Cart) -> (bool, str):
+def is_coupon_valid(coupon: Coupon) -> (bool, str):
     """
     Checks if cart subtotal is larger or equal to minimum of coupon threshold
     """
-    if cart.discount is None:
-        return True, "No coupon attached"
+    today = date.today()
+    if coupon.effective_from and coupon.effective_from > today:
+        return False, "Coupon is not yet active"
 
-    if cart.discount.min_subtotal > get_cart_subtotal(cart):
-        return False, f"Discount starts from cart subtotal of £{cart.discount.min_subtotal}"
-    else:
-        return True, "Discount can be calculated"
+    if coupon.effective_to and coupon.effective_to < today:
+        return False, "Coupon expired"
+
+    return True, ""
+
+
+def has_discount_min_subtotal_reached(cart_with_active_coupon: Cart) -> (bool, str):
+    """
+    Checks if cart subtotal is larger or equal to coupon threshold.
+    """
+    if cart_with_active_coupon.discount.min_subtotal < get_cart_subtotal(cart_with_active_coupon):
+        return False, f"Cart subtotal should be larger or equal to {cart_with_active_coupon.discount.min_subtotal}"
+    return True, ""

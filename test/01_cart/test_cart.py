@@ -1,10 +1,10 @@
+from datetime import date
 from decimal import Decimal
 
 import pytest
 
-from cart.models import Cart
-from cart.services import check_cart_stock, is_discount_valid, calculate_cart_amounts, \
-                          is_coupon_active_with_cart_minimum_value
+from cart.services import check_cart_stock, calculate_cart_amounts, \
+                          is_coupon_valid, has_discount_min_subtotal_reached
 
 def test_cart_services_check_cart_stock(db, base_cart):
     """
@@ -29,17 +29,20 @@ def test_cart_services_check_cart_stock(db, request, cart_fixture, expected_stat
 
 
 @pytest.mark.parametrize("coupon_fixture, expected_status, expected_errors", [
-    ("coupon_no_end_date_amount", True, {}),
-    ("coupon_w_end_date", True, {}),
-    ("coupon_w_end_and_start_date", True, {}),
-    ("coupon_expired", False, {"error": "Coupon expired"}),
-    ("coupon_in_future", False, {"error": "Coupon is not yet active"}),
+    ("coupon_no_end_date_amount", True, ""),
+    ("coupon_w_end_date", True, ""),
+    ("coupon_w_end_and_start_date", True, ""),
+    ("coupon_expired", False, "Coupon expired"),
+    ("coupon_in_future", False, "Coupon is not yet active"),
 ])
-def test_cart_services_is_discount_valid(db, coupon_fixture, expected_status, expected_errors):
+def test_cart_services_is_discount_valid(db, request, coupon_fixture, expected_status, expected_errors):
     """
     Coupon validation
     """
-    assert is_discount_valid(coupon_fixture) == (expected_status, expected_errors), "Discount check"
+    coupon = request.getfixturevalue(coupon_fixture)
+    result_status, result_errors = is_coupon_valid(coupon)
+
+    assert (result_status, result_errors) == (expected_status, expected_errors), f"Discount check: {result_errors}"
 
 
 @pytest.mark.parametrize("cart_fixture, expected_result", [
@@ -70,20 +73,18 @@ def test_cart_services_calculate_cart_amounts(db, cart_fixture, expected_result)
     amounts = calculate_cart_amounts(cart_fixture)
     # assert amounts == expected_result, "Calculation error"
 
-def test_is_coupon_active_with_cart_minimum_value(db, base_cart_with_discount):
-    base_cart_with_discount.discount.min_subtotal = Decimal('100.00')
-    base_cart_with_discount.discount.save()
-    result, msg = is_coupon_active_with_cart_minimum_value(base_cart_with_discount)
+
+def test_coupon_minimal_subtotal_threshold_under(db, base_cart_with_discount):
+    cart = base_cart_with_discount
+    cart.discount.min_subtotal = Decimal('100.00')
+    cart.discount.save()
+    result, msg = has_discount_min_subtotal_reached(cart)
+    assert result is False, msg
+
+def test_coupon_minimal_subtotal_threshold_over(db, cart_with_100_subtotal_and_percent_discount):
+    cart = cart_with_100_subtotal_and_percent_discount
+    cart.discount.min_subtotal = Decimal('100.00')
+    cart.discount.save()
+    result, msg = has_discount_min_subtotal_reached(cart)
     assert result is True, msg
 
-    base_cart_with_discount.discount = None
-    base_cart_with_discount.save()
-    result, msg = is_coupon_active_with_cart_minimum_value(base_cart_with_discount)
-    assert result is True, msg
-
-
-def test_is_coupon_active_with_cart_minimum_value_subtotal_100(db, cart_with_100_subtotal_and_percent_discount):
-    cart_with_100_subtotal_and_percent_discount.discount.min_subtotal = Decimal('100.00')
-    cart_with_100_subtotal_and_percent_discount.discount.save()
-    result, msg = is_coupon_active_with_cart_minimum_value(cart_with_100_subtotal_and_percent_discount)
-    assert result is True, msg
