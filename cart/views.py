@@ -10,6 +10,7 @@ from django.contrib import messages
 
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
+from .services import has_discount_min_subtotal_reached
 
 @receiver(user_logged_in)
 def on_user_logged_in(sender, request, user, **kwargs):
@@ -173,6 +174,11 @@ def save_cart(request):
             if key == 'shipping':
                 shipping = request.POST.get('shipping')
                 cart.shipping_method = shipping
+        if cart.discount is not None:
+            rez, msg = has_discount_min_subtotal_reached(cart)
+            if not rez:
+                messages.error(request, f"The coupon has been removed from cart. {msg}")
+                cart.discount = None
         cart.save()
         messages.success(request, "Cart saved successfully")
 

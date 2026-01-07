@@ -5,6 +5,7 @@ from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 
 from django.db.models import F, Sum
+from requests import request
 
 from cart.models import Cart, CartItem, Coupon, Shipping
 
@@ -60,10 +61,14 @@ def calculate_order(cart_no):
     if cart.discount_id is not None:
         disc = Coupon.objects.filter(id=cart.discount_id).first()
         if disc is not None:
-            if disc.type == 'percent':
-                discount_amount = disc.value * Decimal(str(cart_sub_total['total'])) / 100
-            elif disc.type == 'amount':
-                discount_amount = disc.value
+            if Decimal(str(cart_sub_total['total'])) >= Decimal(str(disc.min_subtotal)):
+                if disc.type == 'percent':
+                    discount_amount = disc.value * Decimal(str(cart_sub_total['total'])) / 100
+                elif disc.type == 'amount':
+                    discount_amount = disc.value
+            else:
+                cart.discount = None
+                cart.save()
 
     ord = dict()
     ord['cart_no'] = cart_no
@@ -109,6 +114,9 @@ def has_discount_min_subtotal_reached(cart_with_active_coupon: Cart) -> (bool, s
     """
     Checks if cart subtotal is larger or equal to coupon threshold.
     """
-    if cart_with_active_coupon.discount.min_subtotal < get_cart_subtotal(cart_with_active_coupon):
-        return False, f"Cart subtotal should be larger or equal to {cart_with_active_coupon.discount.min_subtotal}"
+    cart = cart_with_active_coupon
+
+    if cart.discount.min_subtotal > get_cart_subtotal(cart):
+        return False, f"Cart subtotal should be larger or equal to £{cart.discount.min_subtotal}"
+
     return True, ""
