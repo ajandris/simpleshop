@@ -7,8 +7,6 @@ from cart.models import Cart, CartItem, Coupon, Shipping
 from home.models import Profile, Address
 from products.models import Product
 from django.contrib import messages
-from django.db.models import Sum, F
-from decimal import Decimal, ROUND_HALF_UP
 
 from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
@@ -118,7 +116,7 @@ def add_coupon(request):
     """
     Adds a coupon to cart
     """
-    from .services import is_coupon_active_with_cart_minimum_value
+    from .services import has_discount_min_subtotal_reached
     if request.method == "POST":
         if request.POST.get('coupon'):
             coupon = request.POST.get('coupon').strip().upper()
@@ -128,7 +126,7 @@ def add_coupon(request):
                 cart = Cart.objects.filter(cart_number=cart_no).first()
                 if cart is not None and coup is not None:
                     cart.discount = coup
-                    rez, msg = is_coupon_active_with_cart_minimum_value(cart)
+                    rez, msg = has_discount_min_subtotal_reached(cart)
                     if rez:
                         cart.save()
                         messages.success(request, "Coupon added to cart")
@@ -193,65 +191,12 @@ def pay_now(request):
     return redirect('checkout')
 
 
-def calculate_order(cart_no):
-    """
-    Calculates the order amounts
-    """
-    VAT = Decimal('20.00')
-    cart = Cart
-    try:
-        cart = Cart.objects.get(cart_number=cart_no)
-    except Cart.DoesNotExist:
-        return {}
-
-    shipping = None
-    if cart.shipping_method is None:
-        shipping = Shipping.objects.order_by('discount_threshold').first()
-    else:
-        shipping = Shipping.objects.filter(code=cart.shipping_method).first()
-
-    cart_sub_total = CartItem.objects.filter(cart=cart).aggregate(
-        total=Sum(F('price') * F('qty'))
-    )
-
-    ship_price = 5.00
-    if Decimal(str(cart_sub_total['total'])) > Decimal(str(shipping.discount_threshold)):
-        ship_price = shipping.price_discounted
-    else:
-        ship_price = shipping.price
-
-    discount_amount = Decimal('0.00')
-    if cart.discount_id is not None:
-        disc = Coupon.objects.filter(id=cart.discount_id).first()
-        if disc is not None:
-            if disc.type == 'percent':
-                discount_amount = disc.value * Decimal(str(cart_sub_total['total'])) / 100
-            elif disc.type == 'amount':
-                discount_amount = disc.value
-
-    ord = dict()
-    ord['cart_no'] = cart_no
-    ord['shipping_price'] = ship_price
-    ord['shipping_method_html'] = shipping.text_html
-    ord['discount_value'] = Decimal(str(discount_amount)).quantize(
-                                    Decimal("0.01"), rounding=ROUND_HALF_UP)
-    ord['subtotal'] = Decimal(str(cart_sub_total['total']))
-    ord['vat_percent'] = VAT
-    ord['vat_amount'] = Decimal(str((Decimal(str(cart_sub_total['total'])) -
-                                    Decimal(str(discount_amount))) * VAT / (100 - VAT))).quantize(
-                                    Decimal("0.01"), rounding=ROUND_HALF_UP)
-
-    ord['total'] = Decimal(str(ord.get('subtotal') - ord.get('discount_value') + ord.get('shipping_price'))).quantize(
-                                    Decimal("0.01"), rounding=ROUND_HALF_UP)
-
-    return ord
-
-
 @login_required
 def checkout(request):
     """
     Cart Checkout
     """
+    from .services import calculate_order as get_order_summary
     save_cart(request)
 
     template = 'cart/checkout.html'
@@ -264,8 +209,6 @@ def checkout(request):
     addresses = Address.objects.filter(profile=user_profile).order_by('-is_default')
     if request.method == 'POST':
         active_address_id = int(request.POST.get('active_address_id', '0'))
-
-    print('aaa => ',active_address_id)
 
     if active_address_id:
         for address in addresses:
@@ -282,7 +225,7 @@ def checkout(request):
         shipping = Shipping.objects.filter(code=cart.shipping_method).first()
         if cart is not None:
             cart_items = CartItem.objects.filter(cart=cart)
-            ord = calculate_order(cart_no)
+            ord = get_order_summary(cart_no)
             ctxt = dict(
                 cart=cart,
                 cart_items=cart_items,

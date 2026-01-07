@@ -1,11 +1,12 @@
 """
 Cart service functions
 """
-from datetime import datetime, date
-from decimal import Decimal
+from datetime import date
+from decimal import Decimal, ROUND_HALF_UP
 
-from cart.models import Cart, CartItem, Coupon
+from django.db.models import F, Sum
 
+from cart.models import Cart, CartItem, Coupon, Shipping
 
 def check_cart_stock(cart: Cart):
     """
@@ -28,26 +29,58 @@ def check_cart_stock(cart: Cart):
     return True, {}
 
 
-def calculate_cart_amounts(cart) -> dict:
+def calculate_order(cart_no):
     """
-    Calculates the cart amounts such as total, subtotal, VAT, shipping etc.
-    Returns: (dict: amounts)
+    Calculates the order amounts
     """
-    from decimal import Decimal
-
     VAT = Decimal('20.00')
+    cart = Cart
+    try:
+        cart = Cart.objects.get(cart_number=cart_no)
+    except Cart.DoesNotExist:
+        return {}
 
-    amounts = {
-        'shipping_price': 0,
-        'shipping_method_html': 0,
-        'discount_value': 0,
-        'subtotal': 0,
-        'vat_percent': VAT,
-        'vat_amount': 0,
-        'total': 0
-    }
+    shipping = None
+    if cart.shipping_method is None:
+        shipping = Shipping.objects.order_by('discount_threshold').first()
+    else:
+        shipping = Shipping.objects.filter(code=cart.shipping_method).first()
 
-    return amounts
+    cart_sub_total = CartItem.objects.filter(cart=cart).aggregate(
+        total=Sum(F('price') * F('qty'))
+    )
+
+    ship_price = 5.00
+    if Decimal(str(cart_sub_total['total'])) > Decimal(str(shipping.discount_threshold)):
+        ship_price = shipping.price_discounted
+    else:
+        ship_price = shipping.price
+
+    discount_amount = Decimal('0.00')
+    if cart.discount_id is not None:
+        disc = Coupon.objects.filter(id=cart.discount_id).first()
+        if disc is not None:
+            if disc.type == 'percent':
+                discount_amount = disc.value * Decimal(str(cart_sub_total['total'])) / 100
+            elif disc.type == 'amount':
+                discount_amount = disc.value
+
+    ord = dict()
+    ord['cart_no'] = cart_no
+    ord['shipping_price'] = ship_price
+    ord['shipping_method_html'] = shipping.text_html
+    ord['discount_value'] = Decimal(str(discount_amount)).quantize(
+                                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+    ord['subtotal'] = Decimal(str(cart_sub_total['total']))
+    ord['vat_percent'] = VAT
+    ord['vat_amount'] = Decimal(str((Decimal(str(cart_sub_total['total'])) -
+                                    Decimal(str(discount_amount))) * VAT / (100 - VAT))).quantize(
+                                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    ord['total'] = Decimal(str(ord.get('subtotal') - ord.get('discount_value') + ord.get('shipping_price'))).quantize(
+                                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    return ord
 
 def get_cart_subtotal(cart: Cart) -> Decimal:
     result = Decimal('0.00')
