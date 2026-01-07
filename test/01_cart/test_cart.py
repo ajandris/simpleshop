@@ -3,7 +3,7 @@ from decimal import Decimal
 
 import pytest
 
-from cart.services import check_cart_stock, calculate_cart_amounts, \
+from cart.services import check_cart_stock, calculate_order, \
                           is_coupon_valid, has_discount_min_subtotal_reached
 
 def test_cart_services_check_cart_stock(db, base_cart):
@@ -46,45 +46,61 @@ def test_cart_services_is_discount_valid(db, request, coupon_fixture, expected_s
 
 
 @pytest.mark.parametrize("cart_fixture, expected_result", [
-    ("base_cart", {                 # Amounts need to recalculate before each test
-        'shipping_price': 111,
-        'shipping_method_html': 111,
-        'discount_value': 111,
-        'subtotal': 111,
-        'vat_percent': Decimal(20.00),
-        'vat_amount': 111,
-        'total': 111111
+    ("base_cart_with_discount", {
+        'shipping_price': Decimal('0.00'),
+        'discount_value': Decimal('10.00'),
+        'subtotal': Decimal('512.50'),
+        'vat_percent': Decimal('20.00'),
+        'vat_amount': Decimal('83.75'),
+        'total': Decimal('502.50')
         }),
-    ("base_cart", {  # Amounts need to recalculate before each test
-        'shipping_price': 111,
-        'shipping_method_html': 111,
-        'discount_value': 111,
-        'subtotal': 111,
-        'vat_percent': Decimal(20.00),
-        'vat_amount': 111,
-        'total': 111111
-    }),
+    # ("base_cart", {  # Amounts need to recalculate before each test
+    #     'shipping_price': 111,
+    #     'shipping_method_html': 111,
+    #     'discount_value': 111,
+    #     'subtotal': 111,
+    #     'vat_percent': Decimal(20.00),
+    #     'vat_amount': 111,
+    #     'total': 111111
+    # }),
 ])
-def test_cart_services_calculate_cart_amounts(db, cart_fixture, expected_result):
+def test_cart_services_calculate_cart_amounts(db, request, cart_fixture, expected_result):
     """
     Calculates cart amounts like total, subtotal etc.
     """
-
-    amounts = calculate_cart_amounts(cart_fixture)
-    # assert amounts == expected_result, "Calculation error"
+    cart = request.getfixturevalue(cart_fixture)
+    amounts = calculate_order(cart)
+    amounts.pop('cart_no', None)                # not relevant for calculations
+    amounts.pop('shipping_method_html', None)   # not relevant for calculations
+    assert amounts == expected_result, "Calculation error"
 
 
 def test_coupon_minimal_subtotal_threshold_under(db, base_cart_with_discount):
+    """
+    False if cart subtotal is less than discount threshold
+    """
     cart = base_cart_with_discount
     cart.discount.min_subtotal = Decimal('100.00')
     cart.discount.save()
     result, msg = has_discount_min_subtotal_reached(cart)
-    assert result is False, msg
+    assert result is True, msg
 
-def test_coupon_minimal_subtotal_threshold_over(db, cart_with_100_subtotal_and_percent_discount):
+def test_coupon_minimal_subtotal_threshold_even(db, cart_with_100_subtotal_and_percent_discount):
+    """
+    True if cart subtotal is more or even than discount threshold
+    """
     cart = cart_with_100_subtotal_and_percent_discount
     cart.discount.min_subtotal = Decimal('100.00')
     cart.discount.save()
     result, msg = has_discount_min_subtotal_reached(cart)
     assert result is True, msg
 
+def test_coupon_minimal_subtotal_threshold_over(db, cart_with_100_subtotal_and_percent_discount):
+    """
+    True if cart subtotal is more or even than discount threshold
+    """
+    cart = cart_with_100_subtotal_and_percent_discount
+    cart.discount.min_subtotal = Decimal('200.00')
+    cart.discount.save()
+    result, msg = has_discount_min_subtotal_reached(cart)
+    assert result is False, msg

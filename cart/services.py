@@ -70,22 +70,22 @@ def calculate_order(cart_no):
                 cart.discount = None
                 cart.save()
 
-    ord = dict()
-    ord['cart_no'] = cart_no
-    ord['shipping_price'] = ship_price
-    ord['shipping_method_html'] = shipping.text_html
-    ord['discount_value'] = Decimal(str(discount_amount)).quantize(
+    order = dict()
+    order['cart_no'] = cart_no
+    order['shipping_price'] = ship_price
+    order['shipping_method_html'] = shipping.text_html
+    order['discount_value'] = Decimal(str(discount_amount)).quantize(
                                     Decimal("0.01"), rounding=ROUND_HALF_UP)
-    ord['subtotal'] = Decimal(str(cart_sub_total['total']))
-    ord['vat_percent'] = VAT
-    ord['vat_amount'] = Decimal(str((Decimal(str(cart_sub_total['total'])) -
-                                    Decimal(str(discount_amount))) * VAT / (100 - VAT))).quantize(
+    order['subtotal'] = Decimal(str(cart_sub_total['total'])).quantize(
                                     Decimal("0.01"), rounding=ROUND_HALF_UP)
-
-    ord['total'] = Decimal(str(ord.get('subtotal') - ord.get('discount_value') + ord.get('shipping_price'))).quantize(
+    order['vat_percent'] = VAT
+    total = Decimal(str(order.get('subtotal') - order['discount_value'] + order['shipping_price'])).quantize(
                                     Decimal("0.01"), rounding=ROUND_HALF_UP)
 
-    return ord
+    order['total'] = total
+    order['vat_amount'] = Decimal(str(total - total / (Decimal(str('100.00')) + VAT) * Decimal(str('100')))).quantize(
+                                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+    return order
 
 def get_cart_subtotal(cart: Cart) -> Decimal:
     result = Decimal('0.00')
