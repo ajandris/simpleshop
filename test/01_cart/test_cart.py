@@ -54,15 +54,38 @@ def test_cart_services_is_discount_valid(db, request, coupon_fixture, expected_s
         'vat_amount': Decimal('83.75'),
         'total': Decimal('502.50')
         }),
-    # ("base_cart", {  # Amounts need to recalculate before each test
-    #     'shipping_price': 111,
-    #     'shipping_method_html': 111,
-    #     'discount_value': 111,
-    #     'subtotal': 111,
-    #     'vat_percent': Decimal(20.00),
-    #     'vat_amount': 111,
-    #     'total': 111111
-    # }),
+    ("base_cart_with_discount_percent", {
+        'shipping_price': Decimal('0.00'),
+        'discount_value': Decimal('51.25'),
+        'subtotal': Decimal('512.50'),
+        'vat_percent': Decimal('20.00'),
+        'vat_amount': Decimal('76.88'),
+        'total': Decimal('461.25')
+    }),
+    ("base_cart", {
+        'shipping_price': Decimal('0.00'),
+        'discount_value': Decimal('0.00'),
+        'subtotal': Decimal('512.50'),
+        'vat_percent': Decimal('20.00'),
+        'vat_amount': Decimal('85.42'),
+        'total': Decimal('512.50')
+    }),
+    ("base_cart_with_discount_1000_min_subtotal", {
+        'shipping_price': Decimal('0.00'),
+        'discount_value': Decimal('0.00'),
+        'subtotal': Decimal('512.50'),
+        'vat_percent': Decimal('20.00'),
+        'vat_amount': Decimal('85.42'),
+        'total': Decimal('512.50')
+    }),
+    ("base_cart_with_express_shipping", {
+        'shipping_price': Decimal('8.99'),
+        'discount_value': Decimal('0.00'),
+        'subtotal': Decimal('512.50'),
+        'vat_percent': Decimal('20.00'),
+        'vat_amount': Decimal('86.92'),
+        'total': Decimal('521.49')
+    }),
 ])
 def test_cart_services_calculate_cart_amounts(db, request, cart_fixture, expected_result):
     """

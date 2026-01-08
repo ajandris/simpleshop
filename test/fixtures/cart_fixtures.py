@@ -94,6 +94,21 @@ def base_cart_with_discount(db, base_cart_products, coupon_no_end_date_amount):
 
     return cart
 
+
+@pytest.fixture
+def base_cart_with_discount_percent(db, base_cart_products, coupon_no_end_date_amount):
+    """
+    Base cart with discount coupon
+    """
+    coupon = coupon_no_end_date_amount
+    coupon.type = 'percent'
+    coupon.save()
+    cart = CartFactory(discount=coupon_no_end_date_amount)
+    add_cart_items(cart, base_cart_products)
+
+    return cart
+
+
 @pytest.fixture
 def base_cart_with_55_amount(db, cart_products_55_amount, coupon_no_end_date_amount):
     """
@@ -132,5 +147,29 @@ def cart_with_expired_coupon(db, products_subtotal_100, coupon_expired):
     cart = CartFactory(discount=coupon)
     add_cart_items(cart, products_subtotal_100)
     cart.discount = coupon
+    cart.save()
+    return cart
+
+@pytest.fixture
+def base_cart_with_discount_1000_min_subtotal(db, base_cart_products, coupon_1000_min_subtotal):
+    """
+    Base cart with discount coupon which min_subtotal=1000
+    """
+    coupon = coupon_1000_min_subtotal
+    cart = CartFactory(discount=coupon)
+    add_cart_items(cart, base_cart_products)
+    cart.discount = coupon
+    cart.save()
+    return cart
+
+
+@pytest.fixture
+def base_cart_with_express_shipping(db, base_cart_products):
+    """
+    Base cart with discount coupon which min_subtotal=1000
+    """
+    cart = CartFactory()
+    add_cart_items(cart, base_cart_products)
+    cart.shipping_method = 'express'
     cart.save()
     return cart

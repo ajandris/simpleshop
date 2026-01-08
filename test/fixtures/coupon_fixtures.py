@@ -62,7 +62,7 @@ def coupon_w_end_and_start_date(db):
         code='valid_coupon4',
         value=10,
         # percent or amount
-        type='amount',
+        type='percent',
         # None -> no restriction
         effective_from=start_date,
         # None -> no restriction
@@ -106,5 +106,22 @@ def coupon_in_future(db):
         effective_from=start_date,
         # None -> no restriction
         effective_to=end_date,
+        user=UserFactory(username='testuser')
+    )
+
+
+@pytest.fixture
+def coupon_1000_min_subtotal(db):
+    # Discounts
+    return Coupon.objects.create(
+        min_subtotal=1000,
+        code='valid_coupon1',
+        value=10,
+        # percent or amount
+        type='amount',
+        # null -> no restriction
+        effective_from=None,
+        # null -> no restriction
+        effective_to=None,
         user=UserFactory(username='testuser')
     )
