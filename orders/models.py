@@ -20,8 +20,21 @@ class OrderStatuses(models.Model):
 
 class Order(models.Model):
     order_no = models.CharField(max_length=50, unique=True)
+    owner = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='order_owner')
     order_date = models.DateTimeField(auto_now_add=True)
-    currency = models.CharField(max_length=3)
+    discount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=False, blank=False,
+                                   verbose_name='Discount applied')
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=False, blank=False,
+                                   verbose_name='Subtotal Calculated')
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=False, blank=False,
+                                verbose_name='Order Total Calculated')
+    vat_included = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=False, blank=False,
+                                       verbose_name='Included VAT Calculated')
+    shipping_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=False, blank=False,
+                                          verbose_name='shipping price applied')
+    currency = models.CharField(max_length=3, default='GBP', verbose_name='Order Currency', null=False,
+                                blank=False)
+    cart_no = models.CharField(max_length=100, verbose_name='Cart Number', null=False, blank=False)
     billing_address = models.TextField(null=False, blank=False)
     shipping_address = models.TextField(null=False, blank=False)
     billing_name = models.CharField(max_length=50, null=False, blank=False)
@@ -42,19 +55,10 @@ class Order(models.Model):
         verbose_name = 'Order'
         verbose_name_plural = 'Orders'
 
+    @property
     def __str__(self):
         return self.order_no
 
-    def total_amount(self):
-        """
-        Total order amount calculated
-        @return PositiveInteger in the smallest units
-        """
-        total = 0
-        items = OrderItem.objects.filter(order_id=self.id)
-        for item in items:
-            total += item.line_amount()
-        return total
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
@@ -67,6 +71,7 @@ class OrderItem(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name='DateTime when record updated')
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
+    @property
     def __str__(self):
         return self.sku
 
