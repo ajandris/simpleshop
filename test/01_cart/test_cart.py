@@ -1,7 +1,5 @@
-from datetime import date
-from decimal import Decimal
-
 import pytest
+from decimal import Decimal
 
 from cart.services import check_cart_stock, calculate_order, \
                           is_coupon_valid, has_discount_min_subtotal_reached
