@@ -3,13 +3,14 @@
 *.vscode/
 __pycache__/
 db.sqlite3*
-.env
+.env.test
 env.py
+
 /static/images/
 /media/
 /*.log
 .venv
-migrations/
+*/migrations/
 
 ZZZZ/
 w3v5.css
