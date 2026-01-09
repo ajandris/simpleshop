@@ -5,12 +5,9 @@ import hashlib
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 
-from django.db.models import F, Sum
-from requests import request
-
 from cart.models import Cart, CartItem, Coupon, Shipping
 
-def check_cart_stock(cart: Cart):
+def check_cart_stock(cart: Cart) -> (bool, dict):
     """
     Checks stock levels and prices.
     Returns: (bool: is_valid, dict: errors)
@@ -92,7 +89,7 @@ def calculate_order(cart_no):
                                     Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     order['total'] = total
-    order['vat_amount'] = Decimal(str(total - total / (Decimal(str('100.00')) + VAT) * Decimal(str('100')))).quantize(
+    order['vat_amount'] = Decimal(str(total - total / (Decimal(str('100.00')) + VAT) * Decimal('100'))).quantize(
                                     Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     # Create the final signature
@@ -116,10 +113,10 @@ def is_coupon_valid(coupon: Coupon) -> (bool, str):
     Checks if cart subtotal is larger or equal to minimum of coupon threshold
     """
     today = date.today()
-    if coupon.effective_from and coupon.effective_from > today:
+    if coupon.effective_from is not None and coupon.effective_from > today:
         return False, "Coupon is not yet active"
 
-    if coupon.effective_to and coupon.effective_to < today:
+    if coupon.effective_to is not None and coupon.effective_to < today:
         return False, "Coupon expired"
 
     return True, ""
