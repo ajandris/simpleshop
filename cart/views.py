@@ -244,7 +244,8 @@ def checkout(request):
                 total=ord['total'],
                 profile=user_profile,
                 addresses=addresses,
-                active_address=active_address
+                active_address=active_address,
+                cart_hash=ord['cart_hash']
             )
 
     return render(request, template, context=ctxt)

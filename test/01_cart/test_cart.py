@@ -93,6 +93,7 @@ def test_cart_services_calculate_cart_amounts(db, request, cart_fixture, expecte
     amounts = calculate_order(cart)
     amounts.pop('cart_no', None)                # not relevant for calculations
     amounts.pop('shipping_method_html', None)   # not relevant for calculations
+    amounts.pop('cart_hash', None)              # used for tracking changes
     assert amounts == expected_result, "Calculation error"
 
 

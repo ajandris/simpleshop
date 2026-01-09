@@ -16,10 +16,12 @@ def create_order(cart: Cart) -> Type[Order]:
     return order
 
 
-def validate_order(cart: Cart) -> bool:
+def re_build_order(order: Order, cart: Cart) -> Type[Order]:
     """
-    Validates order against cart.
+    Rebuilds existing order based on a cart.
     @return True if cart has not been changed
     """
 
-    return False
+    order = Order
+
+    return order
