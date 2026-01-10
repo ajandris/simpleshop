@@ -71,3 +71,8 @@ class OrderItem(models.Model):
 
     def line_amount(self):
         return self.quantity * self.unit_price * 100
+
+    class Meta:
+        db_table = 'order_items'
+        verbose_name = 'Order Item'
+        verbose_name_plural = 'Order Items'
