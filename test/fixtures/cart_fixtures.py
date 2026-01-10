@@ -164,7 +164,7 @@ def base_cart_with_discount_1000_min_subtotal(db, base_cart_products, coupon_100
 
 
 @pytest.fixture
-def base_cart_with_express_shipping(db, base_cart_products):
+def base_cart_with_express_shipping(db, base_cart_products) -> Cart:
     """
     Base cart with discount coupon which min_subtotal=1000
     """

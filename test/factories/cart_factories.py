@@ -12,6 +12,7 @@ class CartFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Cart
 
+    cart_number = factory.Sequence(lambda n: f"cart-dsajh{n}76sdvsga")
     owner = factory.SubFactory(UserFactory, username='testuser')
     user = factory.SubFactory(UserFactory, username='testuser')
     discount = None

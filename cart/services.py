@@ -48,7 +48,7 @@ def calculate_order(cart_no):
     # looping cart items and making subtotal and signatures list for hash calculation
     item_signatures = []
     cart_sub_total = Decimal('0.00')
-    cart_items = CartItem.objects.filter(cart=cart)
+    cart_items = CartItem.objects.filter(cart=cart).order_by('id')
     for item in cart_items:
         cart_sub_total += item.qty * Decimal(str(item.price))
         sig = f"{item.product.sku}:{item.qty}:{item.product.price}"
