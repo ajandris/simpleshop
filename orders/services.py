@@ -66,9 +66,7 @@ def re_build_order(order_to_rebuild: Order, cart: Cart) -> Order:
     order.save()
 
     # delete all order items to replace with actual cart items
-    for old_item in OrderItem.objects.filter(order=order):
-        old_item.delete()
-        old_item.save()
+    OrderItem.objects.filter(order=order).delete()
 
     for item in cart.cartitem_set.all():
         order_item = OrderItem.objects.create(
@@ -111,7 +109,6 @@ def make_order(request, cart: Cart) -> Order:
         address += f"\n{post.get('state', '')},"
     address += f"\n{post.get('country', '')}"
     address += f"\n{post.get('zip', '')}"
-
 
     order.billing_name = f"{post.get('first_name', '')}"
     order.billing_surname = f"{post.get('last_name', '')}"
