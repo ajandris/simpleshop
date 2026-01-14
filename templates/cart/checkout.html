@@ -25,29 +25,6 @@
         <!-- Checkout Form Section -->
         <section class="w3-col l8 m12 s12">
 
-            <!-- Contact Information -->
-            <div class="w3-card w3-white w3-margin-bottom">
-                <header class="w3-container w3-padding">
-                    <h3 class="w3-margin-0">Contact Information</h3>
-                </header>
-                <div class="w3-container w3-padding">
-                    <form id="checkout-form">
-                        <div class="w3-row-padding">
-                            <div class="w3-col s12 m6 w3-margin-bottom">
-                                <label for="first-name" class="w3-small"><strong>First Name</strong></label>
-                                <input id="first-name" name="first_name" type="text" class="w3-input w3-border w3-round"
-                                    placeholder="John" value="{{ profile.name }}" required>
-                            </div>
-                            <div class="w3-col s12 m6 w3-margin-bottom">
-                                <label for="last-name" class="w3-small"><strong>Last Name</strong></label>
-                                <input id="last-name" type="text" class="w3-input w3-border w3-round" placeholder="Doe"
-                                    value="{{ profile.surname }}" required>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
             <!-- Shipping Address -->
             <div class="w3-card w3-white w3-margin-bottom">
                 <header class="w3-container w3-padding">
@@ -82,32 +59,33 @@
                 </div>
 {#                    End of address choice#}
                 {% endif %}
+            <form action="{% url 'process-payment' %}" method="post">
                 <div class="w3-container w3-padding">
                     <div class="w3-row-padding">
                         <div class="w3-col s12 w3-margin-bottom">
                             <label for="address_line1" class="w3-small"><strong>Address Line 1</strong></label>
                             <input id="address_line1" type="text" class="w3-input w3-border w3-round"
-                                placeholder="" value="{{ active_address.address_line1 }}" required>
+                                name="address_line1" placeholder="" value="{{ active_address.address_line1 }}" required>
                         </div>
                         <div class="w3-col s12 w3-margin-bottom">
                             <label for="address_line2" class="w3-small">Address Line 2</label>
                             <input id="address_line2" type="text" class="w3-input w3-border w3-round"
-                                placeholder="" value="{{ active_address.address_line2 }}">
+                                name="address_line2" placeholder="" value="{{ active_address.address_line2 }}">
                         </div>
                         <div class="w3-col s12 m4 w3-margin-bottom">
                             <label for="state" class="w3-small">State/Province</label>
                             <input id="state" type="text" class="w3-input w3-border w3-round" placeholder=""
-                                value="{{ active_address.state }}">
+                                name="state" value="{{ active_address.state }}">
                         </div>
                         <div class="w3-col s12 m4 w3-margin-bottom">
                             <label for="city" class="w3-small"><strong>City</strong></label>
                             <input id="city" type="text" class="w3-input w3-border w3-round" placeholder=""
-                                value="{{ active_address.city }}" required>
+                                name="city" value="{{ active_address.city }}" required>
                         </div>
                         <div class="w3-col s12 m4 w3-margin-bottom">
                             <label for="zip" class="w3-small"><strong>Post Code</strong></label>
                             <input id="zip" type="text" class="w3-input w3-border w3-round" placeholder=""
-                                value="{{ active_address.postal_code }}">
+                                name="zip" value="{{ active_address.postal_code }}">
                         </div>
                         <div class="w3-col s12 w3-margin-bottom">
                             <label for="country" class="w3-small"><strong>Country</strong></label>
@@ -124,6 +102,27 @@
                 </div>
             </div>
 
+            <!-- Contact Information -->
+            <div class="w3-card w3-white w3-margin-bottom">
+                <header class="w3-container w3-padding">
+                    <h3 class="w3-margin-0">Contact Information</h3>
+                </header>
+                <div class="w3-container w3-padding">
+                        <div class="w3-row-padding">
+                            <div class="w3-col s12 m6 w3-margin-bottom">
+                                <label for="first_name" class="w3-small"><strong>First Name</strong></label>
+                                <input id="first_name" name="first_name" type="text" class="w3-input w3-border w3-round"
+                                    placeholder="John" value="{{ profile.name }}" required>
+                            </div>
+                            <div class="w3-col s12 m6 w3-margin-bottom">
+                                <label for="last_name" class="w3-small"><strong>Last Name</strong></label>
+                                <input id="last_name" type="text" class="w3-input w3-border w3-round" placeholder="Doe"
+                                    name="last_name" value="{{ profile.surname }}" required>
+                            </div>
+                        </div>
+                </div>
+            </div>
+
             <!-- Payment Details -->
             <div class="w3-card w3-white w3-margin-bottom">
                 <header class="w3-container w3-padding">
@@ -132,7 +131,7 @@
                 <div class="w3-container w3-padding">
                     <div class="w3-row-padding">
                         <div class="w3-col s12 w3-margin-bottom">
-                            <label for="card-number" class="w3-small">Card Number</label>
+                            <label for="card-number" class="w3-small"><strong>Card Number</strong></label>
                             <input id="card-number" type="text" class="w3-input w3-border w3-round"
                                 placeholder="" required maxlength="16">
                         </div>
@@ -140,7 +139,7 @@
                             <label for="expiry-month" class="w3-small"><strong>Expiry Date</strong></label><br>
                             <input id="expiry-month" name="expiry_month" type="text"
                                    class="w3-input w3-border w3-round w3-show-inline-block" placeholder="MM"
-                            required maxlength="2"> /
+                            required maxlength="2">
                             <input id="expiry-year" type="text" name="expiry_year"
                                    class="w3-input w3-border w3-round w3-show-inline-block" placeholder="YY"
                             required maxlength="2">
@@ -232,7 +231,7 @@
 
                     <div class="w3-section">
                         <input type="hidden" id="pay-action" value="{% url 'process-payment' %}">
-                        <button type="button" class="w3-button w3-red w3-round w3-block pay-button" id="pay-button">
+                        <button type="submit" class="w3-button w3-red w3-round w3-block pay-button" id="pay-button">
                             <i class="fa-solid fa-lock background-color-inherit"></i> Pay Now</button>
                     </div>
 

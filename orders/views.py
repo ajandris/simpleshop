@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from cart.services import check_cart_stock, calculate_order
 from cart.models import Cart
+from orders.services import make_order
+from orders.models import Order
 
 def process_payment(request):
     """
@@ -25,12 +27,14 @@ def process_payment(request):
     totals = calculate_order(cart_no)
     checkout_hash = request.POST.get('checkout_hash')
 
+    print(request.POST)
+
     if checkout_hash != totals['cart_hash']:
         messages.error(request, "Your cart has been changed. Please review your cart before payment.")
         return redirect('cart')
 
     # create order
-
+    order = make_order(request, cart)
 
     # log order
 

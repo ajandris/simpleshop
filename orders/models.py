@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -19,7 +21,7 @@ class OrderStatuses(models.Model):
         verbose_name_plural = 'Order Statuses'
 
 class Order(models.Model):
-    order_no = models.CharField(max_length=50, unique=True)
+    order_no = models.UUIDField(default=uuid.uuid4, editable=False, unique=True, null=False, blank=True)
     owner = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='order_owner')
     order_date = models.DateTimeField(auto_now_add=True)
     subtotal = models.DecimalField(max_digits=10, decimal_places=2, default=0.00, null=False, blank=False,

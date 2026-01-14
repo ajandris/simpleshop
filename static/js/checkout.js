@@ -38,7 +38,7 @@ function checkout() {
 
         console.log(form);
 
-        form.submit();
+        // form.submit();
     }
 
     // Event Listeners

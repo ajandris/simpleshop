@@ -9,7 +9,6 @@ def base_order_with_discount(db, base_cart_with_discount):
     cart_totals = calculate_order(cart)
 
     order = Order.objects.create(
-        order_no='ORD-jhafafwnwhjdf',
         cart_no=cart.cart_number,
         discount_amount=cart_totals['discount_value'],
         owner=cart.owner,
