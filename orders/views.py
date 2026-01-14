@@ -58,6 +58,7 @@ def process_payment(request):
         # delete cart and number in sessions
         cart.delete()
         request.session.pop('cart_number', None)
+        request.session.modified = True
     else:
         payment_successful = False
         template = 'orders/payment_failed.html'

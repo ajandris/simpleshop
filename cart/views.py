@@ -34,10 +34,11 @@ def view_cart(request):
             cart = Cart.objects.filter(cart_number=cart_no).first()
             if cart is not None:
                 cart.owner = user
+                cart.user = user
                 cart.save()
         cart_items = CartItem.objects.filter(cart=cart)
     else:
-        cart = Cart.objects.filter(cart_number=cart_no)
+        cart = Cart.objects.filter(cart_number=cart_no).first()
         cart_items = CartItem.objects.filter(cart=cart)
 
     shipping = Shipping.objects.all().order_by('price')
