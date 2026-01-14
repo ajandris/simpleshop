@@ -129,8 +129,8 @@ def make_order(request, cart: Cart) -> Order:
 def get_order_hash(order: Order) -> str:
     item_signatures = []
 
-    for item in order.orderitem_set:
-        sig = f"{item.sku}:{item.qty}:{item.product.price}"
+    for item in order.orderitem_set.all():
+        sig = f"{item.sku}:{item.quantity}:{item.unit_price}"
         item_signatures.append(sig)
     item_signatures.sort()
 
