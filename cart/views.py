@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from cart.models import Cart, CartItem, Coupon, Shipping
 from home.models import Profile, Address
@@ -20,28 +21,36 @@ def on_user_logged_in(sender, request, user, **kwargs):
 
 def view_cart(request):
     template = 'cart/cart.html'
-    cart_no = request.session.get('cart_number')
+    cart_no = request.session.get('cart_number', '')
     ctxt = dict()
-    if cart_no:
-        carts = Cart.objects.filter(cart_number=cart_no)
-        shipping = Shipping.objects.all().order_by('price')
-        cart_items = None
-        if carts is None:
-            if request.user.is_authenticated:
-                carts = Cart.objects.filter(user=request.user)
-                cart_items = CartItem.objects.filter(cart__owner_id=request.user.id)
-        else:
-            cart_items = CartItem.objects.filter(cart=carts[0])
+    if cart_no == '':
+        return render(request, template, context=ctxt)
 
-        coupon = None
-        if carts[0].discount is not None:
-            coupon = Coupon.objects.filter(id=carts[0].discount.id).first()
-        ctxt = {
-            'cart': carts[0],
-            'cart_items': cart_items,
-            'coupon': coupon,
-            'shipping': shipping
-        }
+    if request.user.is_authenticated:
+        user = User.objects.get(username=request.user)
+        cart = Cart.objects.filter(owner=user).order_by('-updated_at').first()
+
+        if cart is None:
+            cart = Cart.objects.filter(cart_number=cart_no).first()
+            if cart is not None:
+                cart.owner = user
+                cart.save()
+        cart_items = CartItem.objects.filter(cart=cart)
+    else:
+        cart = Cart.objects.filter(cart_number=cart_no)
+        cart_items = CartItem.objects.filter(cart=cart)
+
+    shipping = Shipping.objects.all().order_by('price')
+
+    coupon = None
+    if cart.discount is not None:
+        coupon = Coupon.objects.filter(id=cart.discount.id).first()
+    ctxt = {
+        'cart': cart,
+        'cart_items': cart_items,
+        'coupon': coupon,
+        'shipping': shipping
+    }
 
     return render(request, template, context=ctxt)
 
@@ -82,8 +91,7 @@ def add_product(request):
             uuid_str = str(uuid.uuid4())
             cart_no = uuid_str.replace("-", "")
 
-        carts = Cart.objects.get_or_create(cart_number=cart_no)
-        cart = carts[0]
+        cart, created = Cart.objects.get_or_create(cart_number=cart_no)
         if request.user.is_authenticated:
             cart.owner = request.user
             cart.user = request.user
