@@ -171,7 +171,7 @@ def remove_coupon(request):
 
 def save_cart(request):
     if request.method == "POST":
-        cart_no = request.session.get('cart_number')
+        cart_no = request.session.get('cart_number', '')
         cart = Cart.objects.filter(cart_number=cart_no).first()
         for key in request.POST:
             if key.startswith('sku'):

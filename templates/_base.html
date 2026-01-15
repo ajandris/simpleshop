@@ -70,7 +70,7 @@
                   <p class="dropbtn"><i class="fa-regular fa-user" id="profile-fa"></i> {{ user.username }}, your profile</p>
                   <div class="dropdown-content">
                     <a href="{% url 'profile' %}">Profile</a>
-                    <a href="#">Orders</a>
+                    <a href="{% url 'order-list' %}">Orders</a>
                     <a href="{% url 'account_logout' %}">Logout</a>
                   </div>
                 </div>

@@ -1,9 +1,12 @@
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
 from cart.services import check_cart_stock, calculate_order
 from cart.models import Cart
+from orders.models import Order
 from orders.services import make_order, get_order_hash
 
+@login_required
 def process_payment(request):
     """
     Process payment from checkout
@@ -55,6 +58,9 @@ def process_payment(request):
     if card_num == '111111':
         payment_successful = True
         template = 'orders/payment_success.html'
+        context = {
+            'order_number': order.order_no
+        }
         # delete cart and number in sessions
         cart.delete()
         request.session.pop('cart_number', None)
@@ -63,4 +69,28 @@ def process_payment(request):
         payment_successful = False
         template = 'orders/payment_failed.html'
 
-    return render(request, template_name=template)
+    return render(request, template_name=template, context=context)
+
+
+@login_required
+def orders_list(request):
+    template = 'orders/orders_list.html'
+    orders = Order.objects.filter(owner=request.user).order_by('-order_date')
+
+    context = {
+        'orders': orders
+    }
+
+    return render(request, template_name=template, context=context)
+
+
+@login_required
+def orders_details(request, order_no):
+    template = 'orders/order_details.html'
+    order = get_object_or_404(Order, order_no=order_no)
+
+    context = {
+        'order': order
+    }
+
+    return render(request, template_name=template, context=context)

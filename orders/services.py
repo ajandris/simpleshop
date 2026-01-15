@@ -107,8 +107,8 @@ def make_order(request, cart: Cart) -> Order:
     address += f"\n{post.get('city', '')},"
     if post.get('state', '') != '':
         address += f"\n{post.get('state', '')},"
-    address += f"\n{post.get('country', '')}"
     address += f"\n{post.get('zip', '')}"
+    address += f"\n{post.get('country', '')}"
 
     order.billing_name = f"{post.get('first_name', '')}"
     order.billing_surname = f"{post.get('last_name', '')}"

@@ -72,7 +72,7 @@ class OrderItem(models.Model):
         return self.sku
 
     def line_amount(self):
-        return self.quantity * self.unit_price * 100
+        return self.quantity * self.unit_price
 
     class Meta:
         db_table = 'order_items'

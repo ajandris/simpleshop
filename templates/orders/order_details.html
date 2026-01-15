@@ -1,0 +1,136 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+
+    <style>
+
+.address-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 10px;
+}
+
+.address-card {
+    padding: 20px;
+    border: 0;
+    background-color: inherit;
+}
+
+.address-card h3 {
+    margin-top: 0;
+    font-size: 1.1rem;
+    color: #333;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.items-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.grand-total td {
+    font-size: 1.25rem;
+    border-top: 2px solid #222;
+    padding-top: 15px;
+}
+
+.subtotal td {
+    border-top: 2px solid slategrey;
+}
+
+    </style>
+{% endblock extra_css %}
+
+{% block content %}
+<div class="w3-content page w3-padding-16">
+    <div class="w3-row-padding">
+        <div class="w3-card w3-white w3-margin-bottom">
+            <header class="w3-container w3-padding">
+                <h3 class="w3-margin-0 w3-center">Order details</h3>
+            </header>
+            <div class="order-detail-wrapper">
+                <div class="order-header-main w3-margin-left  w3-margin-right">
+                    <div class="header-left">
+                        <p>Order <strong>#{{ order.order_no }}</strong></p>
+                        <p>Date: <strong>{{ order.order_date|date:"d F Y" }}</strong></p>
+                        <p>Status: <strong>{{ order.status }}</strong></p>
+                    </div>
+                </div>
+
+                <div class="address-grid">
+                    <div class="address-card">
+                        <h3><i class="fas fa-truck"></i> Shipping Address</h3>
+                        <p>
+                            {{ order.shipping_name }} {{ order.shipping_surname }}<br>
+                            {{ order.shipping_address|linebreaksbr }}<br>
+                        </p>
+                    </div>
+
+                    <div class="address-card">
+                        <h3><i class="fas fa-file-invoice"></i> Billing Address</h3>
+                        <p>
+                            {{ order.billing_name }} {{ order.billing_surname }}<br>
+                            {{ order.billing_address|linebreaksbr }}<br>
+                        </p>
+                    </div>
+                </div>
+
+                <section class="order-items-section w3-margin-left w3-margin-right">
+                    <h3>Items in this Order</h3>
+                    <table class="items-table">
+                        <thead>
+                            <tr>
+                                <th>SKU</th>
+                                <th>Product</th>
+                                <th class="text-center">Quantity</th>
+                                <th class="text-right">Price</th>
+                                <th class="text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.orderitem_set.all %}
+                            <tr>
+                                <td>{{ item.sku }}</td>
+                                <td>{{ item.item }}</td>
+                                <td class="text-center">{{ item.quantity }}</td>
+                                <td class="text-right">£{{ item.unit_price }}</td>
+                                <td class="text-right">£{{ item.line_amount }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="subtotal">
+                                <td colspan="4" class="text-right">Subtotal</td>
+                                <td class="text-right"><strong>£{{ order.subtotal }}</strong></td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="text-right">Discount</td>
+                                <td class="text-right">- £{{ order.discount_amount }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="text-right">Shipping ({{ order.shipping_method }}) </td>
+                                <td class="text-right">£{{ order.shipping_price }}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="4" class="text-right">VAT included</td>
+                                <td class="text-right">£{{ order.vat_included }}</td>
+                            </tr>
+                            <tr class="grand-total">
+                                <td colspan="4" class="text-right"><strong>Grand Total</strong></td>
+                                <td class="text-right"><strong>£{{ order.total }}</strong></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}
+
+{% block postloadjs %}
+{% endblock postloadjs %}

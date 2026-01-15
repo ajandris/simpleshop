@@ -1,0 +1,57 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+{% endblock extra_css %}
+
+{% block content %}
+<div class="w3-content page w3-padding-16">
+    <div class="w3-row-padding">
+        <div class="w3-card w3-white w3-margin-bottom">
+            <header class="w3-container w3-padding">
+                <h3 class="w3-margin-0 w3-center">My Orders</h3>
+            </header>
+            <div class="w3-container w3-padding">
+                {% if orders %}
+                    <table class="order-table">
+                        <thead>
+                            <tr>
+                                <th>Order Number</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                                <th>Total</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in orders %}
+                            <tr>
+                                <td><strong>{{ order.order_no }}</strong></td>
+                                <td>{{ order.order_date|date:"d M Y" }}</td>
+                                <td>{{ order.status }}</td>
+                                <td>£{{ order.total }}</td>
+                                <td>
+                                    <a href="{% url 'order-detail' order.order_no %}" class="w3-btn w3-border">
+                                        View Details
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                        <p>You haven't placed any orders yet. <a href="{% url 'index' %}">Start shopping!</a></p>
+                    {% endif %}
+            </div>
+        </div>
+
+
+<form id="form-template">
+    <input type="hidden" name="checkout_hash" value="{{ cart_hash }}">
+    {% csrf_token %}
+</form>
+
+{% endblock content %}
+
+{% block postloadjs %}
+{% endblock postloadjs %}
