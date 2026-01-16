@@ -4,6 +4,8 @@ from cart.services import calculate_order
 from cart.models import Cart
 from orders.models import Order, OrderStatuses, OrderItem
 from cart.models import Shipping
+from simpleshop import settings
+
 
 def create_order(cart: Cart) -> Order:
     """
@@ -137,3 +139,32 @@ def get_order_hash(order: Order) -> str:
     full_signature = "|".join(item_signatures)
     hash_str = hashlib.sha256(full_signature.encode()).hexdigest()
     return hash_str
+
+
+def render_email_order_created_content(order: Order) -> (str, str, str):
+    """
+    Makes Order Created email Subject and Body Text and Body HTML content
+    """
+    from django.template.loader import render_to_string
+
+    subject = f"Order #{order.order_no} Created [The Olde Christmas Market]"
+
+    text_template = 'emails/order_receipt_confirmation_text.html'
+    text = render_to_string(text_template, context={"order": order})
+
+    html_template = 'emails/order_receipt_confirmation_html.html'
+    html = render_to_string(html_template, context={"order":order})
+
+    return subject, text, html
+
+
+def email_order_created(order: Order):
+    from django.core.mail import EmailMultiAlternatives
+
+    subject, text, html = render_email_order_created_content(order)
+
+    email = EmailMultiAlternatives(subject, text, settings.EMAIL_HOST_USER, to=['andris.jancevskis@gmail.com'])
+    email.attach_alternative(html, "text/html")
+    email.send()
+
+    return 0

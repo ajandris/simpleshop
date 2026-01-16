@@ -4,13 +4,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from cart.services import check_cart_stock, calculate_order
 from cart.models import Cart
 from orders.models import Order
-from orders.services import make_order, get_order_hash
+from orders.services import make_order, get_order_hash, email_order_created
 
 @login_required
 def process_payment(request):
     """
     Process payment from checkout
     """
+    context = dict()
+
     cart_no = request.session.get('cart_number')
     cart = None
     if cart_no:
@@ -65,6 +67,7 @@ def process_payment(request):
         cart.delete()
         request.session.pop('cart_number', None)
         request.session.modified = True
+        email_order_created(order)
     else:
         payment_successful = False
         template = 'orders/payment_failed.html'

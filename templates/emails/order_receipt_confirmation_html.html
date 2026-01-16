@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+
+<h1>Thank you for your order!</h1>
+<h3>The Olde Christmas Market</h3>
+
+<div>
+    <div>
+        <p>
+            Order <strong>#{{ order.order_no }}</strong><br>
+            Date: <strong>{{ order.order_date|date:"d F Y" }}</strong>
+        </p>
+    </div>
+</div>
+
+    <table>
+        <tr>
+            <td>
+                <div style="padding: 20px;border: 0;background-color: inherit;">
+                    <h3 style="margin-top: 0;font-size: 1.1rem;color: #333;border-bottom: 1px solid #ddd;
+                        padding-bottom: 5px;">Shipping Address</h3>
+                    <p>
+                        {{ order.shipping_name }} {{ order.shipping_surname }}<br>
+                        {{ order.shipping_address|linebreaksbr }}<br>
+                    </p>
+                </div>
+            </td>
+            <td>
+                <div style="padding: 20px;border: 0;background-color: inherit;">
+                    <h3 style="margin-top: 0;font-size: 1.1rem;color: #333;border-bottom: 1px solid #ddd;
+                    padding-bottom: 5px;">Billing Address</h3>
+                    <p>
+                        {{ order.billing_name }} {{ order.billing_surname }}<br>
+                        {{ order.billing_address|linebreaksbr }}<br>
+                    </p>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+<h3>Items in this Order</h3>
+<table style="width: 100%;border-collapse: collapse; border:1px solid grey;">
+    <thead>
+        <tr>
+            <th style="padding-top: 12px;padding-bottom: 12px;text-align: left;background-color: #04AA6D;
+              color: white;border: 1px solid #ddd;padding-left:3px;">SKU</th>
+            <th style="padding-top: 12px;padding-bottom: 12px;text-align: left;background-color: #04AA6D;
+              color: white;border: 1px solid #ddd;padding-left:3px;">Product</th>
+            <th  style="padding-top:12px;padding-bottom:12px;;background-color: #04AA6D;color: white;
+                text-align:center;border: 1px solid #ddd;">Quantity</th>
+            <th  style="padding-top: 12px;padding-bottom: 12px;text-align: right;background-color: #04AA6D;
+              color: white;border: 1px solid #ddd;padding-right:3px;">Price</th>
+            <th  style="padding-top: 12px;padding-bottom: 12px;text-align: right;background-color: #04AA6D;
+              color: white;border: 1px solid #ddd;padding-right:3px;">Total</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in order.orderitem_set.all %}
+        <tr>
+            <td style="padding-left:5px;text-align: left">{{ item.sku }}</td>
+            <td style="padding-left:5px;text-align: left">{{ item.item }}</td>
+            <td style="text-align: center">{{ item.quantity }}</td>
+            <td style="padding-right:5px;text-align: right">£{{ item.unit_price }}</td>
+            <td style="padding-right:5px;text-align: right">£{{ item.line_amount }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr style="border-top: 2px solid slategrey;">
+            <td colspan="4" style="padding-left:5px;text-align: left">Subtotal</td>
+            <td style="padding-right:5px;text-align: right"><strong>£{{ order.subtotal }}</strong></td>
+        </tr>
+        <tr>
+            <td colspan="4" style="padding-left:5px;text-align: left">Discount</td>
+            <td style="padding-right:5px;text-align: right">- £{{ order.discount_amount }}</td>
+        </tr>
+        <tr>
+            <td colspan="4" style="padding-left:5px;text-align: left">Shipping ({{ order.shipping_method }}) </td>
+            <td style="padding-right:5px;text-align: right">£{{ order.shipping_price }}</td>
+        </tr>
+        <tr>
+            <td colspan="4" style="padding-left:5px;text-align: left">VAT included</td>
+            <td style="padding-right:5px;text-align: right">£{{ order.vat_included }}</td>
+        </tr>
+        <tr style="font-size: 1.25rem;border-top: 2px solid #222;padding-top:15px;padding-left:5px;">
+            <td colspan="4" style="padding-left:5px;text-align: left"><strong>Grand Total</strong></td>
+            <td style="padding-right:5px;text-align: right"><strong>£{{ order.total }}</strong></td>
+        </tr>
+    </tfoot>
+</table>
+</section>
+<p>
+    <small><sup>*</sup> This is not a VAT invoice</small>
+</p>
+</body>
+</html>
