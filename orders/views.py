@@ -1,10 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from cart.services import check_cart_stock, calculate_order
 from cart.models import Cart
 from orders.models import Order
 from orders.services import make_order, get_order_hash, email_order_created
+from django.urls import reverse
 
 @login_required
 def process_payment(request):
@@ -12,31 +14,16 @@ def process_payment(request):
     Process payment from checkout
     """
     context = dict()
-
     cart_no = request.session.get('cart_number')
     cart = None
     if cart_no:
         cart = Cart.objects.get(cart_number=cart_no)
     else:
-        messages.error(request, 'Your cart is empty')
+        messages.error(request, "Your cart is empty")
         return redirect('cart')
 
-    # check/ validate cart items against warehouse
-    rez, msg = check_cart_stock(cart)
-    if not rez:
-        messages.error(request, "Item quantities or price have been changed")
-        return redirect('cart')
-
-    # check/ validate cart itself against user changes
-    totals = calculate_order(cart_no)
-    checkout_hash = request.POST.get('checkout_hash')
-
-    if checkout_hash != totals['cart_hash']:
-        messages.error(request, "Your cart has been changed. Please review your cart before payment.")
-        return redirect('cart')
-
-    # create order
     order = make_order(request, cart)
+    checkout_hash = request.POST.get('checkout_hash')
 
     if checkout_hash != get_order_hash(order):
         messages.error(request, "There is a difference between the cart and the created order. \
@@ -57,8 +44,9 @@ def process_payment(request):
     card_cvc = request.POST.get('cvc', '')
     payment_amount = order.total
 
-    if card_num == '111111':
-        payment_successful = True
+    payment_successful = (card_num == '111111')
+
+    if payment_successful:
         template = 'orders/payment_success.html'
         context = {
             'order_number': order.order_no
@@ -69,7 +57,6 @@ def process_payment(request):
         request.session.modified = True
         email_order_created(order)
     else:
-        payment_successful = False
         template = 'orders/payment_failed.html'
 
     return render(request, template_name=template, context=context)
@@ -97,3 +84,46 @@ def orders_details(request, order_no):
     }
 
     return render(request, template_name=template, context=context)
+
+
+@login_required
+def cart_validation(request, cart_no):
+    resp = dict()
+
+    cart_no = request.session.get('cart_number')
+    cart = None
+    if cart_no:
+        cart = Cart.objects.get(cart_number=cart_no)
+    else:
+        resp['valid'] = False
+        resp['error'] = 'No cart found'
+        resp['error_message'] = 'Your cart is empty'
+        resp['error_redirect'] = reverse('cart')
+        return JsonResponse(resp)
+
+    # check/ validate cart items against warehouse
+    rez, msg = check_cart_stock(cart)
+    if not rez:
+        resp['valid'] = False
+        resp['error'] = 'Items changed'
+        resp['error_message'] = 'Item quantities or price have been changed'
+        resp['error_redirect'] = reverse('cart')
+        return JsonResponse(resp)
+
+    # check/ validate cart itself against user changes
+    totals = calculate_order(cart_no)
+    checkout_hash = request.POST.get('checkout_hash')
+
+    if checkout_hash != totals['cart_hash']:
+        resp['valid'] = False
+        resp['error'] = 'Cart changed'
+        resp['error_message'] = 'Your cart has been changed. Please check other browser tabs'
+        resp['error_redirect'] = reverse('cart')
+        return JsonResponse(resp)
+
+    return JsonResponse({
+        'valid': True,
+        'error': None,   # None if valid is True
+        'error_message': None,  # None if valid is True
+        'error_redirect': None,  # None if valid is True
+    })

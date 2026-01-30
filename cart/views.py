@@ -1,5 +1,6 @@
 import uuid
 
+from simpleshop import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -32,14 +33,17 @@ def view_cart(request):
 
         if cart is None:
             cart = Cart.objects.filter(cart_number=cart_no).first()
-            if cart is not None:
-                cart.owner = user
-                cart.user = user
-                cart.save()
+        else:
+            cart.owner = user
+            cart.user = user
+            cart.save()
         cart_items = CartItem.objects.filter(cart=cart)
     else:
         cart = Cart.objects.filter(cart_number=cart_no).first()
         cart_items = CartItem.objects.filter(cart=cart)
+
+    if cart is None:
+        return render(request, template, context=ctxt)
 
     shipping = Shipping.objects.all().order_by('price')
 
@@ -254,7 +258,10 @@ def checkout(request):
                 profile=user_profile,
                 addresses=addresses,
                 active_address=active_address,
-                cart_hash=ord['cart_hash']
-            )
+                cart_hash=ord['cart_hash'],
 
+                stripe_public_key=settings.STRIPE_PUBLIC_KEY,
+                client_secret=settings.STRIPE_SECRET_KEY
+            )
+        print("Context: \n", ctxt)
     return render(request, template, context=ctxt)
