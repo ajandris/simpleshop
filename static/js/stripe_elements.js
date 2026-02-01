@@ -8,12 +8,7 @@ async function stripe_fnc(){
   const response = await fetch("/payment/stripe/pk/", {method: "POST"});
   const pk = await response.json();
 
-  console.log(pk);
-
   const stripe = Stripe(pk.pk);
-
-  // The items the customer wants to buy
-  // const items = [{ id: "xl-tshirt", amount: 1000 }];
 
   const paymentElementOptions = {
   layout: "tabs", // Use 'tabs' or 'accordion'
@@ -31,11 +26,6 @@ async function stripe_fnc(){
 
   initialize();
 
-  // console.log("Looking for form...");
-  // console.log(document.getElementById('payment-form'));
-  //
-  // console.log(document.forms);
-
   let frm = document.getElementById('payment-form');
   if (frm) {
       frm.addEventListener("submit", handleSubmit);
@@ -49,24 +39,29 @@ async function stripe_fnc(){
     const cartNo = JSON.parse(cartNoRaw);
     const response = await fetch(`/payment/stripe/stripe_payment_intent/${cartNo}/`, {
         method: "POST"});
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ items }),
-    // });
     const { clientSecret } = await response.json();
 
     const appearance = {
       theme: 'stripe',
-  variables: {
-    colorPrimary: '#0570de',
-    colorBackground: '#ffffff',
-    colorText: '#30313d',
-    colorDanger: '#df1b41',
-    fontFamily: 'Ideal Sans, system-ui, sans-serif',
-    spacingUnit: '2px',
-    borderRadius: '4px',
-    // See all possible variables below
-  }    };
+      variables: {
+        // colorPrimary: '#0570de',
+        colorBackground: '#F5F0E6',
+        // colorText: '#30313d',
+        colorDanger: '#df1b41',
+        // fontFamily: 'Ideal Sans, system-ui, sans-serif',
+        spacingUnit: '2px',
+        borderRadius: '4px',
+        },
+      rules: {
+        '.Label': {
+          fontWeight: '600',
+          fontFamily: 'Verdana, sans-serif',
+          fontSize: '12px',
+          color: '#000000',
+          display: 'block',
+        }
+      }
+      };
     elements = stripe.elements(
         {
           appearance,
@@ -82,10 +77,15 @@ async function stripe_fnc(){
     e.preventDefault();
     // setLoading(true);
 
-    let address;
+    const order = await fetch(`/payment/get_order/`, {
+        method: "POST",
+    });
+
+    const address = '';
     const city = '';
     const postalCode = '';
     const country = '';
+    const orderNo = ''
 
     const { error } = await stripe.confirmPayment({
       elements,
@@ -100,9 +100,12 @@ async function stripe_fnc(){
               line1: "123 High Street",
               city: "Burton upon Trent",
               postal_code: "DE14 1AA",
-              country: "GB", // This matches the field you set to 'never'
+              country: "GB",
             },
           },
+          metadata: {
+            order_number: orderNo,
+          }
         },
       },
     });

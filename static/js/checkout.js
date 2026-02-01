@@ -29,24 +29,9 @@ function checkout() {
         }
     }
 
-    function submitToPay(){
-        const form = document.getElementById('form-template');
-        form.method = 'POST';
-        form.action = document.getElementById('pay-action').value;
-
-        // form.appendChild(inputField);
-
-        console.log(form);
-
-        // form.submit();
-    }
-
     // Event Listeners
     document.addEventListener('DOMContentLoaded', () => {
         showProductLinePrices();
-        document.getElementById('pay-button').addEventListener('click', () =>{
-            submitToPay();
-        })
     })
 }
 

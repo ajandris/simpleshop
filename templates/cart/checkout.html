@@ -2,8 +2,6 @@
 {% load static %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/checkout.css' %}">
-
 {% endblock extra_css %}
 
 {% block content %}
@@ -56,46 +54,47 @@
                         </form>
 {#                    End of address choice#}
                 {% endif %}
-{#            <form action="{% url 'process-payment' %}" method="post" class="wide">#}
                 <div class="w3-container">
-                    <div class="w3-row-padding">
-                        <div class="w3-col s12 w3-margin-bottom">
-                            <label for="address_line1" class="w3-small"><strong>Address Line 1</strong></label>
-                            <input id="address_line1" type="text" class="w3-input w3-border w3-round"
-                                name="address_line1" placeholder="" value="{{ active_address.address_line1 }}" required>
+                    <form id="addresses" class="wide">
+                        <div class="w3-row-padding">
+                            <div class="w3-col s12 w3-margin-bottom">
+                                <label for="address_line1" class="w3-small"><strong>Address Line 1</strong></label>
+                                <input id="address_line1" type="text" class="w3-input w3-border w3-round"
+                                    name="address_line1" placeholder="" value="{{ active_address.address_line1 }}" required>
+                            </div>
+                            <div class="w3-col s12 w3-margin-bottom">
+                                <label for="address_line2" class="w3-small">Address Line 2</label>
+                                <input id="address_line2" type="text" class="w3-input w3-border w3-round"
+                                    name="address_line2" placeholder="" value="{{ active_address.address_line2 }}">
+                            </div>
+                            <div class="w3-col s12 m4 w3-margin-bottom">
+                                <label for="state" class="w3-small">State/Province</label>
+                                <input id="state" type="text" class="w3-input w3-border w3-round" placeholder=""
+                                    name="state" value="{{ active_address.state }}">
+                            </div>
+                            <div class="w3-col s12 m4 w3-margin-bottom">
+                                <label for="city" class="w3-small"><strong>City</strong></label>
+                                <input id="city" type="text" class="w3-input w3-border w3-round" placeholder=""
+                                    name="city" value="{{ active_address.city }}" required>
+                            </div>
+                            <div class="w3-col s12 m4 w3-margin-bottom">
+                                <label for="zip" class="w3-small"><strong>Post Code</strong></label>
+                                <input id="zip" type="text" class="w3-input w3-border w3-round" placeholder=""
+                                    name="zip" value="{{ active_address.postal_code }}">
+                            </div>
+                            <div class="w3-col s12 w3-margin-bottom">
+                                <label for="country" class="w3-small"><strong>Country</strong></label>
+                                <select id="country" name="country" class="w3-select w3-border w3-round">
+                                    <option value="GB"
+                                            {% if active_address.country == 'GB' %}selected{% endif %}>United Kingdom</option>
+                                    <option value="US"
+                                            {% if active_address.country == 'US' %}selected{% endif %}>United States</option>
+                                    <option value="CA"
+                                            {% if active_address.country == 'CA' %}selected{% endif %}>Canada</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="w3-col s12 w3-margin-bottom">
-                            <label for="address_line2" class="w3-small">Address Line 2</label>
-                            <input id="address_line2" type="text" class="w3-input w3-border w3-round"
-                                name="address_line2" placeholder="" value="{{ active_address.address_line2 }}">
-                        </div>
-                        <div class="w3-col s12 m4 w3-margin-bottom">
-                            <label for="state" class="w3-small">State/Province</label>
-                            <input id="state" type="text" class="w3-input w3-border w3-round" placeholder=""
-                                name="state" value="{{ active_address.state }}">
-                        </div>
-                        <div class="w3-col s12 m4 w3-margin-bottom">
-                            <label for="city" class="w3-small"><strong>City</strong></label>
-                            <input id="city" type="text" class="w3-input w3-border w3-round" placeholder=""
-                                name="city" value="{{ active_address.city }}" required>
-                        </div>
-                        <div class="w3-col s12 m4 w3-margin-bottom">
-                            <label for="zip" class="w3-small"><strong>Post Code</strong></label>
-                            <input id="zip" type="text" class="w3-input w3-border w3-round" placeholder=""
-                                name="zip" value="{{ active_address.postal_code }}">
-                        </div>
-                        <div class="w3-col s12 w3-margin-bottom">
-                            <label for="country" class="w3-small"><strong>Country</strong></label>
-                            <select id="country" name="country" class="w3-select w3-border w3-round">
-                                <option value="GB"
-                                        {% if active_address.country == 'GB' %}selected{% endif %}>United Kingdom</option>
-                                <option value="US"
-                                        {% if active_address.country == 'US' %}selected{% endif %}>United States</option>
-                                <option value="CA"
-                                        {% if active_address.country == 'CA' %}selected{% endif %}>Canada</option>
-                            </select>
-                        </div>
-                    </div>
+                    </form>
                 </div>
             </div>
 
@@ -104,7 +103,7 @@
                 <header class="w3-container w3-padding">
                     <h3 class="w3-margin-0">Contact Information</h3>
                 </header>
-                <div class="w3-container w3-padding">
+                <form id='contact-information' class="w3-container w3-padding">
                         <div class="w3-row-padding">
                             <div class="w3-col s12 m6 w3-margin-bottom">
                                 <label for="first_name" class="w3-small"><strong>First Name</strong></label>
@@ -117,28 +116,34 @@
                                     name="last_name" value="{{ profile.surname }}" required>
                             </div>
                         </div>
-                </div>
+                </form>
             </div>
 
             <!-- Payment Details (Stripe) -->
-            <form id="payment-form" class="wide">
-                <div id="payment-message"></div>
-                <div id="card-element">
-                  </div>
-                <div class="w3-center w3-padding">
-                    You are about to order items for <strong>£{{ total|floatformat:2 }}</strong>.
-                </div>
+            <div class="w3-card w3-margin-bottom w3-padding">
+                <header class="w3-container w3-padding">
+                    <h3 class="w3-margin-0">Payment</h3>
+                </header>
 
-                <div class="">
-                    <button type="submit" class="w3-button w3-red w3-round w3-block pay-button" id="submit">
-                        <i class="fa-solid fa-lock background-color-inherit"></i> Pay Now</button>
-                </div>
-                <div class="w3-small w3-text-grey w3-margin-bottom">
-                    <i class="fa-solid fa-lock"></i> Secure payment • <i class="fa-solid fa-rotate"></i> 30-day
-                    returns • <strong>No actual payments will be taken</strong>
-                </div>
-            </form>
+                <form id="payment-form" class="w3-padding">
+                    <div id="payment-message" class="w3-center w3-panel w3-red no-padding-margin w3-margin-bottom">
+                    </div>
+                    <div id="card-element">
+                      </div>
+                    <div class="w3-center w3-padding">
+                        You are about to order items for <strong>£{{ total|floatformat:2 }}</strong>.
+                    </div>
 
+                    <div class="">
+                        <button type="submit" class="w3-button w3-red w3-round w3-block pay-button" id="submit">
+                            <i class="fa-solid fa-lock background-color-inherit"></i> Pay Now</button>
+                    </div>
+                    <div class="w3-small w3-text-grey w3-margin-bottom">
+                        <i class="fa-solid fa-lock"></i> Secure payment • <i class="fa-solid fa-rotate"></i> 30-day
+                        returns • <strong>No actual payments will be taken</strong>
+                    </div>
+                </form>
+            </div>
         </section>
 
         <!-- Order Summary -->
@@ -215,8 +220,8 @@
                             </strong></div>
                     </div>
 
-                    <div class="w3-section">
-                        &nbsp;
+                    <div class="no-padding-margin">
+                        <p class="no-padding-margin w3-small">&nbsp;</p>
                     </div>
                 </div>
             </div>
