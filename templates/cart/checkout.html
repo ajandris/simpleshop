@@ -163,7 +163,7 @@
                 </header>
 
                 <!-- Cart Items -->
-                <div class="w3-container" id="cartBody">
+                <div class="w3-container" id="cart-body">
                     {% csrf_token %}
                     {% for prod in cart_items %}
                     <div class="w3-row w3-padding-small">
@@ -172,13 +172,11 @@
                                 <img src="{{ prod.product.image.url.url }}" alt="{{ prod.product.title }}">
                             </div>
                         </div>
-                        <div class="w3-col s6">
+                        <div class="w3-col s6 w3-margin-left">
                             <strong class="w3-small">{{ prod.product.title }}</strong>
                             <div class="w3-tiny w3-text-grey">Price: <span class="item-price">
                                 £{{ prod.product.price }}</span></div>
                             <div class="w3-tiny w3-text-grey">Qty: <span class="item-qty">{{ prod.qty }}</span></div>
-                        </div>
-                        <div class="w3-col s3 w3-right-align">
                             <div class="w3-small">£<span class="prod-line"
                                 data-qty="{{ prod.qty }}" data-price="{{ prod.product.price }}">
                             </span></div>
