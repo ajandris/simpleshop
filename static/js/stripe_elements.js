@@ -117,16 +117,23 @@ async function stripe_fnc(){
     }
 
     // creating order
-    const order = await fetch(`/payment/get_order/`, {
+    const address = (document.getElementById('address_line1') + ' ' +
+        document.getElementById('address_line2')).trim();
+    const city = document.getElementById('city') ? '' : document.getElementById('city');
+    const postalCode = document.getElementById('zip') ? '' : document.getElementById('zip');
+    const country = document.getElementById('country');
+
+    const data = Array();
+
+    const orderInfo = await fetch(`/payment/get_order/`, {
         method: "POST",
     });
 
-    const address = '';
-    const city = '';
-    const postalCode = '';
-    const country = '';
-    const orderNo = ''
+    const email = '';
+    const orderNo = 'fake-order-232-23213-3221323-233';
+    const orderName = document.getElementById('first_name') + ' ' + document.getElementById('second_name')
 
+    // Stripe payment
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
@@ -134,13 +141,13 @@ async function stripe_fnc(){
         return_url: `${get_server()}/payment/stripe/process_payment/`,
         payment_method_data: {
           billing_details: {
-            name: "John Doe", // You can get this from a standard HTML input
-            email: "john@example.com",
+            name: orderName, // You can get this from a standard HTML input
+            email: email,
             address: {
-              line1: "123 High Street",
-              city: "Burton upon Trent",
-              postal_code: "DE14 1AA",
-              country: "GB",
+              line1: address,
+              city: city,
+              postal_code: postalCode,
+              country: country,
             },
           },
           metadata: {
