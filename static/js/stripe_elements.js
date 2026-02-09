@@ -77,6 +77,46 @@ async function stripe_fnc(){
     e.preventDefault();
     // setLoading(true);
 
+    // check address and name form
+    const form = document.getElementById('addresses_form');
+    const form_2 = document.getElementById('contact_information_form');
+
+    const errorColor = "#df1b41";
+    let isFormValid = true;
+    let inputs = form.querySelectorAll('input[required]');
+    let inputs_2 = form_2.querySelectorAll('input[required]');
+
+    const allInputs = Array.from(inputs);
+    for (let inp of inputs_2){
+      allInputs.push(inp);
+    }
+
+    allInputs.forEach(input => {
+        const errorDisplay = input.parentElement.querySelector('.error-message');
+
+        if (!input.validity.valid) {
+            isFormValid = false;
+            input.classList.add('input-error');
+            errorDisplay.textContent = input.validationMessage; // Use browser's default message
+            errorDisplay.classList.add('error-text');
+
+            // 2. Put error message under the field
+            if (errorDisplay) {
+                errorDisplay.textContent = "This field is required.";
+                errorDisplay.style.color = errorColor;
+                errorDisplay.style.fontSize = "12px";
+            }
+        } else {
+          // Reset styles if the field is now valid
+          input.classList.remove('input-error');
+          errorDisplay.textContent = "";
+        }
+    });
+    if (!isFormValid){
+      return;
+    }
+
+    // creating order
     const order = await fetch(`/payment/get_order/`, {
         method: "POST",
     });

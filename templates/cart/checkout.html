@@ -2,6 +2,7 @@
 {% load static %}
 
 {% block extra_css %}
+        <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
 {% endblock extra_css %}
 
 {% block content %}
@@ -55,32 +56,37 @@
 {#                    End of address choice#}
                 {% endif %}
                 <div class="w3-container">
-                    <form id="addresses" class="wide">
+                    <form id="addresses_form" class="wide">
                         <div class="w3-row-padding">
                             <div class="w3-col s12 w3-margin-bottom">
                                 <label for="address_line1" class="w3-small"><strong>Address Line 1</strong></label>
                                 <input id="address_line1" type="text" class="w3-input w3-border w3-round"
                                     name="address_line1" placeholder="" value="{{ active_address.address_line1 }}" required>
+                                <div class="error-message"></div>
                             </div>
                             <div class="w3-col s12 w3-margin-bottom">
                                 <label for="address_line2" class="w3-small">Address Line 2</label>
                                 <input id="address_line2" type="text" class="w3-input w3-border w3-round"
                                     name="address_line2" placeholder="" value="{{ active_address.address_line2 }}">
+                                <div class="error-message"></div>
                             </div>
                             <div class="w3-col s12 m4 w3-margin-bottom">
                                 <label for="state" class="w3-small">State/Province</label>
                                 <input id="state" type="text" class="w3-input w3-border w3-round" placeholder=""
                                     name="state" value="{{ active_address.state }}">
+                                <div class="error-message"></div>
                             </div>
                             <div class="w3-col s12 m4 w3-margin-bottom">
                                 <label for="city" class="w3-small"><strong>City</strong></label>
                                 <input id="city" type="text" class="w3-input w3-border w3-round" placeholder=""
                                     name="city" value="{{ active_address.city }}" required>
+                                <div class="error-message"></div>
                             </div>
                             <div class="w3-col s12 m4 w3-margin-bottom">
                                 <label for="zip" class="w3-small"><strong>Post Code</strong></label>
                                 <input id="zip" type="text" class="w3-input w3-border w3-round" placeholder=""
-                                    name="zip" value="{{ active_address.postal_code }}">
+                                    name="zip" value="{{ active_address.postal_code }}" required>
+                                <div class="error-message"></div>
                             </div>
                             <div class="w3-col s12 w3-margin-bottom">
                                 <label for="country" class="w3-small"><strong>Country</strong></label>
@@ -92,6 +98,7 @@
                                     <option value="CA"
                                             {% if active_address.country == 'CA' %}selected{% endif %}>Canada</option>
                                 </select>
+                                <div class="error-message"></div>
                             </div>
                         </div>
                     </form>
@@ -103,17 +110,19 @@
                 <header class="w3-container w3-padding">
                     <h3 class="w3-margin-0">Contact Information</h3>
                 </header>
-                <form id='contact-information' class="w3-container w3-padding">
+                <form id='contact_information_form' class="w3-container w3-padding">
                         <div class="w3-row-padding">
                             <div class="w3-col s12 m6 w3-margin-bottom">
                                 <label for="first_name" class="w3-small"><strong>First Name</strong></label>
                                 <input id="first_name" name="first_name" type="text" class="w3-input w3-border w3-round"
-                                    placeholder="John" value="{{ profile.name }}" required>
+                                    placeholder="" value="{{ profile.name }}" required>
+                                <div class="error-message"></div>
                             </div>
                             <div class="w3-col s12 m6 w3-margin-bottom">
                                 <label for="last_name" class="w3-small"><strong>Last Name</strong></label>
-                                <input id="last_name" type="text" class="w3-input w3-border w3-round" placeholder="Doe"
+                                <input id="last_name" type="text" class="w3-input w3-border w3-round" placeholder=""
                                     name="last_name" value="{{ profile.surname }}" required>
+                                <div class="error-message"></div>
                             </div>
                         </div>
                 </form>
