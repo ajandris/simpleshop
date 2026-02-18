@@ -285,3 +285,6 @@ def profile_addresses_make_default(request):
         messages.success(request, 'Default address changed')
 
     return redirect('profile_addresses')
+
+def about(request):
+    return render(request, 'home/about.html')
