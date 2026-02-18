@@ -119,12 +119,9 @@ async function stripe_fnc(){
     // creating order
     const address = (document.getElementById('address_line1').value + ' ' +
         document.getElementById('address_line2').value).trim();
-    const city = document.getElementById('city').value ?
-        '' : document.getElementById('city').value;
-    const postalCode = document.getElementById('zip').value ?
-        '' : document.getElementById('zip').value;
-    const state = document.getElementById('state').value ?
-        '' : document.getElementById('state').value;
+    const city = document.getElementById('city').value || '';
+    const postalCode = document.getElementById('zip').value || '';
+    const state = document.getElementById('state').value || '';
     const country = document.getElementById('country').value;
     const first_name = document.getElementById('first_name').value;
     const surname = document.getElementById('last_name').value;
@@ -134,7 +131,7 @@ async function stripe_fnc(){
     const data = {
       address: address,
       city: city,
-      postalCode: postalCode,
+      postal_code: postalCode,
       country: country,
       state: state,
       first_name: first_name,
@@ -146,7 +143,11 @@ async function stripe_fnc(){
 
     const orderInfo = await fetch(`/payment/stripe/get_order/`, {
         method: "POST",
-        data: data,
+          headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": csrf,
+          },
+        body: JSON.stringify(data),
     });
 
     const order = await orderInfo.json();

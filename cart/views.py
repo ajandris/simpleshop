@@ -265,5 +265,4 @@ def checkout(request):
                 cart_hash=ord['cart_hash'],
                 email=email,
             )
-        print("Context: \n", ctxt)
     return render(request, template, context=ctxt)

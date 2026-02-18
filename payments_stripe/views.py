@@ -1,3 +1,5 @@
+import json
+
 import stripe
 from django.conf import settings
 from django.contrib import messages
@@ -116,14 +118,15 @@ def complete_payment(request):
         update_order_status(order, OrderStatuses.objects.get(code='PAYMENT_FAILED'))
         return redirect('payment-failed')
 
-@csrf_exempt
 def get_order(request):
     """
     Gets order for JSON response.
     If validation fails, redirects to cart with error message.
     """
 
-    resp = dict()
+    if request.body is None:
+        return JsonResponse({'error': 'No request body'}, status=400)
+    data = json.loads(request.body)
 
     cart_no = request.session.get('cart_number')
     cart = None
@@ -141,13 +144,32 @@ def get_order(request):
 
     # check/ validate cart itself against user changes
     totals = calculate_order(cart_no)
-    checkout_hash = request.POST.get('checkout_hash')
+    checkout_hash = data.get('cart_hash')   # checkout cart hash
 
     if checkout_hash != totals['cart_hash']:
         messages.error(request, 'Your cart has been changed. Please check other browser tabs.')
         redirect('cart')
 
     order = make_order(request, cart)
+
+    # adds additional info to order (overrides previously saved)
+    address = f"{data.get('address', '')}"
+    address += f"\n{data.get('city', '')},"
+    if data.get('state', '') != '':
+        address += f"\n{data.get('state', '')},"
+    address += f"\n{data.get('postal_code', '')}"
+    address += f"\n{data.get('country', '')}"
+
+    order.billing_name = f"{data.get('first_name', '')}"
+    order.billing_surname = f"{data.get('surname', '')}"
+    order.billing_address = address
+
+    order.shipping_name = f"{data.get('first_name', '')}"
+    order.shipping_surname = f"{data.get('surname', '')}"
+    order.shipping_address = address
+
+    order.email = data.get('email', '')
+    order.save()
 
     return JsonResponse({
         'order_no': order.order_no,
