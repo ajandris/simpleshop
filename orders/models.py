@@ -41,6 +41,8 @@ class Order(models.Model):
     shipping_surname = models.CharField(max_length=50, null=False, blank=False)
     shipping_method = models.CharField(max_length=30, null=False, blank=False)
     shipping_price = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False)
+    email = models.EmailField(max_length=254, null=True, blank=True, verbose_name='Email',
+                              db_comment='Email to send order status updates')
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2, null=False, blank=False, default=0)
     status = models.ForeignKey(OrderStatuses, on_delete=models.DO_NOTHING)
 

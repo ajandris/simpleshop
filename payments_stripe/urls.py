@@ -8,5 +8,6 @@ urlpatterns = [
     path('stripe_payment_intent/<str:cart_no>/', views.create_payment_intent,
          name='stripe-payment-intent'),
     path('pk/', views.get_stripe_publishable_key, name='stripe-pk'),
-    path('process_payment/', views.complete_payment, name='complete-stripe-payment'),
+    path('process_payment/', views.complete_payment, name='stripe-complete-payment'),
+    path('get_order/', views.get_order, name='stripe-get-order'),
 ]

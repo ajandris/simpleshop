@@ -1,5 +1,7 @@
 import uuid
 
+from allauth.account.models import EmailAddress
+
 from simpleshop import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -238,6 +240,8 @@ def checkout(request):
         if len(addresses) > 0:
             active_address = addresses[0]
 
+    email = EmailAddress.objects.filter(user=user, primary=True).first()
+
     cart_no = request.session.get('cart_number')
     ctxt = dict()
     if cart_no:
@@ -259,9 +263,7 @@ def checkout(request):
                 addresses=addresses,
                 active_address=active_address,
                 cart_hash=ord['cart_hash'],
-
-                stripe_public_key=settings.STRIPE_PUBLIC_KEY,
-                client_secret=settings.STRIPE_SECRET_KEY
+                email=email,
             )
         print("Context: \n", ctxt)
     return render(request, template, context=ctxt)

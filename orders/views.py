@@ -8,59 +8,59 @@ from orders.models import Order
 from orders.services import make_order, get_order_hash, email_order_created
 from django.urls import reverse
 
-@login_required
-def process_payment(request):
-    """
-    Process payment from checkout
-    """
-    context = dict()
-    cart_no = request.session.get('cart_number')
-    cart = None
-    if cart_no:
-        cart = Cart.objects.get(cart_number=cart_no)
-    else:
-        messages.error(request, "Your cart is empty")
-        return redirect('cart')
-
-    order = make_order(request, cart)
-    checkout_hash = request.POST.get('checkout_hash')
-
-    if checkout_hash != get_order_hash(order):
-        messages.error(request, "There is a difference between the cart and the created order. \
-                        Please contact the Customer Support")
-        return redirect('cart')
-
-
-
-    # log order
-
-    # process payment
-
-    # moch process for development
-
-    card_num = request.POST.get('card_number', '')
-    card_month = request.POST.get('expiry_month', '')
-    card_year = request.POST.get('expiry_year', '')
-    card_cvc = request.POST.get('cvc', '')
-    payment_amount = order.total
-
-    payment_successful = (card_num == '111111')
-
-    if payment_successful:
-        template = 'orders/payment_success.html'
-        context = {
-            'order_number': order.order_no
-        }
-        # delete cart and number in sessions
-        cart.delete()
-        request.session.pop('cart_number', None)
-        request.session.modified = True
-        email_order_created(order)
-    else:
-        template = 'orders/payment_failed.html'
-
-    return render(request, template_name=template, context=context)
-
+# @login_required
+# def process_payment(request):
+#     """
+#     Process payment from checkout
+#     """
+#     context = dict()
+#     cart_no = request.session.get('cart_number')
+#     cart = None
+#     if cart_no:
+#         cart = Cart.objects.get(cart_number=cart_no)
+#     else:
+#         messages.error(request, "Your cart is empty")
+#         return redirect('cart')
+#
+#     order = make_order(request, cart)
+#     checkout_hash = request.POST.get('checkout_hash')
+#
+#     if checkout_hash != get_order_hash(order):
+#         messages.error(request, "There is a difference between the cart and the created order. \
+#                         Please contact the Customer Support")
+#         return redirect('cart')
+#
+#
+#
+#     # log order
+#
+#     # process payment
+#
+#     # moch process for development
+#
+#     card_num = request.POST.get('card_number', '')
+#     card_month = request.POST.get('expiry_month', '')
+#     card_year = request.POST.get('expiry_year', '')
+#     card_cvc = request.POST.get('cvc', '')
+#     payment_amount = order.total
+#
+#     payment_successful = (card_num == '111111')
+#
+#     if payment_successful:
+#         template = 'orders/payment_success.html'
+#         context = {
+#             'order_number': order.order_no
+#         }
+#         # delete cart and number in sessions
+#         cart.delete()
+#         request.session.pop('cart_number', None)
+#         request.session.modified = True
+#         email_order_created(order)
+#     else:
+#         template = 'orders/payment_failed.html'
+#
+#     return render(request, template_name=template, context=context)
+#
 
 @login_required
 def orders_list(request):
@@ -85,45 +85,3 @@ def orders_details(request, order_no):
 
     return render(request, template_name=template, context=context)
 
-
-@login_required
-def cart_validation(request, cart_no):
-    resp = dict()
-
-    cart_no = request.session.get('cart_number')
-    cart = None
-    if cart_no:
-        cart = Cart.objects.get(cart_number=cart_no)
-    else:
-        resp['valid'] = False
-        resp['error'] = 'No cart found'
-        resp['error_message'] = 'Your cart is empty'
-        resp['error_redirect'] = reverse('cart')
-        return JsonResponse(resp)
-
-    # check/ validate cart items against warehouse
-    rez, msg = check_cart_stock(cart)
-    if not rez:
-        resp['valid'] = False
-        resp['error'] = 'Items changed'
-        resp['error_message'] = 'Item quantities or price have been changed'
-        resp['error_redirect'] = reverse('cart')
-        return JsonResponse(resp)
-
-    # check/ validate cart itself against user changes
-    totals = calculate_order(cart_no)
-    checkout_hash = request.POST.get('checkout_hash')
-
-    if checkout_hash != totals['cart_hash']:
-        resp['valid'] = False
-        resp['error'] = 'Cart changed'
-        resp['error_message'] = 'Your cart has been changed. Please check other browser tabs'
-        resp['error_redirect'] = reverse('cart')
-        return JsonResponse(resp)
-
-    return JsonResponse({
-        'valid': True,
-        'error': None,   # None if valid is True
-        'error_message': None,  # None if valid is True
-        'error_redirect': None,  # None if valid is True
-    })

@@ -57,6 +57,9 @@
                 {% endif %}
                 <div class="w3-container">
                     <form id="addresses_form" class="wide">
+                    <input type="hidden" name="cart_hash" id="cart_hash" value="{{ cart_hash }}">
+                    <input type="hidden" name="email" id="email" value="{{ email }}">
+                    {% csrf_token %}
                         <div class="w3-row-padding">
                             <div class="w3-col s12 w3-margin-bottom">
                                 <label for="address_line1" class="w3-small"><strong>Address Line 1</strong></label>
@@ -124,6 +127,9 @@
                                     name="last_name" value="{{ profile.surname }}" required>
                                 <div class="error-message"></div>
                             </div>
+                        </div>
+                        <div class="w3-row-padding w3-center"><small>
+                            Order confirmation will be sent to your primary email <strong>{{ email }}</strong>.</small>
                         </div>
                 </form>
             </div>

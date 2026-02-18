@@ -1,4 +1,7 @@
 import hashlib
+
+from django.contrib.auth.decorators import login_required
+
 from cart.services import calculate_order
 
 from cart.models import Cart
@@ -122,6 +125,7 @@ def make_order(request, cart: Cart) -> Order:
 
     shipping = Shipping.objects.get(code=cart.shipping_method)
     order.shipping_method = shipping.title
+    order.email = post.get('email', '')
 
     order.save()
 
@@ -168,3 +172,7 @@ def email_order_created(order: Order):
     email.send()
 
     return 0
+
+def update_order_status(order: Order, status: OrderStatuses):
+    order.status = status
+    order.save()

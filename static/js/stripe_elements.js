@@ -117,21 +117,43 @@ async function stripe_fnc(){
     }
 
     // creating order
-    const address = (document.getElementById('address_line1') + ' ' +
-        document.getElementById('address_line2')).trim();
-    const city = document.getElementById('city') ? '' : document.getElementById('city');
-    const postalCode = document.getElementById('zip') ? '' : document.getElementById('zip');
-    const country = document.getElementById('country');
+    const address = (document.getElementById('address_line1').value + ' ' +
+        document.getElementById('address_line2').value).trim();
+    const city = document.getElementById('city').value ?
+        '' : document.getElementById('city').value;
+    const postalCode = document.getElementById('zip').value ?
+        '' : document.getElementById('zip').value;
+    const state = document.getElementById('state').value ?
+        '' : document.getElementById('state').value;
+    const country = document.getElementById('country').value;
+    const first_name = document.getElementById('first_name').value;
+    const surname = document.getElementById('last_name').value;
+    const csrf = document.getElementsByName('csrfmiddlewaretoken')[0].value;
+    const e_mail = document.getElementById('email').value;
 
-    const data = Array();
+    const data = {
+      address: address,
+      city: city,
+      postalCode: postalCode,
+      country: country,
+      state: state,
+      first_name: first_name,
+      surname: surname,
+      cart_hash: document.getElementById('cart_hash').value,
+      email: e_mail,
+      csrfmiddlewaretoken: csrf,
+    };
 
-    const orderInfo = await fetch(`/payment/get_order/`, {
+    const orderInfo = await fetch(`/payment/stripe/get_order/`, {
         method: "POST",
+        data: data,
     });
 
-    const email = '';
-    const orderNo = 'fake-order-232-23213-3221323-233';
-    const orderName = document.getElementById('first_name') + ' ' + document.getElementById('second_name')
+    const order = await orderInfo.json();
+
+    const orderNo = order.order_no;
+    const orderName = first_name + ' ' + surname;
+
 
     // Stripe payment
     const { error } = await stripe.confirmPayment({
@@ -142,7 +164,7 @@ async function stripe_fnc(){
         payment_method_data: {
           billing_details: {
             name: orderName, // You can get this from a standard HTML input
-            email: email,
+            email: e_mail,
             address: {
               line1: address,
               city: city,

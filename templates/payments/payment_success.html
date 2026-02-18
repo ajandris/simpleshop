@@ -7,7 +7,7 @@
 {% block content %}
 <div class="w3-center">
 <h1>Payment successful</h1>
-    <p class="w3-margin-bottom">Thank you for your order #{{ order_number }}</p>
+    <p class="w3-margin-bottom">Thank you for your order #{{ order_no }}</p>
     <a href="{% url 'order-list' %}" class="w3-button w3-green">View Orders</a>
     <a href="{% url 'index' %}" class="w3-button w3-green">Home</a>
 </div>
