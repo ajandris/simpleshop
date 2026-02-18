@@ -1,4 +1,7 @@
+import requests
+
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from django.contrib import messages
@@ -7,6 +10,7 @@ from collections import defaultdict
 
 from home.models import Profile, Address
 from products.models import Category, Product
+from simpleshop import settings
 
 
 # Create your views here.
@@ -288,3 +292,41 @@ def profile_addresses_make_default(request):
 
 def about(request):
     return render(request, 'home/about.html')
+
+def writeme(request):
+    ctx = {
+        "site_key": settings.RECAPTCHA_SITE_KEY,
+    }
+    if request.method == "POST":
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+
+        data = {
+            'secret': settings.RECAPTCHA_SECRET_KEY,
+            'response': recaptcha_response
+        }
+
+        r = requests.post('https://www.google.com/recaptcha/api/siteverify', data=data)
+        result = r.json()
+
+        if not result.get('success'):
+            messages.error(request, "reCAPTCHA failed. Please try again.")
+            return render(request, 'home/contact_form.html', context=ctx)
+
+        # Process form normally
+        name = request.POST.get("name")
+        email = request.POST.get("email")
+        message = request.POST.get("message")
+
+        # send message
+        send_mail(
+            subject="News from [The Olde Christmas Market] Contact Form",
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=False,
+        )
+
+        # Save, email, or handle message here
+        messages.success(request, "Thank you! Your message has been sent.")
+
+    return render(request, 'home/contact_form.html', context=ctx)
