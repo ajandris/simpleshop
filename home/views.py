@@ -331,7 +331,7 @@ def writeme(request):
         """
         # send message
         send_mail(
-            subject="News from [The Olde Christmas Market] Contact Form",
+            subject="News from The Olde Christmas Market Contact Form",
             message=msg_text_to_sender,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[email],
@@ -347,7 +347,7 @@ def writeme(request):
         """
         # send message
         send_mail(
-            subject="News from [The Olde Christmas Market] Contact Form",
+            subject="News from The Olde Christmas Market Contact Form",
             message=msg_text_to_receiver,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[site_contact],
