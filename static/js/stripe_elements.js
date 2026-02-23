@@ -75,7 +75,6 @@ async function stripe_fnc(){
 
   async function handleSubmit(e) {
     e.preventDefault();
-    // setLoading(true);
 
     // check address and name form
     const form = document.getElementById('addresses_form');
@@ -191,36 +190,8 @@ async function stripe_fnc(){
       showMessage("An unexpected error occurred.");
     }
 
-    // setLoading(false);
+    setLoading(false);
   }
-
-  // ------- UI helpers -------
-
-  function showMessage(messageText) {
-    const messageContainer = document.querySelector("#payment-message");
-
-    messageContainer.classList.remove("hidden");
-    messageContainer.textContent = messageText;
-
-    setTimeout(function () {
-      messageContainer.classList.add("hidden");
-      messageContainer.textContent = "";
-    }, 4000);
-  }
-
-  // Show a spinner on payment submission
-  // function setLoading(isLoading) {
-  //   if (isLoading) {
-  //     // Disable the button and show a spinner
-  //     document.querySelector("#submit").disabled = true;
-  //     document.querySelector("#spinner").classList.remove("hidden");
-  //     document.querySelector("#button-text").classList.add("hidden");
-  //   } else {
-  //     document.querySelector("#submit").disabled = false;
-  //     document.querySelector("#spinner").classList.add("hidden");
-  //     document.querySelector("#button-text").classList.remove("hidden");
-  //   }
-  // }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
