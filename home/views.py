@@ -1,3 +1,5 @@
+import os
+
 import requests
 
 from django.contrib.auth.decorators import login_required
@@ -319,7 +321,7 @@ def writeme(request):
         name = request.POST.get("name")
         email = request.POST.get("email")
         message = request.POST.get("message")
-        site_contact = 'andris.jancevskis@gmail.com'
+        site_contact = os.environ.get('CONTACT_FORM_RECEIVER', '')
 
         msg_text_to_sender = f"""
         Hi, {name}! 
