@@ -319,17 +319,39 @@ def writeme(request):
         name = request.POST.get("name")
         email = request.POST.get("email")
         message = request.POST.get("message")
+        site_contact = 'andris.jancevskis@gmail.com'
 
+        msg_text_to_sender = f"""
+        Hi, {name}! 
+        We have received your message sent from The Olde Chrismas Market contact form.
+        You wrote us:
+        {message}
+        """
         # send message
         send_mail(
             subject="News from [The Olde Christmas Market] Contact Form",
-            message=message,
+            message=msg_text_to_sender,
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[email],
             fail_silently=False,
         )
 
-        # Save, email, or handle message here
+        msg_text_to_receiver = f"""
+        Hi, {name}! 
+        We received a message sent from The Olde Chrismas Market contact form.
+        Sent by: {email}
+        Message:
+        {message}
+        """
+        # send message
+        send_mail(
+            subject="News from [The Olde Christmas Market] Contact Form",
+            message=msg_text_to_receiver,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[site_contact],
+            fail_silently=False,
+        )
+
         messages.success(request, "Thank you! Your message has been sent.")
 
     return render(request, 'home/contact_form.html', context=ctx)
