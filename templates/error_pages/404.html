@@ -1,6 +1,10 @@
 {% extends "_base.html" %}
 {% load static %}
 
+{% block extra_meta %}
+    <meta http-equiv="refresh" content="15;url={% url 'index' %}">
+{% endblock extra_meta %}
+
 {% block extra_css %}
 <style>
     .elf-img {
