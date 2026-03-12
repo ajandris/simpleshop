@@ -22,6 +22,7 @@ def on_user_logged_in(sender, request, user, **kwargs):
     request.session['just_logged_in'] = True
 
 
+@login_required
 def view_cart(request):
     template = 'cart/cart.html'
     cart_no = request.session.get('cart_number', '')
@@ -61,6 +62,7 @@ def view_cart(request):
 
     return render(request, template, context=ctxt)
 
+@login_required
 def remove_from_cart(request):
     """
     Remove a product from the cart
@@ -86,10 +88,13 @@ def remove_from_cart(request):
     return redirect('cart')
 
 
+@login_required
 def add_product(request):
     """
     Adds product to cart
     """
+    if request.method == 'GET':
+        return redirect('index')
     if request.method == 'POST':
         sku = request.POST['sku']
         quantity = int(request.POST.get('quantity')) if request.POST.get('quantity') is not None else 1
@@ -128,6 +133,7 @@ def add_product(request):
     return redirect(request.META.get('HTTP_REFERER', 'cart'))
 
 
+@login_required
 def add_coupon(request):
     """
     Adds a coupon to cart
@@ -152,6 +158,7 @@ def add_coupon(request):
     return redirect('cart')
 
 
+@login_required
 def remove_coupon(request):
     """
     Removes a coupon from cart
@@ -175,6 +182,7 @@ def remove_coupon(request):
     return redirect('cart')
 
 
+@login_required
 def save_cart(request):
     if request.method == "POST":
         cart_no = request.session.get('cart_number', '')
@@ -197,6 +205,7 @@ def save_cart(request):
         cart.save()
         messages.success(request, "Cart saved successfully")
 
+@login_required
 def update_cart(request):
 
     save_cart(request)

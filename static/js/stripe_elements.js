@@ -189,8 +189,6 @@ async function stripe_fnc(){
     } else {
       showMessage("An unexpected error occurred.");
     }
-
-    setLoading(false);
   }
 }
 

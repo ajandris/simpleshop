@@ -8,60 +8,6 @@ from orders.models import Order
 from orders.services import make_order, get_order_hash, email_order_created
 from django.urls import reverse
 
-# @login_required
-# def process_payment(request):
-#     """
-#     Process payment from checkout
-#     """
-#     context = dict()
-#     cart_no = request.session.get('cart_number')
-#     cart = None
-#     if cart_no:
-#         cart = Cart.objects.get(cart_number=cart_no)
-#     else:
-#         messages.error(request, "Your cart is empty")
-#         return redirect('cart')
-#
-#     order = make_order(request, cart)
-#     checkout_hash = request.POST.get('checkout_hash')
-#
-#     if checkout_hash != get_order_hash(order):
-#         messages.error(request, "There is a difference between the cart and the created order. \
-#                         Please contact the Customer Support")
-#         return redirect('cart')
-#
-#
-#
-#     # log order
-#
-#     # process payment
-#
-#     # moch process for development
-#
-#     card_num = request.POST.get('card_number', '')
-#     card_month = request.POST.get('expiry_month', '')
-#     card_year = request.POST.get('expiry_year', '')
-#     card_cvc = request.POST.get('cvc', '')
-#     payment_amount = order.total
-#
-#     payment_successful = (card_num == '111111')
-#
-#     if payment_successful:
-#         template = 'orders/payment_success.html'
-#         context = {
-#             'order_number': order.order_no
-#         }
-#         # delete cart and number in sessions
-#         cart.delete()
-#         request.session.pop('cart_number', None)
-#         request.session.modified = True
-#         email_order_created(order)
-#     else:
-#         template = 'orders/payment_failed.html'
-#
-#     return render(request, template_name=template, context=context)
-#
-
 @login_required
 def orders_list(request):
     template = 'orders/orders_list.html'

@@ -1,5 +1,5 @@
-import os
 
+import os
 import requests
 
 from django.contrib.auth.decorators import login_required
@@ -160,7 +160,7 @@ def profile_addresses_add(request):
 
     if request.method == 'POST':
         address_count = Address.objects.filter(profile=user_profile).count()
-        print('Address Count', address_count)
+        # print('Address Count', address_count)
         address = Address.objects.create(
             profile=user_profile,
             is_default=(address_count == 0),
