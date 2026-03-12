@@ -36,9 +36,6 @@ def index(request):
 
     cont = {'categories': categories}
 
-    print(settings.MEDIA_URL)
-    print(settings.MEDIA_ROOT)
-
     return render(request, template, context=cont)
 
 @login_required
