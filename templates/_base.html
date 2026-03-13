@@ -43,9 +43,14 @@
      <div id="logo-header" class="w3-center">
          <a href="{% url 'index' %}"><img src="{% static 'images/logo_transparent.png' %}" class="logo"></a>
      </div>
+
+{% block search_products %}
+{% endblock search_products %}
+
+
     <div class="wide main-menu-bgcolor">
      <nav class="w3-container w3-row main-menu">
-         <div class="w3-col l8 m8 s8 w3-left w3-padding-small">
+         <div class="w3-col l7 m7 s7 w3-left w3-padding-small">
              <a href="{% url 'index' %}">Home</a>&nbsp;&nbsp;
              <div class="dropdown">
               <p class="dropbtn"> Products</p>
@@ -57,10 +62,11 @@
                     <a href="{% url 'catalogue' 'holiday-apparel' %}">Holiday Apparel</a>
                   </div>
             </div>
-             <a href="{% url 'about' %}">About</a>
-             &nbsp;<a href="{% url 'contact-form' %}">Contact</a>
-         </div>
-         <div class="w3-col l4 m4 s4 w3-padding-small">
+               <a href="{% url 'about' %}">About</a>
+              &nbsp;<a href="{% url 'contact-form' %}">Contact</a>
+             </div>
+
+         <div class="w3-col l5 m5 s5 w3-padding-small">
              <div class="w3-right w3-padding-small">
                  <a href="{% url 'cart' %}"><i class="fa-solid fa-cart-shopping background-color-inherit w3-large"></i>
                      {% if cart_item_count %}

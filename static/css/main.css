@@ -403,3 +403,32 @@ th {
 #coupon-apply-bt-wrapper{
     padding-top: 24px;
 }
+
+#search-wrapper form{
+    background-color: inherit;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    gap: 0;
+    justify-content: center;
+    /*border: green 2px solid;*/
+}
+#search-wrapper input[type=text] {
+    max-width: 100%;
+    min-width: 400px;
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+    margin-right: 0;
+}
+#search-wrapper button[type=submit] {
+    margin-left: 0;
+    border: 0;
+}
+#search-wrapper span {
+    background-color: lightgrey;
+    font-weight: bold;
+    border: black solid 1px;
+    padding: 2px 5px 3px 4px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}

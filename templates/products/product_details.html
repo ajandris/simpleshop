@@ -8,6 +8,11 @@
 {% endblock %}
 
 
+{% block search_products %}
+    {% include 'products/snippets/search.html' %}
+{% endblock search_products %}
+
+
 {% block content %}
   <div class="w3-border-bottom" >
     <h3 class="w3-center wide">{{ product.title }}</h3>

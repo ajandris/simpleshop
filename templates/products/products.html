@@ -1,6 +1,11 @@
 {% extends '_base.html' %}
 {% load static %}
 
+{% block search_products %}
+    {% include 'products/snippets/search.html' %}
+{% endblock search_products %}
+
+
 {% block content %}
 
   <div class="w3-row-padding w3-padding-16">
