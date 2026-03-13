@@ -46,8 +46,8 @@ The Shop implements statuses: Pending, Paid, Payment Failed, Confirmed and Compl
 After Checkout page is filled and Pay button pressed.
 
 The implemented Orders workflows are:
-1. Order Pending -> Paid -> Confirmed -> Completed
-2. Order Pending -> Payment Failed -> Pending -> Retry -> Paid -> Confirmed -> Completed
+1. Order Pending -> Paid
+2. Order Pending -> Payment Failed -> Order Pending -> Retry -> Paid
 
 What is not included:
 1. Order processing
@@ -67,19 +67,14 @@ If not available, adjust cart with items and available quantities in cart and sh
 Payment:
 
 + Payment attempt returns Payment Successful.
-  + Log Payment action.
 
 The next steps are created automatically (for future use):
 
 * Order status change to Paid.
-  + Log Order action.
-
 
 * Order status change to Confirmed.
-  + Log Order action.
 
 * Order status change to Completed.
-  + Log Order action.
 
 # Testing
 The ordering process testing is performed by implementing the Test Driven Development (TDD).
