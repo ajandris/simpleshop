@@ -1,12 +1,12 @@
             <div class="w3-padding-small w3-center" id="search-wrapper">
-                        <form action="{% url 'products' %}" method="post">
+                        <form action="{% url 'products' %}" method="get">
                             <input
                                 type="text"
                                 name="q"
-                                placeholder=" Search products..."
+                                placeholder="Search products..."
                                 value="{{ search_criteria|default:'' }}"
+                                minlength="3"
                             >
                             <button type="submit"><span>Search</span></button>
-                            {% csrf_token %}
                         </form>
             </div>

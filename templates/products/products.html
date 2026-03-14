@@ -25,7 +25,7 @@
 
             <label>Max price</label>
             <input class="w3-input w3-border w3-round" type="number" name="max" step="0.1" value="{{ max_price }}">
-
+            <input type="hidden" name="q" value="{{ search_criteria|default:'' }}">
             <div class="w3-section">
               <button class="w3-button w3-black w3-round w3-margin-right" type="submit">
                 <i class="fa-solid fa-magnifying-glass background-color-inherit"></i> Apply

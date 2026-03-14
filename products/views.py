@@ -1,8 +1,9 @@
 from decimal import Decimal, InvalidOperation
 
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
-from .models import Product, Category, Images, ProductImages
+from .models import Product, Category, Images
 
 
 # Create your views here.
@@ -12,12 +13,31 @@ def catalogue(request, slug):
 
     cat = get_object_or_404(Category, slug=slug)
 
-    prod = Product.objects.filter(category=cat).order_by("id", "-updated_at")
+    prod = None
 
+    search_criteria = request.GET.get("q")
     min_price_raw = request.GET.get("min")
     max_price_raw = request.GET.get("max")
 
     # Apply filters safely
+    if search_criteria:
+        try:
+            prod = Product.objects.filter(
+                Q(category=cat),
+                Q(sku=search_criteria.upper()) |
+                Q(title__icontains=search_criteria) |
+                Q(short_description__icontains=search_criteria) |
+                Q(description__icontains=search_criteria) |
+                Q(tags__icontains=search_criteria) |
+                Q(category__title__icontains=search_criteria) |
+                Q(category__description__icontains=search_criteria)
+            ).distinct()
+
+        except InvalidOperation:
+            pass
+    else:
+        prod = Product.objects.filter(category=cat).order_by("id", "-updated_at")
+
     if min_price_raw:
         try:
             prod = prod.filter(price__gte=Decimal(min_price_raw))
@@ -43,6 +63,7 @@ def catalogue(request, slug):
         "page_obj": page_obj,
         "min_price": min_price_raw or "",
         "max_price": max_price_raw or "",
+        "search_criteria": search_criteria or "",
         "qs_without_page": qs_without_page,
         "category": cat,
     }
@@ -53,17 +74,36 @@ def products(request):
 
     template = 'products/products.html'
 
-    prod = Product.objects.all().order_by("id", "-updated_at")
+    prod = None
 
+    search_criteria = request.GET.get("q")
     min_price_raw = request.GET.get("min")
     max_price_raw = request.GET.get("max")
 
     # Apply filters safely
+    if search_criteria:
+        try:
+            prod = Product.objects.filter(
+                Q(sku=search_criteria.upper()) |
+                Q(title__icontains=search_criteria) |
+                Q(short_description__icontains=search_criteria) |
+                Q(description__icontains=search_criteria) |
+                Q(tags__icontains=search_criteria) |
+                Q(category__title__icontains=search_criteria) |
+                Q(category__description__icontains=search_criteria)
+            ).distinct()
+
+        except InvalidOperation:
+            pass
+    else:
+        prod = Product.objects.all().order_by("id", "-updated_at")
+
     if min_price_raw:
         try:
             prod = prod.filter(price__gte=Decimal(min_price_raw))
         except InvalidOperation:
             pass  # ignore bad input
+
     if max_price_raw:
         try:
             prod = prod.filter(price__lte=Decimal(max_price_raw))
@@ -84,6 +124,7 @@ def products(request):
         "page_obj": page_obj,
         "min_price": min_price_raw or "",
         "max_price": max_price_raw or "",
+        "search_criteria": search_criteria or "",
         "qs_without_page": qs_without_page
     }
 
