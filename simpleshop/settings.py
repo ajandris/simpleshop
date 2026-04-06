@@ -65,6 +65,9 @@ INSTALLED_APPS = [
     'orders',
     'payments',
     'payments_stripe',
+
+    # temporary
+    'pylint',
 ]
 
 if DEBUG:
