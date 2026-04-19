@@ -2,7 +2,6 @@ import uuid
 
 from allauth.account.models import EmailAddress
 
-from simpleshop import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -16,23 +15,30 @@ from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
 from .services import has_discount_min_subtotal_reached
 
+
 @receiver(user_logged_in)
 def on_user_logged_in(sender, request, user, **kwargs):
+    """
+    Signal handler or function triggered when a user logs in.
+    """
     # This runs immediately after login
-    request.session['just_logged_in'] = True
+    request.session["just_logged_in"] = True
 
 
 @login_required
 def view_cart(request):
-    template = 'cart/cart.html'
-    cart_no = request.session.get('cart_number', '')
+    """
+    View function to display the shopping cart.
+    """
+    template = "cart/cart.html"
+    cart_no = request.session.get("cart_number", "")
     ctxt = dict()
-    if cart_no == '':
+    if cart_no == "":
         return render(request, template, context=ctxt)
 
     if request.user.is_authenticated:
         user = User.objects.get(username=request.user)
-        cart = Cart.objects.filter(owner=user).order_by('-updated_at').first()
+        cart = Cart.objects.filter(owner=user).order_by("-updated_at").first()
 
         if cart is None:
             cart = Cart.objects.filter(cart_number=cart_no).first()
@@ -48,44 +54,45 @@ def view_cart(request):
     if cart is None:
         return render(request, template, context=ctxt)
 
-    shipping = Shipping.objects.all().order_by('price')
+    shipping = Shipping.objects.all().order_by("price")
 
     coupon = None
     if cart.discount is not None:
         coupon = Coupon.objects.filter(id=cart.discount.id).first()
     ctxt = {
-        'cart': cart,
-        'cart_items': cart_items,
-        'coupon': coupon,
-        'shipping': shipping
+        "cart": cart,
+        "cart_items": cart_items,
+        "coupon": coupon,
+        "shipping": shipping,
     }
 
     return render(request, template, context=ctxt)
+
 
 @login_required
 def remove_from_cart(request):
     """
     Remove a product from the cart
     """
-    cart_no = request.session.get('cart_number')
-    if request.method != 'POST' or cart_no is None:
+    cart_no = request.session.get("cart_number")
+    if request.method != "POST" or cart_no is None:
         return view_cart(request)
 
     carts = Cart.objects.filter(cart_number=cart_no)
     if carts is not None:
-        sku = request.POST['sku']
+        sku = request.POST["sku"]
         cart = carts[0]
         cart_items = CartItem.objects.filter(cart=cart, product__sku=sku)
         cart_items.delete()
         cart_items = CartItem.objects.filter(cart=cart)
         if cart_items is None:
             cart.delete()
-            request.session.pop('cart_number', None)
+            request.session.pop("cart_number", None)
             request.session.modified = True
 
     messages.success(request, "Item removed from cart successfully!")
 
-    return redirect('cart')
+    return redirect("cart")
 
 
 @login_required
@@ -93,12 +100,16 @@ def add_product(request):
     """
     Adds product to cart
     """
-    if request.method == 'GET':
-        return redirect('index')
-    if request.method == 'POST':
-        sku = request.POST['sku']
-        quantity = int(request.POST.get('quantity')) if request.POST.get('quantity') is not None else 1
-        cart_no = request.session.get('cart_number')
+    if request.method == "GET":
+        return redirect("index")
+    if request.method == "POST":
+        sku = request.POST["sku"]
+        quantity = (
+            int(request.POST.get("quantity"))
+            if request.POST.get("quantity") is not None
+            else 1
+        )
+        cart_no = request.session.get("cart_number")
         if cart_no is None:
             uuid_str = str(uuid.uuid4())
             cart_no = uuid_str.replace("-", "")
@@ -112,10 +123,16 @@ def add_product(request):
         product = Product.objects.get(sku=sku)
         cart_items = CartItem.objects.filter(cart=cart, product=product)
 
-        quantity = int(request.POST.get('quantity')) if request.POST.get('quantity') is not None else 1
+        quantity = (
+            int(request.POST.get("quantity"))
+            if request.POST.get("quantity") is not None
+            else 1
+        )
 
         if cart_items.count() == 0:
-            cart_item = CartItem.objects.create(cart=cart, product=product, qty=quantity, price=product.price)
+            cart_item = CartItem.objects.create(
+                cart=cart, product=product, qty=quantity, price=product.price
+            )
             cart_item.save()
         else:
             cart_item = cart_items[0]
@@ -125,12 +142,12 @@ def add_product(request):
                 cart_item.qty = quantity
             cart_item.save()
 
-        request.session['cart_number'] = cart_no
+        request.session["cart_number"] = cart_no
         request.session.modified = True  # optional, ensures session is saved
 
         messages.success(request, "Item added to cart successfully!")
 
-    return redirect(request.META.get('HTTP_REFERER', 'cart'))
+    return redirect(request.META.get("HTTP_REFERER", "cart"))
 
 
 @login_required
@@ -139,12 +156,13 @@ def add_coupon(request):
     Adds a coupon to cart
     """
     from .services import has_discount_min_subtotal_reached
+
     if request.method == "POST":
-        if request.POST.get('coupon'):
-            coupon = request.POST.get('coupon').strip().upper()
+        if request.POST.get("coupon"):
+            coupon = request.POST.get("coupon").strip().upper()
             coup = Coupon.objects.filter(code__iexact=coupon).first()
-            if request.session.get('cart_number'):
-                cart_no = request.session.get('cart_number')
+            if request.session.get("cart_number"):
+                cart_no = request.session.get("cart_number")
                 cart = Cart.objects.filter(cart_number=cart_no).first()
                 if cart is not None and coup is not None:
                     cart.discount = coup
@@ -155,7 +173,7 @@ def add_coupon(request):
                     else:
                         messages.error(request, msg)
 
-    return redirect('cart')
+    return redirect("cart")
 
 
 @login_required
@@ -165,9 +183,9 @@ def remove_coupon(request):
     """
     success = False
     if request.method == "POST":
-        if request.POST.get('coupon'):
-            if request.session.get('cart_number'):
-                cart_no = request.session.get('cart_number')
+        if request.POST.get("coupon"):
+            if request.session.get("cart_number"):
+                cart_no = request.session.get("cart_number")
                 cart = Cart.objects.filter(cart_number=cart_no).first()
                 if cart is not None:
                     cart.discount = None
@@ -179,38 +197,49 @@ def remove_coupon(request):
     else:
         messages.error(request, "Coupon is not removed from cart")
 
-    return redirect('cart')
+    return redirect("cart")
 
 
 @login_required
 def save_cart(request):
+    """
+    View function to save cart items.
+    """
     if request.method == "POST":
-        cart_no = request.session.get('cart_number', '')
+        cart_no = request.session.get("cart_number", "")
         cart = Cart.objects.filter(cart_number=cart_no).first()
         for key in request.POST:
-            if key.startswith('sku'):
-                sku = key.split('-')[1]
+            if key.startswith("sku"):
+                sku = key.split("-")[1]
                 quantity = int(request.POST.get(key))
-                ci = CartItem.objects.filter(cart=cart, product__sku=sku).first()
+                ci = CartItem.objects.filter(
+                    cart=cart, product__sku=sku
+                ).first()
                 ci.qty = quantity
                 ci.save()
-            if key == 'shipping':
-                shipping = request.POST.get('shipping')
+            if key == "shipping":
+                shipping = request.POST.get("shipping")
                 cart.shipping_method = shipping
         if cart.discount is not None:
             rez, msg = has_discount_min_subtotal_reached(cart)
             if not rez:
-                messages.error(request, f"The coupon has been removed from cart. {msg}")
+                messages.error(
+                    request, f"The coupon has been removed from cart. {msg}"
+                )
                 cart.discount = None
         cart.save()
         messages.success(request, "Cart saved successfully")
 
+
 @login_required
 def update_cart(request):
+    """
+    View function to update quantities or items in the cart.
+    """
 
     save_cart(request)
 
-    return redirect('cart')
+    return redirect("cart")
 
 
 @login_required
@@ -218,7 +247,7 @@ def pay_now(request):
     """
     Pays for chosen products
     """
-    return redirect('checkout')
+    return redirect("checkout")
 
 
 @login_required
@@ -227,18 +256,21 @@ def checkout(request):
     Cart Checkout
     """
     from .services import calculate_order as get_order_summary
+
     save_cart(request)
 
-    template = 'cart/checkout.html'
+    template = "cart/checkout.html"
 
     user = get_user_model().objects.get(username=request.user.username)
     user_profile = get_object_or_404(Profile, owner=user)
 
     active_address = None
     active_address_id = None
-    addresses = Address.objects.filter(profile=user_profile).order_by('-is_default')
-    if request.method == 'POST':
-        active_address_id = int(request.POST.get('active_address_id', '0'))
+    addresses = Address.objects.filter(profile=user_profile).order_by(
+        "-is_default"
+    )
+    if request.method == "POST":
+        active_address_id = int(request.POST.get("active_address_id", "0"))
 
     if active_address_id:
         for address in addresses:
@@ -251,7 +283,7 @@ def checkout(request):
 
     email = EmailAddress.objects.filter(user=user, primary=True).first()
 
-    cart_no = request.session.get('cart_number')
+    cart_no = request.session.get("cart_number")
     ctxt = dict()
     if cart_no:
         cart = Cart.objects.filter(cart_number=cart_no).first()
@@ -261,17 +293,17 @@ def checkout(request):
             ctxt = dict(
                 cart=cart,
                 cart_items=cart_items,
-                shipping_price=ord['shipping_price'],
-                shipping_method_html=ord['shipping_method_html'],
-                discount_value=ord['discount_value'],
-                subtotal=ord['subtotal'],
-                vat_percent=ord['vat_percent'],
-                vat_amount=ord['vat_amount'],
-                total=ord['total'],
+                shipping_price=ord["shipping_price"],
+                shipping_method_html=ord["shipping_method_html"],
+                discount_value=ord["discount_value"],
+                subtotal=ord["subtotal"],
+                vat_percent=ord["vat_percent"],
+                vat_amount=ord["vat_amount"],
+                total=ord["total"],
                 profile=user_profile,
                 addresses=addresses,
                 active_address=active_address,
-                cart_hash=ord['cart_hash'],
+                cart_hash=ord["cart_hash"],
                 email=email,
             )
     return render(request, template, context=ctxt)

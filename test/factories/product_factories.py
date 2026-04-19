@@ -5,6 +5,7 @@ from test.factories.category_factories import CategoryFactory
 from test.factories.image_factories import ImagesFactory
 from test.factories.user_factories import UserFactory
 
+
 class ProductFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Product

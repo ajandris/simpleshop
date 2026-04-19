@@ -5,11 +5,14 @@ from django.db.models import Q
 from django.shortcuts import render, get_object_or_404
 from .models import Product, Category, Images
 
-
 # Create your views here.
 
+
 def catalogue(request, slug):
-    template = 'products/catalogue.html'
+    """
+    View function to display the product catalogue.
+    """
+    template = "products/catalogue.html"
 
     cat = get_object_or_404(Category, slug=slug)
 
@@ -24,19 +27,21 @@ def catalogue(request, slug):
         try:
             prod = Product.objects.filter(
                 Q(category=cat),
-                Q(sku=search_criteria.upper()) |
-                Q(title__icontains=search_criteria) |
-                Q(short_description__icontains=search_criteria) |
-                Q(description__icontains=search_criteria) |
-                Q(tags__icontains=search_criteria) |
-                Q(category__title__icontains=search_criteria) |
-                Q(category__description__icontains=search_criteria)
+                Q(sku=search_criteria.upper())
+                | Q(title__icontains=search_criteria)
+                | Q(short_description__icontains=search_criteria)
+                | Q(description__icontains=search_criteria)
+                | Q(tags__icontains=search_criteria)
+                | Q(category__title__icontains=search_criteria)
+                | Q(category__description__icontains=search_criteria),
             ).distinct()
 
         except InvalidOperation:
             pass
     else:
-        prod = Product.objects.filter(category=cat).order_by("id", "-updated_at")
+        prod = Product.objects.filter(category=cat).order_by(
+            "id", "-updated_at"
+        )
 
     if min_price_raw:
         try:
@@ -70,9 +75,13 @@ def catalogue(request, slug):
 
     return render(request, template_name=template, context=context)
 
-def products(request):
 
-    template = 'products/products.html'
+def products(request):
+    """
+    View function to display a list of products based on filters.
+    """
+
+    template = "products/products.html"
 
     prod = None
 
@@ -84,13 +93,13 @@ def products(request):
     if search_criteria:
         try:
             prod = Product.objects.filter(
-                Q(sku=search_criteria.upper()) |
-                Q(title__icontains=search_criteria) |
-                Q(short_description__icontains=search_criteria) |
-                Q(description__icontains=search_criteria) |
-                Q(tags__icontains=search_criteria) |
-                Q(category__title__icontains=search_criteria) |
-                Q(category__description__icontains=search_criteria)
+                Q(sku=search_criteria.upper())
+                | Q(title__icontains=search_criteria)
+                | Q(short_description__icontains=search_criteria)
+                | Q(description__icontains=search_criteria)
+                | Q(tags__icontains=search_criteria)
+                | Q(category__title__icontains=search_criteria)
+                | Q(category__description__icontains=search_criteria)
             ).distinct()
 
         except InvalidOperation:
@@ -125,13 +134,16 @@ def products(request):
         "min_price": min_price_raw or "",
         "max_price": max_price_raw or "",
         "search_criteria": search_criteria or "",
-        "qs_without_page": qs_without_page
+        "qs_without_page": qs_without_page,
     }
 
     return render(request, template_name=template, context=context)
 
 
 def product_detail(request, slug):
+    """
+    View function to display the details of a specific product.
+    """
     template = "products/product_details.html"
     product = get_object_or_404(Product, slug=slug)
     # Build gallery: primary image first, then extras (unique by URL)

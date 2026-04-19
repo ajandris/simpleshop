@@ -1,4 +1,4 @@
-""""
+""" "
 Module: utils.py
 Description: Utility functions
 """
@@ -8,7 +8,7 @@ from django.utils.crypto import get_random_string
 
 def unique_slugify(instance, slug):
     """
-        Creates unique slugs
+    Creates unique slugs
     """
     model = instance.__class__
     slug = slug.lower()

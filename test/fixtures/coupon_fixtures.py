@@ -3,35 +3,38 @@ from datetime import datetime, timedelta
 from cart.models import Coupon
 from test.factories.user_factories import UserFactory
 
+
 @pytest.fixture
 def coupon_no_end_date_amount(db):
     # Discounts
     return Coupon.objects.create(
-        code='valid_coupon1',
+        code="valid_coupon1",
         value=10,
         # percent or amount
-        type='amount',
+        type="amount",
         # null -> no restriction
         effective_from=None,
         # null -> no restriction
         effective_to=None,
-        user=UserFactory(username='testuser')
+        user=UserFactory(username="testuser"),
     )
+
 
 @pytest.fixture
 def coupon_no_end_date_percent(db):
     # Discounts
     return Coupon.objects.create(
-        code='valid_coupon2',
+        code="valid_coupon2",
         value=10,
         # percent or amount
-        type='percent',
+        type="percent",
         # None -> no restriction
         effective_from=None,
         # None -> no restriction
         effective_to=None,
-        user=UserFactory(username='testuser')
+        user=UserFactory(username="testuser"),
     )
+
 
 @pytest.fixture
 def coupon_w_end_date(db):
@@ -40,16 +43,17 @@ def coupon_w_end_date(db):
     offset = timedelta(days=100)
     end_date = today + offset
     return Coupon.objects.create(
-        code='valid_coupon3',
+        code="valid_coupon3",
         value=10,
         # percent or amount
-        type='amount',
+        type="amount",
         # None -> no restriction
         effective_from=None,
         # None -> no restriction
         effective_to=end_date,
-        user=UserFactory(username='testuser')
+        user=UserFactory(username="testuser"),
     )
+
 
 @pytest.fixture
 def coupon_w_end_and_start_date(db):
@@ -59,16 +63,17 @@ def coupon_w_end_and_start_date(db):
     start_date = today - offset
     end_date = today + offset
     return Coupon.objects.create(
-        code='valid_coupon4',
+        code="valid_coupon4",
         value=10,
         # percent or amount
-        type='percent',
+        type="percent",
         # None -> no restriction
         effective_from=start_date,
         # None -> no restriction
         effective_to=end_date,
-        user=UserFactory(username='testuser')
+        user=UserFactory(username="testuser"),
     )
+
 
 @pytest.fixture
 def coupon_expired(db):
@@ -78,16 +83,17 @@ def coupon_expired(db):
     end_date = today - timedelta(days=5)
     start_date = today - offset
     return Coupon.objects.create(
-        code='expired_coupon',
+        code="expired_coupon",
         value=10,
         # percent or amount
-        type='amount',
+        type="amount",
         # None -> no restriction
         effective_from=start_date,
         # None -> no restriction
         effective_to=end_date,
-        user=UserFactory(username='testuser')
+        user=UserFactory(username="testuser"),
     )
+
 
 @pytest.fixture
 def coupon_in_future(db):
@@ -98,15 +104,15 @@ def coupon_in_future(db):
     end_date = today + offset
 
     return Coupon.objects.create(
-        code='future_coupon',
+        code="future_coupon",
         value=10,
         # percent or amount
-        type='amount',
+        type="amount",
         # None -> no restriction
         effective_from=start_date,
         # None -> no restriction
         effective_to=end_date,
-        user=UserFactory(username='testuser')
+        user=UserFactory(username="testuser"),
     )
 
 
@@ -115,13 +121,13 @@ def coupon_1000_min_subtotal(db):
     # Discounts
     return Coupon.objects.create(
         min_subtotal=1000,
-        code='valid_coupon1',
+        code="valid_coupon1",
         value=10,
         # percent or amount
-        type='amount',
+        type="amount",
         # null -> no restriction
         effective_from=None,
         # null -> no restriction
         effective_to=None,
-        user=UserFactory(username='testuser')
+        user=UserFactory(username="testuser"),
     )

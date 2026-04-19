@@ -1,6 +1,5 @@
 import hashlib
 
-from django.contrib.auth.decorators import login_required
 
 from cart.services import calculate_order
 
@@ -13,33 +12,34 @@ from simpleshop import settings
 def create_order(cart: Cart) -> Order:
     """
     Creates a new Order from a cart
-    To create full order, user make_order(). It adds addresses and other necessary information to the order
+    To create full order, use make_order(). It adds addresses and
+    other necessary information to the order.
     """
     cart_totals = calculate_order(cart)
-    order_status = OrderStatuses.objects.get(code='PENDING')
+    order_status = OrderStatuses.objects.get(code="PENDING")
     order = Order.objects.create(
         cart_no=cart.cart_number,
-        discount_amount=cart_totals['discount_value'],
-        total=cart_totals['total'],
+        discount_amount=cart_totals["discount_value"],
+        total=cart_totals["total"],
         owner=cart.owner,
-        subtotal=cart_totals['subtotal'],
-        vat_included=cart_totals['vat_amount'],
-        billing_address='Billing Address',
-        shipping_address='Shipping Address',
-        shipping_price=cart_totals['shipping_price'],
+        subtotal=cart_totals["subtotal"],
+        vat_included=cart_totals["vat_amount"],
+        billing_address="Billing Address",
+        shipping_address="Shipping Address",
+        shipping_price=cart_totals["shipping_price"],
         status=order_status,
-        user=cart.owner
+        user=cart.owner,
     )
     order.save()
 
     for item in cart.cartitem_set.all():
-        order_item=OrderItem.objects.create(
+        order_item = OrderItem.objects.create(
             order=order,
             sku=item.product.sku,
             item=item.product.title,
             quantity=item.qty,
             unit_price=item.price,
-            user=cart.owner
+            user=cart.owner,
         )
         order_item.save()
 
@@ -50,7 +50,8 @@ def re_build_order(order_to_rebuild: Order, cart: Cart) -> Order:
     """
     Rebuilds existing order based on a cart.
     @return True if cart has not been changed
-    To create full order, user make_order(). It adds addresses and other necessary information to the order
+    To create full order, use make_order(). It adds addresses and
+    other necessary information to the order.
     """
     cart_totals = calculate_order(cart)
 
@@ -58,15 +59,15 @@ def re_build_order(order_to_rebuild: Order, cart: Cart) -> Order:
 
     order = order_to_rebuild
     order.cart_no = cart.cart_number
-    order.discount_amount = cart_totals['discount_value']
-    order.total = cart_totals['total']
+    order.discount_amount = cart_totals["discount_value"]
+    order.total = cart_totals["total"]
     order.owner = cart.owner
-    order.subtotal = cart_totals['subtotal']
-    order.vat_included = cart_totals['vat_amount']
-    order.billing_address = 'Billing Address'
-    order.shipping_address = 'Shipping Address'
-    order.shipping_price = cart_totals['shipping_price']
-    order.status = OrderStatuses.objects.get(code='PENDING')
+    order.subtotal = cart_totals["subtotal"]
+    order.vat_included = cart_totals["vat_amount"]
+    order.billing_address = "Billing Address"
+    order.shipping_address = "Shipping Address"
+    order.shipping_price = cart_totals["shipping_price"]
+    order.status = OrderStatuses.objects.get(code="PENDING")
     order.user = cart.owner
     order.save()
 
@@ -80,17 +81,20 @@ def re_build_order(order_to_rebuild: Order, cart: Cart) -> Order:
             item=item.product.title,
             quantity=item.qty,
             unit_price=item.price,
-            user=cart.owner
+            user=cart.owner,
         )
         order_item.save()
 
     return order
 
+
 def make_order(request, cart: Cart) -> Order:
     """
-    Order creation master function, which serves creating a new order based on a cart and
-    recreating an existing order with order_no and based on a Cart.
-    If order_no provided does not have associated order, a new order is created.
+    Order creation master function, which serves creating a new order
+    based on a cart and recreating an existing order with order_no
+    and based on a Cart.
+    If order_no provided does not have associated order, a new order is
+    created.
     """
 
     order = Order()
@@ -104,13 +108,13 @@ def make_order(request, cart: Cart) -> Order:
     # Add addresses
     post = request.POST
     address = f"{post.get('address_line1', '')}"
-    if post.get('address_line2', '') == '':
+    if post.get("address_line2", "") == "":
         address += ","
     else:
         address += f" {post.get('address_line2', '')},"
 
     address += f"\n{post.get('city', '')},"
-    if post.get('state', '') != '':
+    if post.get("state", "") != "":
         address += f"\n{post.get('state', '')},"
     address += f"\n{post.get('zip', '')}"
     address += f"\n{post.get('country', '')}"
@@ -125,7 +129,7 @@ def make_order(request, cart: Cart) -> Order:
 
     shipping = Shipping.objects.get(code=cart.shipping_method)
     order.shipping_method = shipping.title
-    order.email = post.get('email', '')
+    order.email = post.get("email", "")
 
     order.save()
 
@@ -133,6 +137,9 @@ def make_order(request, cart: Cart) -> Order:
 
 
 def get_order_hash(order: Order) -> str:
+    """
+    Generates and returns a unique hash for an order.
+    """
     item_signatures = []
 
     for item in order.orderitem_set.all():
@@ -153,26 +160,38 @@ def render_email_order_created_content(order: Order) -> (str, str, str):
 
     subject = f"Order #{order.order_no} Created [The Olde Christmas Market]"
 
-    text_template = 'emails/order_receipt_confirmation_text.html'
+    text_template = "emails/order_receipt_confirmation_text.html"
     text = render_to_string(text_template, context={"order": order})
 
-    html_template = 'emails/order_receipt_confirmation_html.html'
-    html = render_to_string(html_template, context={"order":order})
+    html_template = "emails/order_receipt_confirmation_html.html"
+    html = render_to_string(html_template, context={"order": order})
 
     return subject, text, html
 
 
 def email_order_created(order: Order):
+    """
+    Sends an email notification when an order is created.
+    """
     from django.core.mail import EmailMultiAlternatives
 
     subject, text, html = render_email_order_created_content(order)
 
-    email = EmailMultiAlternatives(subject, text, settings.EMAIL_HOST_USER, to=['andris.jancevskis@gmail.com'])
+    email = EmailMultiAlternatives(
+        subject,
+        text,
+        settings.EMAIL_HOST_USER,
+        to=["andris.jancevskis@gmail.com"],
+    )
     email.attach_alternative(html, "text/html")
     email.send()
 
     return 0
 
+
 def update_order_status(order: Order, status: OrderStatuses):
+    """
+    Updates the status of a given order.
+    """
     order.status = status
     order.save()

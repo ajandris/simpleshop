@@ -1,6 +1,7 @@
 """
 Product fixtures for pytest
 """
+
 import pytest
 from test.factories.product_factories import ProductFactory
 
@@ -18,8 +19,7 @@ def base_cart_products(db):
 
 
 @pytest.fixture
-def cart_products_with_price_change(
-        db, base_cart_products):
+def cart_products_with_price_change(db, base_cart_products):
     products = base_cart_products
     products[0].price = 15
     products[0].save()
@@ -27,11 +27,13 @@ def cart_products_with_price_change(
 
 
 @pytest.fixture
-def cart_products_55_amount(
-        db):
+def cart_products_55_amount(db):
     prod1 = ProductFactory(price=5.50, stock=10)
-    products = [prod1,]
+    products = [
+        prod1,
+    ]
     return products
+
 
 @pytest.fixture
 def products_subtotal_100(db):

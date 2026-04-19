@@ -1,11 +1,13 @@
 """
 Cart service functions
 """
+
 import hashlib
 from datetime import date
 from decimal import Decimal, ROUND_HALF_UP
 
 from cart.models import Cart, CartItem, Coupon, Shipping
+
 
 def check_cart_stock(cart: Cart) -> (bool, dict):
     """
@@ -32,7 +34,7 @@ def calculate_order(cart_no):
     """
     Calculates the order amounts
     """
-    VAT = Decimal('20.00')
+    VAT = Decimal("20.00")
     cart = Cart
     try:
         cart = Cart.objects.get(cart_number=cart_no)
@@ -41,14 +43,15 @@ def calculate_order(cart_no):
 
     shipping = None
     if cart.shipping_method is None:
-        shipping = Shipping.objects.order_by('discount_threshold').first()
+        shipping = Shipping.objects.order_by("discount_threshold").first()
     else:
         shipping = Shipping.objects.filter(code=cart.shipping_method).first()
 
-    # looping cart items and making subtotal and signatures list for hash calculation
+    # Looping cart items and making subtotal and signatures list for
+    # hash calculation
     item_signatures = []
-    cart_sub_total = Decimal('0.00')
-    cart_items = CartItem.objects.filter(cart=cart).order_by('id')
+    cart_sub_total = Decimal("0.00")
+    cart_items = CartItem.objects.filter(cart=cart).order_by("id")
     for item in cart_items:
         cart_sub_total += item.qty * Decimal(str(item.price))
         sig = f"{item.product.sku}:{item.qty}:{item.product.price}"
@@ -57,50 +60,66 @@ def calculate_order(cart_no):
 
     # shipping
     ship_price = 5.00
-    if Decimal(str(cart_sub_total)) > Decimal(str(shipping.discount_threshold)):
+    if Decimal(str(cart_sub_total)) > Decimal(
+        str(shipping.discount_threshold)
+    ):
         ship_price = shipping.price_discounted
     else:
         ship_price = shipping.price
 
     # discounts/ coupons
-    discount_amount = Decimal('0.00')
+    discount_amount = Decimal("0.00")
     if cart.discount_id is not None:
         disc = Coupon.objects.filter(id=cart.discount_id).first()
         if disc is not None:
             if Decimal(str(cart_sub_total)) >= Decimal(str(disc.min_subtotal)):
-                if disc.type == 'percent':
-                    discount_amount = disc.value * Decimal(str(cart_sub_total)) / 100
-                elif disc.type == 'amount':
+                if disc.type == "percent":
+                    discount_amount = (
+                        disc.value * Decimal(str(cart_sub_total)) / 100
+                    )
+                elif disc.type == "amount":
                     discount_amount = disc.value
             else:
                 cart.discount = None
                 cart.save()
 
     order = dict()
-    order['cart_no'] = cart_no
-    order['shipping_price'] = ship_price
-    order['shipping_method_html'] = shipping.text_html
-    order['discount_value'] = Decimal(str(discount_amount)).quantize(
-                                    Decimal("0.01"), rounding=ROUND_HALF_UP)
-    order['subtotal'] = Decimal(str(cart_sub_total)).quantize(
-                                    Decimal("0.01"), rounding=ROUND_HALF_UP)
-    order['vat_percent'] = VAT
-    total = Decimal(str(order.get('subtotal') - order['discount_value'] + order['shipping_price'])).quantize(
-                                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+    order["cart_no"] = cart_no
+    order["shipping_price"] = ship_price
+    order["shipping_method_html"] = shipping.text_html
+    order["discount_value"] = Decimal(str(discount_amount)).quantize(
+        Decimal("0.01"), rounding=ROUND_HALF_UP
+    )
+    order["subtotal"] = Decimal(str(cart_sub_total)).quantize(
+        Decimal("0.01"), rounding=ROUND_HALF_UP
+    )
+    order["vat_percent"] = VAT
+    total = Decimal(
+        str(
+            order.get("subtotal")
+            - order["discount_value"]
+            + order["shipping_price"]
+        )
+    ).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
-    order['total'] = total
-    order['vat_amount'] = Decimal(str(total - total / (Decimal(str('100.00')) + VAT) * Decimal('100'))).quantize(
-                                    Decimal("0.01"), rounding=ROUND_HALF_UP)
+    order["total"] = total
+    order["vat_amount"] = Decimal(
+        str(total - total / (Decimal(str("100.00")) + VAT) * Decimal("100"))
+    ).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     # Create the final signature
     full_signature = "|".join(item_signatures)
     cart_hash = hashlib.sha256(full_signature.encode()).hexdigest()
-    order['cart_hash'] = cart_hash
+    order["cart_hash"] = cart_hash
 
     return order
 
+
 def get_cart_subtotal(cart: Cart) -> Decimal:
-    result = Decimal('0.00')
+    """
+    Calculates and returns the subtotal of the cart.
+    """
+    result = Decimal("0.00")
     cart_items = CartItem.objects.filter(cart=cart)
     for item in cart_items:
         result += item.qty * Decimal(str(item.price))
@@ -122,13 +141,21 @@ def is_coupon_valid(coupon: Coupon) -> (bool, str):
     return True, ""
 
 
-def has_discount_min_subtotal_reached(cart_with_active_coupon: Cart) -> (bool, str):
+def has_discount_min_subtotal_reached(
+    cart_with_active_coupon: Cart,
+) -> (bool, str):
     """
     Checks if cart subtotal is larger or equal to coupon threshold.
     """
     cart = cart_with_active_coupon
 
     if cart.discount.min_subtotal > get_cart_subtotal(cart):
-        return False, f"Cart subtotal should be larger or equal to £{cart.discount.min_subtotal}"
+        return (
+            False,
+            (
+                "Cart subtotal should be larger or equal to "
+                f"£{cart.discount.min_subtotal}"
+            ),
+        )
 
     return True, ""
