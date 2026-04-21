@@ -108,5 +108,6 @@
 {% endblock content %}
 
 {% block postloadjs %}
+    {{ block.super }}
         <script src="{% static 'js/product_gallery.js' %}"></script>
 {% endblock postloadjs %}

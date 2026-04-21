@@ -197,5 +197,6 @@
 {% endblock content %}
 
 {% block postloadjs %}
+    {{ block.super }}
 <script src="{% static 'js/cart.js' %}"></script>
 {% endblock postloadjs %}

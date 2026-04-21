@@ -2,42 +2,58 @@
 {% load static %}
 
 {% block search_products %}
-    {% include 'products/snippets/search.html' %}
+{% include 'products/snippets/search.html' %}
 {% endblock search_products %}
 
 
 {% block content %}
 
-    <div class="banner-wrapper">
-        <img src="{% static 'images/banner.png' %}" class="main-banner">
-    </div>
+<div class="banner-wrapper">
+  <img src="{% static 'images/banner.png' %}" class="main-banner">
+</div>
 
+<!-- Mobile category filter (visible only on small screens) -->
+<div class="w3-hide-large w3-hide-medium w3-container w3-padding w3-margin-top">
+  <label for="mobile-category-select" class="w3-text-grey"><b>Select Featured Category:</b></label>
+  <select id="mobile-category-select" class="w3-select w3-border w3-round" onchange="filterMobileCategory(this.value)">
+    <option value="all" selected>Show all products</option>
     {% for cat in categories %}
-    <!-- Category loop -->
-    <section class="category-section">
-      <h2 class="w3-border-bottom w3-padding-small">{{ cat.title }}</h2>
-      <div class="scroll-container">
-        <!-- Repeat for 8 products -->
-        {% for prod in cat.top_products %}
-            <div class="w3-card product-card w3-padding">
-              <a href="{% url 'product-detail' slug=prod.slug %}"
-                 class="no-text-decoration">
-                    <img src="{{ prod.image.url.url }}" alt="{{ prod.image.name }}"
-                         class="w3-image product-image-carousel">
-                    <h6>{{ prod.title }}</h6></a>
-                  <form method="post" action="{% url 'add-to-cart'%}">
-                      <input type="hidden" name="sku" value="{{ prod.sku }}">
-                      {% csrf_token %}
-                    <div class="w3-section">
-                      <span class="price">£{{ prod.price }}</span>&nbsp;&nbsp;
-                          <button class="w3-button w3-border w3-round w3-right">Add to cart</button>
-                    </div>
-                  </form>
-            </div>
-        {% endfor %}
-        <!-- Add 7 more product cards similarly -->
-      </div>
-    </section>
+    <option value="cat-{{ forloop.counter }}">{{ cat.title }}</option>
     {% endfor %}
+  </select>
+</div>
+
+{% for cat in categories %}
+<!-- Category loop -->
+<section class="category-section" id="cat-{{ forloop.counter }}">
+  <h2 class="w3-border-bottom w3-padding-small">{{ cat.title }}</h2>
+  <div class="w3-row-padding w3-margin-top">
+    {% for prod in cat.top_products %}
+    <div class="w3-col l3 m4 s12 w3-margin-bottom">
+      <div class="w3-card w3-white product-card">
+        <figure class="w3-image w3-margin-0">
+          <a href="{% url 'product-detail' slug=prod.slug %}" class="no-text-decoration">
+            <img src="{{ prod.image.url.url }}" alt="{{ prod.image.name }}">
+          </a>
+        </figure>
+        <div class="w3-container card-under-image">
+          <h6 class="w3-margin-top w3-margin-bottom">
+            <a href="{% url 'product-detail' slug=prod.slug %}" class="no-text-decoration">{{ prod.title }}</a>
+          </h6>
+          <form method="post" action="{% url 'add-to-cart'%}">
+            <input type="hidden" name="sku" value="{{ prod.sku }}">
+            {% csrf_token %}
+            <div class="w3-section">
+              <span class="price">£{{ prod.price }}</span>&nbsp;&nbsp;
+              <button class="w3-button w3-border w3-round w3-right">Add to cart</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endfor %}
 
 {% endblock content %}

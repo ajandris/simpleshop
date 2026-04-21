@@ -2,125 +2,183 @@
 
 <!doctype html>
 <html lang="en">
-  <head>
 
-    {% block meta %}
-        <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <meta name="robots" content="noindex, nofollow">
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    {% endblock %}
+<head>
 
-    {% block extra_meta %}
-    {% endblock %}
+  {% block meta %}
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="robots" content="noindex, nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  {% endblock %}
 
-    {% block corecss %}
-        <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    {% endblock %}
+  {% block extra_meta %}
+  {% endblock %}
 
-    {% block extra_css %}
-    {% endblock %}
+  {% block corecss %}
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/5/w3.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+  {% endblock %}
 
-    {% block corejs %}
-        <script src="{% static 'js/main.js' %}"></script>
-        <!-- Stripe -->
-        <script src="https://js.stripe.com/v3/"></script>
-    {% endblock %}
+  {% block extra_css %}
+  {% endblock %}
 
-    {% block extra_js %}
-    {% endblock %}
+  {% block corejs %}
+  <script src="{% static 'js/main.js' %}"></script>
+  <!-- Stripe -->
+  <script src="https://js.stripe.com/v3/"></script>
+  {% endblock %}
 
-    <title>{% block title %}The Christmas Shop{% endblock title %}{% block subtitle %}{% endblock subtitle %}</title>
+  {% block extra_js %}
+  {% endblock %}
 
-      <!-- Favicon -->
-      <link rel="icon" type="image/png" href="{% static 'images/favico_transparent.png' %}">
+  <title>{% block title %}The Christmas Shop{% endblock title %}{% block subtitle %}{% endblock subtitle %}</title>
 
-  </head>
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="{% static 'images/favico_transparent.png' %}">
+
+</head>
+
 <body>
-<header class="wide">
-     <div id="logo-header" class="w3-center">
-         <a href="{% url 'index' %}"><img src="{% static 'images/logo_transparent.png' %}" class="logo"></a>
-     </div>
 
-{% block search_products %}
-{% endblock search_products %}
+  <!-- Mobile Sidebar -->
+  <div class="w3-sidebar w3-bar-block w3-animate-left main-menu-bgcolor w3-text-black w3-bold mobile-sidebar"
+    id="mobileSidebar">
+    <button class="w3-bar-item w3-button w3-large mobile-sidebar-close" onclick="closeSidebar()">&times;
+      Close</button>
+    <a href="{% url 'index' %}" class="w3-bar-item w3-button">Home</a>
+
+    <div class="w3-dropdown-click">
+      <button onclick="toggleMobileDropdown()" class="w3-button mobile-sidebar-dropdown-btn">Products <i
+          class="fa fa-caret-down w3-right"></i></button>
+      <div id="mobileProductsDrop" class="w3-dropdown-content w3-bar-block w3-border background-color-inherit">
+        <a href="{% url 'products' %}" class="w3-bar-item w3-button">All products</a>
+        <a href="{% url 'catalogue' 'christmas-decorations' %}" class="w3-bar-item w3-button">Christmas Decorations</a>
+        <a href="{% url 'catalogue' 'toys-gifts' %}" class="w3-bar-item w3-button">Toys & Gifts</a>
+        <a href="{% url 'catalogue' 'festive-homeware' %}" class="w3-bar-item w3-button">Festive Homeware</a>
+        <a href="{% url 'catalogue' 'holiday-apparel' %}" class="w3-bar-item w3-button">Holiday Apparel</a>
+      </div>
+    </div>
+
+    <a href="{% url 'about' %}" class="w3-bar-item w3-button">About</a>
+    <a href="{% url 'contact-form' %}" class="w3-bar-item w3-button">Contact</a>
+    <hr class="mobile-sidebar-separator">
+
+    <a href="{% url 'cart' %}" class="w3-bar-item w3-button">
+      <i class="fa-solid fa-cart-shopping  background-color-inherit"></i> Cart
+      {% if cart_item_count %}
+      <span class="cart-count w3-badge w3-border w3-border-white">{{ cart_item_count }}</span>
+      {% endif %}
+    </a>
+    <hr class="mobile-sidebar-separator">
+
+    {% if user.is_authenticated %}
+    <a href="{% url 'profile' %}" class="w3-bar-item w3-button"><i
+        class="fa-regular fa-user background-color-inherit"></i> Profile</a>
+    <a href="{% url 'order-list' %}" class="w3-bar-item w3-button">Orders</a>
+    <a href="{% url 'account_logout' %}" class="w3-bar-item w3-button">Logout</a>
+    {% else %}
+    <a href="{% url 'account_login' %}" class="w3-bar-item w3-button">Login</a>
+    <a href="{% url 'account_signup' %}" class="w3-bar-item w3-button">Sign Up</a>
+    {% endif %}
+  </div>
+  <div class="w3-overlay w3-animate-opacity sidebar-overlay" onclick="closeSidebar()" id="sidebarOverlay"></div>
+  <header class="wide">
+    <div id="logo-header" class="w3-center">
+      <a href="{% url 'index' %}"><img src="{% static 'images/logo_transparent.png' %}" class="logo"></a>
+    </div>
+
+    {% block search_products %}
+    {% endblock search_products %}
 
 
     <div class="wide main-menu-bgcolor">
-     <nav class="w3-container w3-row main-menu">
-         <div class="w3-col l7 m7 s7 w3-left w3-padding-small">
-             <a href="{% url 'index' %}">Home</a>&nbsp;&nbsp;
-             <div class="dropdown">
-              <p class="dropbtn"> Products</p>
-                  <div class="dropdown-content">
-                    <a href="{% url 'products' %}">All products</a>
-                    <a href="{% url 'catalogue' 'christmas-decorations' %}">Christmas Decorations</a>
-                    <a href="{% url 'catalogue' 'toys-gifts' %}">Toys & Gifts</a>
-                    <a href="{% url 'catalogue' 'festive-homeware' %}">Festive Homeware</a>
-                    <a href="{% url 'catalogue' 'holiday-apparel' %}">Holiday Apparel</a>
-                  </div>
-            </div>
-               <a href="{% url 'about' %}">About</a>
-              &nbsp;<a href="{% url 'contact-form' %}">Contact</a>
-             </div>
+      <!-- MOBILE MENU BAR -->
+      <div class="w3-bar w3-hide-large w3-hide-medium w3-text-black main-menu-bgcolor">
+        <button class="w3-bar-item w3-button w3-xlarge" onclick="openSidebar()"><i
+            class="fa fa-bars mobile-icons"></i></button>
+        <a href="{% url 'cart' %}" class="w3-bar-item w3-button w3-right w3-xlarge">
+          <i class="fa-solid fa-cart-shopping mobile-icons"></i>
+          {% if cart_item_count %}
+          <span class="cart-count w3-badge w3-border background-color-inherit">{{ cart_item_count }}</span>
+          {% endif %}
+        </a>
+      </div>
 
-         <div class="w3-col l5 m5 s5 w3-padding-small">
-             <div class="w3-right w3-padding-small">
-                 <a href="{% url 'cart' %}"><i class="fa-solid fa-cart-shopping background-color-inherit w3-large"></i>
-                     {% if cart_item_count %}
-                    <span class="cart-count w3-badge w3-border w3-border-white">{{ cart_item_count }}</span>
-                    {% endif %}
-                 </a>
-             </div>
-             {% if user.is_authenticated %}
-                 <div class="dropdown w3-right">
-                  <p class="dropbtn"><i class="fa-regular fa-user" id="profile-fa"></i> {{ user.username }}, your profile</p>
-                  <div class="dropdown-content">
-                    <a href="{% url 'profile' %}">Profile</a>
-                    <a href="{% url 'order-list' %}">Orders</a>
-                    <a href="{% url 'account_logout' %}">Logout</a>
-                  </div>
-                </div>
-             {% else %}
-                 <div class="w3-right">
-                    <a href="{% url 'account_login' %}">Login</a> |
-                    <a href="{% url 'account_signup' %}">Sign Up</a>
-                 </div>
-             {% endif %}
+      <nav class="w3-container w3-row main-menu w3-hide-small">
+        <div class="w3-col l7 m7 s12 w3-left w3-padding-small">
+          <a href="{% url 'index' %}">Home</a>&nbsp;&nbsp;
+          <div class="dropdown">
+            <p class="dropbtn"> Products</p>
+            <div class="dropdown-content">
+              <a href="{% url 'products' %}">All products</a>
+              <a href="{% url 'catalogue' 'christmas-decorations' %}">Christmas Decorations</a>
+              <a href="{% url 'catalogue' 'toys-gifts' %}">Toys & Gifts</a>
+              <a href="{% url 'catalogue' 'festive-homeware' %}">Festive Homeware</a>
+              <a href="{% url 'catalogue' 'holiday-apparel' %}">Holiday Apparel</a>
             </div>
-     </nav>
+          </div>
+          <a href="{% url 'about' %}">About</a>
+          &nbsp;<a href="{% url 'contact-form' %}">Contact</a>
+        </div>
+
+        <div class="w3-col l5 m5 s12 w3-padding-small">
+          <div class="w3-right w3-padding-small">
+            <a href="{% url 'cart' %}"><i class="fa-solid fa-cart-shopping background-color-inherit w3-large"></i>
+              {% if cart_item_count %}
+              <span class="cart-count w3-badge w3-border w3-border-white">{{ cart_item_count }}</span>
+              {% endif %}
+            </a>
+          </div>
+          {% if user.is_authenticated %}
+          <div class="dropdown w3-right">
+            <p class="dropbtn"><i class="fa-regular fa-user" id="profile-fa"></i> {{ user.username }}, your profile</p>
+            <div class="dropdown-content">
+              <a href="{% url 'profile' %}">Profile</a>
+              <a href="{% url 'order-list' %}">Orders</a>
+              <a href="{% url 'account_logout' %}">Logout</a>
+            </div>
+          </div>
+          {% else %}
+          <div class="w3-right">
+            <a href="{% url 'account_login' %}">Login</a> |
+            <a href="{% url 'account_signup' %}">Sign Up</a>
+          </div>
+          {% endif %}
+        </div>
+      </nav>
     </div>
- </header>
+  </header>
 
-    {% if messages %}
-        <div class="w3-container w3-center">
-         <ul>
-            {% for message in messages %}
-                <li class="{{ message.tags }}">{{ message }}</li>
-            {% endfor %}
-         </ul>
-       </div>
-    {% endif %}
+  {% if messages %}
+  <div class="w3-container w3-center">
+    <ul>
+      {% for message in messages %}
+      <li class="{{ message.tags }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
 
-    {% block page_header %}
-    {% endblock %}
+  {% block page_header %}
+  {% endblock %}
 
-    <div class="w3-container page-content">
+  <div class="w3-container page-content">
     {% block content %}
     {% endblock %}
 
     <footer class="w3-row w3-container w3-center w3-green w3-padding-24 w3-margin-top">
-            <div class="w3-col s6 m6 l6 w3-left-align background-color-inherit">
-                &copy; The Olde Christmas Market
-            </div>
-
+      <div class="w3-col s12 m6 l6 w3-center background-color-inherit wide">
+        &copy; The Olde Christmas Market
+      </div>
     </footer>
-    </div>
+  </div>
 
-    {% block postloadjs %}
-    {% endblock %}
+  {% block postloadjs %}
+  <script src="{% static 'js/main_postload.js' %}"></script>
+  {% endblock %}
 
 </body>
+
 </html>
