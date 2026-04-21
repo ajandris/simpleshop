@@ -1,12 +1,15 @@
-            <div class="w3-padding-small w3-center" id="search-wrapper">
-                        <form action="{% url 'products' %}" method="get">
-                            <input
-                                type="text"
-                                name="q"
-                                placeholder="Search products..."
-                                value="{{ search_criteria|default:'' }}"
-                                minlength="3"
-                            >
-                            <button type="submit"><span>Search</span></button>
-                        </form>
+<div class="w3-padding-16 w3-center" id="search-wrapper">
+    <form action="{% url 'products' %}" method="get">
+        <input
+            type="text"
+            name="q"
+            placeholder="Search our festive collections..."
+            value="{{ search_criteria|default:'' }}"
+            minlength="3"
+            autocomplete="off"
+        >
+        <button type="submit" class="w3-green w3-hover-opacity" title="Search">
+            <i class="fa-solid fa-magnifying-glass background-color-inherit"></i><span class="w3-hide-small" style="font-size: inherit; background: none; border: none; padding: 0; color: inherit; margin-left: 6px;">Search</span>
+        </button>
+    </form>
             </div>
