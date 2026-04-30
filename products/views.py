@@ -159,9 +159,12 @@ def product_detail(request, slug):
     if images is None:
         gallery.append(product.image.url)
     else:
-        for img in images:
-            if img.url is not None and img.url.url not in gallery:
-                gallery.append(img.url.url)
+        if product.image.name.lower() == 'placeholder':
+            gallery.append(product.image.url.url)
+        else:
+            for img in images:
+                if img.url.url is not None and img.url.url not in gallery:
+                    gallery.append(img.url.url)
     context = {
         "product": product,
         "gallery": gallery,
