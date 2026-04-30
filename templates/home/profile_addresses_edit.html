@@ -6,7 +6,7 @@
       <form action="{% url 'profile_addresses_edit' %}" method="post" enctype="multipart/form-data">
           {% csrf_token %}
           <input type="hidden" name="address_id" value="{{ address.id }}">
-        <h2>Add New Address</h2>
+        <h2>Edit Address</h2>
           <div class="w3-card w3-white w3-margin-bottom">
                 <div class="w3-container w3-padding">
                     <div class="w3-row-padding">
