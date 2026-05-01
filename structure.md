@@ -1,7 +1,13 @@
+Simpleshop database structure and description
+=============================================
+# Server structure
+<img src="readme_assets/db/simpleshop.png" alt="Server structure">
 
 
+
+# Database description
 ## Table: product_dimensions
-Table comment: Available Product Dimensions list
+Table comment: Available Product Dimensions list - for future use
 
 
 ### Primary Key: 
@@ -39,6 +45,7 @@ TABLE "product_dimensions" CONSTRAINT "product_variants_dimension_name_9_id_bdab
 
 
 ## Table: product_variants
+Table comment: Product variants  - for future use
 
 ### Primary Key: 
 "product_variants_pkey" on column "id"
@@ -156,6 +163,7 @@ TABLE "products" CONSTRAINT "products_productimages_product_id_24647d74_fk_produ
 
 
 ## Table: product_images
+Table comment: Product images
 
 ### Primary Key: 
 "products_productimages_pkey" on column "id"
@@ -433,6 +441,7 @@ TABLE "coupons" CONSTRAINT "cart_discount_id_a01db4c8_fk_coupons_id" FOREIGN KEY
 
 
 ## Table: order_statuses
+Table comments: Order Statuses
 
 ### Primary Key: 
 "order_statuses_pkey" on column "id"
@@ -462,6 +471,7 @@ TABLE "order_statuses" CONSTRAINT "orders_status_id_e763064e_fk_order_statuses_i
 
 
 ## Table: order_items
+Table comment: Order Items
 
 ### Primary Key: 
 "orders_orderitem_pkey" on column "id"
@@ -487,6 +497,7 @@ TABLE "order_statuses" CONSTRAINT "orders_status_id_e763064e_fk_order_statuses_i
 
 
 ## Table: orders
+Table comment: Orders
 
 ### Primary Key: 
 "orders_pkey" on column "id"
