@@ -75,19 +75,19 @@ function main(gallery) {
 
   rightBtn.addEventListener('click', () => {
       scrollImageRight();
-  })
+  });
   leftBtn.addEventListener('click', () => {
       scrollImageLeft();
-  })
+  });
 
   for (let i=1; i <= gallery.length;i++){
      document.getElementById(`img_${i}`).addEventListener('click', () => {
          selectImage(i-1);
-     })
+     });
   }
     document.addEventListener('DOMContentLoaded', () => {
       selectImage(0);
-  })
+  });
 
   stage.addEventListener('click', toggleZoom);
   stage.addEventListener('mousemove', panZoom);

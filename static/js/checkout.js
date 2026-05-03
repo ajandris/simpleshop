@@ -32,7 +32,7 @@ function checkout() {
     // Event Listeners
     document.addEventListener('DOMContentLoaded', () => {
         showProductLinePrices();
-    })
+    });
 }
 
 checkout();

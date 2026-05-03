@@ -23,14 +23,14 @@
                     (default)
                 {% endif %}
                 <div class="w3-padding">
-                        <button id="edit-address" name="action" type="button" data-id="{{ addr.id }}"
+                        <button id="edit-address-{{ addr.id }}" name="action" type="button" data-id="{{ addr.id }}"
                                 data-url="{% url 'profile_addresses_edit_show' %}"
                                 class="w3-button w3-dark-gray w3-round address-action">Edit</button>
                         {% if not addr.is_default %}
-                            <button id="make-default" name="action" type="button" data-id="{{ addr.id }}"
+                            <button id="make-default-{{ addr.id }}" name="action" type="button" data-id="{{ addr.id }}"
                                 data-url="{% url 'profile_addresses_make_default' %}"
                                 class="w3-button w3-dark-gray w3-round address-action">Make Default</button>
-                            <button id="delete_address" name="action" type="button" data-id="{{ addr.id }}"
+                            <button id="delete_address-{{ addr.id }}" name="action" type="button" data-id="{{ addr.id }}"
                                 data-url="{% url 'profile_addresses_delete' %}"
                                 class="w3-button w3-dark-gray w3-round address-action">Delete Address</button>
                         {% endif %}
@@ -42,6 +42,5 @@
         {% csrf_token %}
     </form>
     <a href="{% url 'profile_addresses_new' %}" class="w3-button w3-dark-gray w3-round w3-block"> Add New Address </a>
-</div>
 
 {% endblock profile-content %}

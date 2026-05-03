@@ -51,6 +51,167 @@ file that is in the ```<project root>/``` directory.
 The final result without error is shown in the image below.
 <img src="readme_assets/success/pytest_success.png" alt="Automated test result" width="75%">
 
+## CSS Validation
+Checking css for errors in Jigsaw site.
+<a href="https://jigsaw.w3.org/css-validator/">CSS Validation Service</a>
+
+### file: main.css
+Errors on checking:
+
+<img src="readme_assets/errors/main_css_errors.png" alt="main.css errors" width="75%">
+
+No errors after fixing:
+
+<img src="readme_assets/success/main_css_no_errors.png" alt="main.css no errors" width="75%">
+
+### file: cart.css
+No errors on checking:
+
+<img src="readme_assets/success/cart_css_no_errors.png" alt="cart.css no errors" width="75%">
+
+However, there are some warnings that ar enot related to the programming:
+
+<img src="readme_assets/success/cart_css_warnings.png" alt="warnings on cart.css" width="75%">
+
+### file: checkout.css
+No errors on checking:
+
+<img src="readme_assets/success/checkout_css_no_errors.png" alt="checkout.css no errors" width="75%">
+
+
+## Validating HTML
+
+<a href=""> Markup Validation Service on w3.org site</a>
+
+### Home page
+https://theoldechristmasmarket.projects.andris.jancevskis.com/
+
+Errors.
+
+<img src="readme_assets/errors/home_page_html_errors.png" alt="Home page HTML errors" width="75%">
+
+After fixing:
+
+<img src="readme_assets/errors/home_page_html_errors_2.png" alt="Home page HTML errors" width="75%">
+
+Leaving heading errors is a design decision that does not affect site's functionality or look and feel. 
+
+
+### Categories page
+https://theoldechristmasmarket.projects.andris.jancevskis.com/products/catalogue/toys-gifts/
+
+<img src="readme_assets/errors/categories_page_html_error.png" alt="Categories page HTML errors" width="75%">
+
+Leaving heading error is a design decision that does not affect site's functionality or look and feel. 
+
+### About page
+https://theoldechristmasmarket.projects.andris.jancevskis.com/about/
+
+No errors.
+
+<img src="readme_assets/success/about_page_html_no_errors.png" alt="About page HTML no errors" width="75%">
+
+### Contact page
+https://theoldechristmasmarket.projects.andris.jancevskis.com/writeme/
+
+No errors.
+
+<img src="readme_assets/success/contact_page_html_no_errors.png" alt="Contact page HTML no errors" width="75%">
+
+### Orders list
+Source input.
+
+<img src="readme_assets/errors/orders_list_HTML_errors.png" alt="Orders list HTML errors" width="75%">
+
+After fixing.
+
+<img src="readme_assets/success/orders_list_html_no_errors.png" alt="Orders list HTML no errors" width="75%">
+
+
+### Order details
+Source input.
+
+No errors.
+
+<img src="readme_assets/success/order_details_html_no_errors.png" alt="Orders details HTML no errors" width="75%">
+
+### Cart
+Source input.
+
+No errors
+
+<img src="readme_assets/success/cart_html_success.png" alt="Cart HTML check no errors" width="75%">
+
+### Checkout
+Source input.
+
+No errors
+
+<img src="readme_assets/success/checkout_page_html_no_errors.png" alt="Checkout page HTML check no errors" width="75%">
+
+### Address list
+Source input
+
+Errors with three addresses on the list.
+
+<img src="readme_assets/errors/address_list_html_error.png" alt="Address list HTML check errors" width="75%">
+
+After fixing ids and JavaScript - no errors
+
+<img src="readme_assets/success/address_list_html_no_errors.png" alt="Address list HTML check no errors" width="75%">
+
+
+### New address
+Source input
+
+Errors.
+
+<img src="readme_assets/errors/new_address_html_errors.png" alt="New address HTML check errors" width="75%">
+
+After fixing - no errors
+
+<img src="readme_assets/success/address_list_html_no_errors.png" alt="New address HTML check no errors" width="75%">
+
+### New address
+Source input
+
+No errors
+
+<img src="readme_assets/success/address_edit_html_no_errors.png" alt="Address edit HTML check no errors" width="75%">
+
+## JavaScript validation
+https://codeshack.io/js-validator/
+
+Checked files:
+- cart.js (warnings only)
+- checkout.js (warnings only)
+- main.js (no errors or warnings)
+- main_postload.js (no errors or warnings)
+- product_gallery.js (warnings only)
+- profile.js (warnings only)
+- stripe_elements.js (no errors or warnings)
+
+Warnings types in validation results:
+* Missing semicolons (fixed)
+* Functions declared within loops referencing an outer scoped variable may lead to confusing semantics.
+  * that warning is when the same function is called in a loop for each product and uses sku that is calculated from outer source - HTML DOM.
+
+
+## Stripe payments
+Stripe payments functionality in this shop uses the Stripe Sandbox. Sandbox means that no real payments are taken and is used for testing payment functionality.
+The test cards are:
+* 4242 4242 4242 4242 for successful authorisation (expiry date: any future date, CVC: any three numbers)
+* 4000 0000 0000 0002 for failed payments.
+Once the payment attempt is done, all results are collected in Stripe’s transaction log.
+
+Transactions list.
+
+<img src="readme_assets/stripe/transactions_list.png" alt="Transactions list at Stripe" width="75%">
+
+Transaction details.
+
+<img src="readme_assets/stripe/transaction_details.png" alt="Transaction details" width="75%">
+
 ## Acceptance test
 Testing if user stories are implemented.
 The screenshots are provided below the summary table.

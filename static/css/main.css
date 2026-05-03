@@ -317,14 +317,12 @@ th {
 }
 
 .background-color-inherit {
-    background-color: inherit;
-    !important;
+    background-color: inherit !important;
 }
 
 .mobile-icons {
     color: #f1f1f1;
-    background-color: inherit;
-    !important;
+    background-color: inherit !important;
 }
 
 .cart-count {

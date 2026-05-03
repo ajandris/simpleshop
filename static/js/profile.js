@@ -7,11 +7,10 @@ function profile() {
     function submitAddressAction(button){
         const form = document.getElementById('form-template');
         let input = document.createElement("input");
-        let id = 'sgadddqwbnwdddwdgqg2bwbdbdd';
+        let id = '';
         form.method = 'post';
         form.action = button.dataset.url;
         input.name = "address_id";
-        input.id = 'sgadddqwbnwdddwdgqg2bwbdbdd';
         input.type = "hidden";
         input.value = button.dataset.id;
 
@@ -21,8 +20,7 @@ function profile() {
         }
         form.appendChild(input);
 
-        if (button.id === 'delete_address'){
-            console.log(button.dataset.id, button.name, button.id);
+        if (button.id.startsWith('delete_address')){
             if (! confirm("Do you really want to delete this address?")){
                 return;
             }
@@ -35,8 +33,8 @@ function profile() {
         const actionButtons = document.getElementsByClassName('address-action');
         for (let bt of actionButtons){
             bt.addEventListener('click', (e)=>{
-                submitAddressAction(e.currentTarget)
-            })
+                submitAddressAction(e.currentTarget);
+            });
         }
     });
 } // EOF profile
