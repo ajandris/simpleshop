@@ -53,7 +53,7 @@
             <div class="w3-card w3-white product-card">
               <figure class="w3-image">
                   <a href="{% url 'product-detail' slug=product.slug %}">
-                    <img src="{{ product.image.url.url }}" alt="{{ product.title }}" loading="lazy" style="aspect-ratio: 1/1; object-fit: cover;">
+                    <img src="{{ product.image.url.url }}" alt="{{ product.title }}" loading="lazy" style="aspect-ratio: 1/1; object-fit: cover;" width="1000" height="1000">
                   </a>
               </figure>
               <div class="w3-container card-under-image">
