@@ -200,9 +200,30 @@ Warnings types in validation results:
 ## Performance
 **_Lighthouse (_**[**_https://web.dev/measure/_**](https://web.dev/measure/)**_)_**
 
+The site's performance is at its maximum.
 
+Mobile version.
 
+<img src="readme_assets/performance/mobile_low.png" alt="Mobile applications performance" width="75%">
 
+Desktop version
+
+<img src="readme_assets/performance/desktop_with_stripe_js.png" alt="Desktop applications performance" width="75%">
+
+The mobile version's performance is below 90% because the site has to load an external javascript file from Stripe.
+That is Stripe's recommendation to to have it on each file to prevent fraud.
+
+As a proof of the problem, the Stripe's JavaScript file was commented and run test again.
+
+Mobile version.
+
+<img src="readme_assets/performance/mobile_without_stripe_js.png" alt="Mobile applications performance without stripe.js" width="75%">
+
+Desktop version
+
+<img src="readme_assets/performance/desktop_with_stripe_js.png" alt="Desktop applications performance without Stripe.js" width="75%">
+
+As we can see, the issue is only with the mobile view.
 
 
 ## Stripe payments
