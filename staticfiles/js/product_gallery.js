@@ -2,99 +2,100 @@
  * product gallery management
  */
 function main(gallery) {
-  // ===== Init main image & thumbs =====
-  const stage = document.getElementById('zoomStage');
-  const thumbs = document.getElementById('thumbs');
+    const stage = document.getElementById('zoomStage');
+    const thumbs = document.getElementById('thumbs');
+    const leftBtn = document.getElementById("thumbs_left_btn");
+    const rightBtn = document.getElementById("thumbs_right_btn");
+    const activeImageTracker = document.getElementById('active_image');
 
-  const leftBtn = document.getElementById("thumbs_left_btn");
-  const rightBtn = document.getElementById("thumbs_right_btn");
+    if (!stage || !gallery || gallery.length === 0) return;
 
+    function setStageImage(url) {
+        if (!url) return;
+        stage.style.backgroundImage = `url('${url}')`;
+        stage.classList.remove('zooming');
+    }
 
-  // const leftBtn = document.getElementById("leftBtn");
-  // const rightBtn = document.getElementById("rightBtn");
+    function selectImage(index) {
+        if (index < 0 || index >= gallery.length) return;
+        const url = gallery[index];
+        setStageImage(url);
+        
+        if (thumbs) {
+            [...thumbs.children].forEach(el => el.classList.remove('active'));
+            const active = thumbs.querySelector(`[data-index="${index}"]`);
+            if (active) active.classList.add('active');
+        }
+        
+        if (activeImageTracker) {
+            activeImageTracker.setAttribute('data-active-image-id', index.toString());
+        }
+    }
 
-
-  function setStageImage(url) {
-      stage.style.backgroundImage = `url('${url}')`;
-      stage.classList.remove('zooming');
-  }
-
-  function selectImage(index) {
-      const url = gallery[index];
-      setStageImage(url);
-      // highlight active thumb
-      if (thumbs) {
-          [...thumbs.children].forEach(el => el.classList.remove('active'));
-          const active = thumbs.querySelector(`[data-index="${index}"]`);
-          if (active) active.classList.add('active');
-      }
-      document.getElementById('active_image').setAttribute('data-active-image-id',
-          (index).toString());
-  }
-
-  function scrollImageRight() {
-      let active_thumb = document.getElementById('active_image');
-      let active_image = parseInt(active_thumb.getAttribute('data-active-image-id'));
-      console.log(gallery.length, active_image);
-
-      if (active_image < gallery.length - 1){
-          selectImage(active_image + 1);
-          document.getElementById('active_image').setAttribute('data-active-image-id',
-              (active_image + 1).toString());
-      }
-  }
+    function scrollImageRight() {
+        if (!activeImageTracker) return;
+        let active_image = parseInt(activeImageTracker.getAttribute('data-active-image-id') || "0");
+        if (active_image < gallery.length - 1) {
+            selectImage(active_image + 1);
+        }
+    }
 
     function scrollImageLeft() {
-      let active_thumb = document.getElementById('active_image');
-      let active_image = parseInt(active_thumb.getAttribute('data-active-image-id'));
-      console.log(gallery.length, active_image);
+        if (!activeImageTracker) return;
+        let active_image = parseInt(activeImageTracker.getAttribute('data-active-image-id') || "0");
+        if (active_image > 0) {
+            selectImage(active_image - 1);
+        }
+    }
 
-      if (active_image > 0){
-          selectImage(active_image - 1);
-          document.getElementById('active_image').setAttribute('data-active-image-id',
-              (active_image - 1).toString());
-      }
-  }
+    // Zoom behavior
+    let zoomOn = false;
+    function toggleZoom() {
+        zoomOn = !zoomOn;
+        stage.classList.toggle('zooming', zoomOn);
+    }
 
+    function panZoom(e) {
+        if (!zoomOn) return;
+        const rect = stage.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        stage.style.backgroundPosition = `${x}% ${y}%`;
+    }
 
-  // ===== Zoom behavior (click to toggle, move to pan) =====
-  let zoomOn = false;
+    if (rightBtn) rightBtn.addEventListener('click', scrollImageRight);
+    if (leftBtn) leftBtn.addEventListener('click', scrollImageLeft);
 
-  function toggleZoom() {
-      zoomOn = !zoomOn;
-      stage.classList.toggle('zooming', zoomOn);
-  }
+    for (let i = 1; i <= gallery.length; i++) {
+        const thumbImg = document.getElementById(`img_${i}`);
+        if (thumbImg) {
+            thumbImg.addEventListener('click', () => selectImage(i - 1));
+        }
+    }
 
-  function panZoom(e) {
-      if (!zoomOn) return;
-      const rect = stage.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-      stage.style.backgroundPosition = `${x}% ${y}%`;
-  }
+    selectImage(0);
 
-  rightBtn.addEventListener('click', () => {
-      scrollImageRight();
-  });
-  leftBtn.addEventListener('click', () => {
-      scrollImageLeft();
-  });
+    stage.addEventListener('click', toggleZoom);
+    stage.addEventListener('mousemove', panZoom);
+    stage.addEventListener('mouseleave', () => {
+        if (zoomOn) stage.style.backgroundPosition = 'center';
+    });
+}
 
-  for (let i=1; i <= gallery.length;i++){
-     document.getElementById(`img_${i}`).addEventListener('click', () => {
-         selectImage(i-1);
-     });
-  }
-    document.addEventListener('DOMContentLoaded', () => {
-      selectImage(0);
-  });
+function initGallery() {
+    const galleryDataElement = document.getElementById('gallery-data');
+    if (galleryDataElement) {
+        try {
+            const gallery = JSON.parse(galleryDataElement.textContent);
+            main(gallery);
+        } catch (e) {
+            console.error("Gallery data parse error:", e);
+        }
+    }
+}
 
-  stage.addEventListener('click', toggleZoom);
-  stage.addEventListener('mousemove', panZoom);
-  stage.addEventListener('mouseleave', () => {
-      if (zoomOn) stage.style.backgroundPosition = 'center';
-  });
-
-} // EOF main
-
-main(GALLERY);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGallery);
+} else {
+    initGallery();
+}

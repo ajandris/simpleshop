@@ -1,11 +1,6 @@
 {% extends '_base.html' %}
 {% load static product_tags %}
 
-{% block extra_js %}
-    <script>
-    const GALLERY =[];
-    </script>
-{% endblock %}
 
 
 {% block search_products %}
@@ -47,11 +42,9 @@
               <div class="thumb" data-index="{{ forloop.counter0 }}">
                 <img id='img_{{ forloop.counter }}' src="{{ url|thumbnail:150 }}" alt="{{ product.title }} thumbnail {{ forloop.counter }}" loading="lazy" style="aspect-ratio: 1/1; object-fit: cover;" width="150" height="150">
               </div>
-                  <script>
-                  GALLERY.push('{{ url }}')
-                  </script>
               {% endfor %}
             </div>
+            {{ gallery|resolve_urls|json_script:"gallery-data" }}
 
             <button type="button" class="w3-button w3-white w3-border thumb-btn
                     thumb-btn-right"
