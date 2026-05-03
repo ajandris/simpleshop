@@ -1,5 +1,5 @@
 {% extends '_base.html' %}
-{% load static %}
+{% load static product_tags %}
 
 {% block extra_js %}
     <script>
@@ -45,7 +45,7 @@
             <div id="thumbs" class="thumbs">
               {% for url in gallery %}
               <div class="thumb" data-index="{{ forloop.counter0 }}">
-                <img id='img_{{ forloop.counter }}' src="{{ url }}" alt="{{ product.title }} thumbnail {{ forloop.counter }}" loading="lazy" style="aspect-ratio: 1/1; object-fit: cover;" width="1000" height="1000">
+                <img id='img_{{ forloop.counter }}' src="{{ url|thumbnail:150 }}" alt="{{ product.title }} thumbnail {{ forloop.counter }}" loading="lazy" style="aspect-ratio: 1/1; object-fit: cover;" width="150" height="150">
               </div>
                   <script>
                   GALLERY.push('{{ url }}')

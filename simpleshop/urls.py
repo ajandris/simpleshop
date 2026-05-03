@@ -29,7 +29,14 @@ if settings.DEBUG:
 else:
     from django.urls import re_path
     from django.views.static import serve
+    from django.utils.cache import patch_cache_control
+
+    def cached_serve(request, path, document_root=None, show_indexes=False):
+        response = serve(request, path, document_root, show_indexes)
+        # Cache media files for 1 year
+        patch_cache_control(response, public=True, max_age=31536000)
+        return response
     
     urlpatterns += [
-        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+        re_path(r'^media/(?P<path>.*)$', cached_serve, {'document_root': settings.MEDIA_ROOT}),
     ]
