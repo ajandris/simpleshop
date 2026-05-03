@@ -1,0 +1,13 @@
+/**
+Checkout only styles
+ */
+
+.input-error {
+    border: 2px solid #df1b41 !important;
+}
+
+.error-text {
+    color: #df1b41;
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
