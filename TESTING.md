@@ -197,6 +197,14 @@ Warnings types in validation results:
   * that warning is when the same function is called in a loop for each product and uses sku that is calculated from outer source - HTML DOM.
 
 
+## Performance
+**_Lighthouse (_**[**_https://web.dev/measure/_**](https://web.dev/measure/)**_)_**
+
+
+
+
+
+
 ## Stripe payments
 Stripe payments functionality in this shop uses the Stripe Sandbox. Sandbox means that no real payments are taken and is used for testing payment functionality.
 The test cards are:
