@@ -270,6 +270,13 @@ Skeleton Plane is concerned about the site's functionality, including its databa
 **Entity-relationship diagrams (ERDs)** show the relationships between data entities. 
 It serves as the starting point of a database design, and it impacts the site's navigation and layout.
 
+Some database tables are connected with relationships.  There are hard and soft relationships. The hard relationships are the one which are enforced on tha database level via foreign keys, while soft relationships are the one which are enforced on the application level, while soft relationships are the ones that are enforced by application logic.
+
+In this project, hard relationships are enforced at the database level using strict foreign key constraints, such as cart_item maintaining a direct link to orders (order_id) and orders linking to order_items (order_id). The cardinality of this relationship is many-to-one, meaning one order contains one or more order items.
+
+In contrast, soft relationships are maintained logically through application logic rather than database constraints; for example, the 
+cart table is related as one to one to orders table, but maintained programmatically. At the end only one order is submitted for authorisation. Upon successful payment authorisation, that cart becomes an order and gets deleted
+
 The final Entity-Relationship diagram and database table description is located in the 
 file [Structure](structure.md).
 
