@@ -251,6 +251,44 @@ def pay_now(request):
     """
     Pays for chosen products
     """
+    if request.method == "POST":
+        sku = request.POST.get("sku")
+        if sku:
+            quantity = (
+                int(request.POST.get("quantity"))
+                if request.POST.get("quantity") is not None
+                else 1
+            )
+            cart_no = request.session.get("cart_number")
+            if cart_no is None:
+                uuid_str = str(uuid.uuid4())
+                cart_no = uuid_str.replace("-", "")
+
+            cart, created = Cart.objects.get_or_create(cart_number=cart_no)
+            if request.user.is_authenticated:
+                cart.owner = request.user
+                cart.user = request.user
+            cart.save()
+
+            product = Product.objects.get(sku=sku)
+            cart_items = CartItem.objects.filter(cart=cart, product=product)
+
+            if cart_items.count() == 0:
+                cart_item = CartItem.objects.create(
+                    cart=cart, product=product, qty=quantity, price=product.price
+                )
+                cart_item.save()
+            else:
+                cart_item = cart_items[0]
+                if cart_item.product == product:
+                    cart_item.qty = cart_item.qty + quantity
+                else:
+                    cart_item.qty = quantity
+                cart_item.save()
+
+            request.session["cart_number"] = cart_no
+            request.session.modified = True
+
     return redirect("checkout")
 
 

@@ -280,3 +280,37 @@ def test_checkout_creates_profile_if_missing(client, db, user):
     # Verify the profile was automatically created
     assert Profile.objects.filter(owner=user).exists()
 
+
+def test_pay_now_adds_product_to_cart(client, db, user, base_cart_products):
+    """
+    Posting to the pay-now view should add the product to the cart and redirect to checkout.
+    """
+    from django.urls import reverse
+    from cart.models import CartItem, Cart
+    from home.models import Profile
+
+    # Ensure profile exists for user
+    Profile.objects.create(owner=user, user=user, email=user.email)
+    client.force_login(user)
+
+    product = base_cart_products[0]
+
+    # Cart should be empty initially
+    assert not Cart.objects.exists()
+    assert not CartItem.objects.exists()
+
+    response = client.post(reverse("pay-now"), {
+        "sku": product.sku,
+        "quantity": "2"
+    })
+
+    # Assert redirect to checkout
+    assert response.status_code == 302
+    assert response.url == reverse("checkout")
+
+    # Assert product is now in the cart
+    assert Cart.objects.exists()
+    cart_item = CartItem.objects.get(product=product)
+    assert cart_item.qty == 2
+
+
