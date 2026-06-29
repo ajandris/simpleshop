@@ -208,6 +208,9 @@ def save_cart(request):
     if request.method == "POST":
         cart_no = request.session.get("cart_number", "")
         cart = Cart.objects.filter(cart_number=cart_no).first()
+        if cart is None:
+            return
+
         for key in request.POST:
             if key.startswith("sku"):
                 sku = key.split("-")[1]
@@ -215,8 +218,9 @@ def save_cart(request):
                 ci = CartItem.objects.filter(
                     cart=cart, product__sku=sku
                 ).first()
-                ci.qty = quantity
-                ci.save()
+                if ci is not None:
+                    ci.qty = quantity
+                    ci.save()
             if key == "shipping":
                 shipping = request.POST.get("shipping")
                 cart.shipping_method = shipping

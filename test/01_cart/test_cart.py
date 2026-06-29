@@ -223,3 +223,36 @@ def test_checkout_empty_cart(client, db, user):
 
     # Verify the session has been cleared of the cart_number
     assert "cart_number" not in client.session
+
+
+def test_checkout_empty_cart_post(client, db, user):
+    """
+    If a user submits a POST request to checkout (e.g. from cart page form submission)
+    but the cart items are missing in DB, it should delete the cart,
+    clear session and redirect back to cart, instead of throwing AttributeError 500.
+    """
+    from django.urls import reverse
+    from cart.models import Cart
+    from home.models import Profile
+
+    Profile.objects.create(owner=user, user=user, email=user.email)
+    client.force_login(user)
+
+    cart = Cart.objects.create(cart_number="test_empty_cart_no", owner=user, user=user)
+
+    session = client.session
+    session["cart_number"] = "test_empty_cart_no"
+    session.save()
+
+    response = client.post(reverse("checkout"), {
+        "sku-testproduct": "1",
+        "shipping": "standard"
+    })
+
+    # Assert redirect to cart page and no 500 error
+    assert response.status_code == 302
+    assert response.url == reverse("cart")
+
+    # Verify database cleanup
+    assert not Cart.objects.filter(cart_number="test_empty_cart_no").exists()
+    assert "cart_number" not in client.session
