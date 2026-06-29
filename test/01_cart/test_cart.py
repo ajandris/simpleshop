@@ -189,3 +189,37 @@ def test_coupon_minimal_subtotal_threshold_over(
     cart.discount.save()
     result, msg = has_discount_min_subtotal_reached(cart)
     assert result is False, msg
+
+
+def test_checkout_empty_cart(client, db, user):
+    """
+    If cart exists but there are no cart items, delete cart,
+    clear the cart_number from the session, and redirect to the cart page.
+    """
+    from django.urls import reverse
+    from cart.models import Cart
+    from home.models import Profile
+
+    # Ensure profile exists for the user
+    Profile.objects.create(owner=user, user=user, email=user.email)
+
+    client.force_login(user)
+
+    # Create a cart without any items
+    cart = Cart.objects.create(cart_number="test_empty_cart_no", owner=user, user=user)
+
+    session = client.session
+    session["cart_number"] = "test_empty_cart_no"
+    session.save()
+
+    response = client.get(reverse("checkout"))
+
+    # Assert redirect to cart page
+    assert response.status_code == 302
+    assert response.url == reverse("cart")
+
+    # Verify the cart was deleted from DB
+    assert not Cart.objects.filter(cart_number="test_empty_cart_no").exists()
+
+    # Verify the session has been cleared of the cart_number
+    assert "cart_number" not in client.session

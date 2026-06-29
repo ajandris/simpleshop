@@ -289,6 +289,10 @@ def checkout(request):
         cart = Cart.objects.filter(cart_number=cart_no).first()
         if cart is not None:
             cart_items = CartItem.objects.filter(cart=cart)
+            if not cart_items.exists():
+                cart.delete()
+                request.session.pop("cart_number", None)
+                return redirect("cart")
             ord = get_order_summary(cart_no)
             ctxt = dict(
                 cart=cart,
@@ -306,4 +310,8 @@ def checkout(request):
                 cart_hash=ord["cart_hash"],
                 email=email,
             )
+        else:
+            return redirect("cart")
+    else:
+        return redirect("cart")
     return render(request, template, context=ctxt)
