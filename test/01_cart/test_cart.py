@@ -256,3 +256,27 @@ def test_checkout_empty_cart_post(client, db, user):
     # Verify database cleanup
     assert not Cart.objects.filter(cart_number="test_empty_cart_no").exists()
     assert "cart_number" not in client.session
+
+
+def test_checkout_creates_profile_if_missing(client, db, user):
+    """
+    If a user visits checkout but doesn't have a Profile object, it should be created automatically,
+    rather than raising a 404 error.
+    """
+    from django.urls import reverse
+    from home.models import Profile
+
+    client.force_login(user)
+
+    # Verify profile does not exist initially
+    assert not Profile.objects.filter(owner=user).exists()
+
+    response = client.get(reverse("checkout"))
+
+    # It should not return a 404. Since the cart is empty, it will redirect (302) to cart.
+    assert response.status_code == 302
+    assert response.url == reverse("cart")
+
+    # Verify the profile was automatically created
+    assert Profile.objects.filter(owner=user).exists()
+

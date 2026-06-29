@@ -266,7 +266,15 @@ def checkout(request):
     template = "cart/checkout.html"
 
     user = get_user_model().objects.get(username=request.user.username)
-    user_profile = get_object_or_404(Profile, owner=user)
+    user_profile, created = Profile.objects.get_or_create(
+        owner=user,
+        defaults={
+            "name": user.first_name,
+            "surname": user.last_name,
+            "email": user.email,
+            "user": user,
+        },
+    )
 
     active_address = None
     active_address_id = None
