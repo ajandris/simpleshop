@@ -25,6 +25,11 @@
                 {% element fields form=form unlabeled=True %}
                 {% endelement %}
                 {{ redirect_field }}
+
+                <!-- Google reCAPTCHA -->
+                <div class="w3-margin-bottom">
+                    <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
+                </div>
             {% endslot %}
             {% slot actions %}
                 {% element button tags="prominent,signup" type="submit" %}
@@ -45,3 +50,10 @@
     {% endif %}
      </div>
 {% endblock content %}
+
+{% block postloadjs %}
+    {{ block.super }}
+    <!-- Load reCAPTCHA script -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{% endblock postloadjs %}
+

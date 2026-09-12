@@ -92,6 +92,7 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "cart.context_processors.cart_item_count",
+                "home.context_processors.recaptcha",
             ],
         },
     },
@@ -205,6 +206,9 @@ ACCOUNT_SIGNUP_FIELDS = [
     "password1*",
     "password2*",
 ]
+ACCOUNT_FORMS = {
+    "signup": "home.forms.CustomSignupForm",
+}
 
 ACCOUNT_LOGOUT_REDIRECT_URL = "/"
 ACCOUNT_LOGIN_REDIRECT_URL = "/"
