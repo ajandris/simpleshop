@@ -9,7 +9,7 @@ The platform allows customers to explore categories such as decorations, gifts, 
 The project demonstrates a full-stack web application built with **Django, HTML, CSS, JavaScript, and PostgreSQL**, with automated backend tests for core business logic.
 
 **Live Site:**  
-https://theoldechristmasmarket.projects.andris.jancevskis.com/
+https://theoldechristmasmarket.p.jancevskis.com/
 
 **GitHub Repository:**  
 https://github.com/ajandris/simpleshop
