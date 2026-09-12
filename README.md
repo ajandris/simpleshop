@@ -403,52 +403,43 @@ Detailed database and user creation instructions are not included in this docume
 Overall, creating a database with cPanel is a straightforward task.
 
 ## Environment variables
-Environment variables for development are set in the env.py file. For the production environment, 
+Environment variables for development are set in the `.env` file (see `.env.example`). For the production environment, 
 those should be put on the web server during deployment. The development environment is set on a 
 local computer with PostgreSQL installed.
 
-**The list of environment variables:**
-```
+**The list of environment variables (`.env`):**
+```dotenv
 # security
-SECRET_KEY: <THE KEY FROM INITIAL SETTINGS.PY FILE>
-DEBUG: False
-ALLOWED_HOSTS: localhost, 127.0.0.1  # a list of allowed hosts separated by coma
+SECRET_KEY=<THE KEY FROM INITIAL SETTINGS.PY FILE>
+DEBUG=False
+ALLOWED_HOSTS=localhost,127.0.0.1  # a list of allowed hosts separated by comma
 
 # database
-POSTGRES_USER: <myuser>
-POSTGRES_PASSWORD: <mypassword>
-POSTGRES_HOST: <host>
-POSTGRES_PORT: <port>  # default is 5432
-POSTGRES_DATABASE_NAME: <mydatabase>
+PG_USER=<myuser>
+PG_PASSWORD=<mypassword>
+PG_HOST=<host>
+PG_PORT=5432
+PG_DB=<mydatabase>
 
 # Your provider's SMTP server
-os.environ.setdefault("EMAIL_HOST", <email host>)
-os.environ.setdefault("EMAIL_PORT", <email port: string>)  # 465 for SSL, 587 for TLS
+EMAIL_HOST=<email host>
+EMAIL_PORT=465  # 465 for SSL, 587 for TLS
 # True for TLS, False if using SSL and vice versa
-os.environ.setdefault("EMAIL_USE_TLS", <use TLS>) # check settings
-os.environ.setdefault("EMAIL_USE_SSL", <use SSL>)  # True if using SSL
-os.environ.setdefault("EMAIL_HOST_USER", <email host user>)
-os.environ.setdefault("EMAIL_HOST_PASSWORD", <password>)
+EMAIL_USE_TLS=False
+EMAIL_USE_SSL=True
+EMAIL_HOST_USER=<email host user>
+EMAIL_HOST_PASSWORD=<password>
 
-os.environ.setdefault("CONTACT_FORM_RECEIVER", <email>)
+CONTACT_FORM_RECEIVER=<email>
 
-os.environ.setdefault(
-    "STRIPE_PUBLIC_KEY",
-    <Stripe public key>,
-)
-os.environ.setdefault(
-    "STRIPE_SECRET_KEY",
-    <Stripe secret key>,
-)
+# Stripe
+STRIPE_PUBLIC_KEY=<Stripe public key>
+STRIPE_SECRET_KEY=<Stripe secret key>
+STRIPE_WEBHOOK_SECRET=<Stripe webhook secret>
 
 # keys from Google
-os.environ.setdefault(
-    "RECAPTCHA_SITE_KEY", <site key>
-)
-os.environ.setdefault(
-    "RECAPTCHA_SECRET_KEY", <secret key>
-)
-
+RECAPTCHA_SITE_KEY=<site key>
+RECAPTCHA_SECRET_KEY=<secret key>
 ```
 
 The secret key is copied from the initial settings.py file. If you don't have it, create a temporary Django project, 
@@ -522,6 +513,37 @@ database user having insufficient privileges to the database and/or schema PUBLI
 account with a command '''python manage.py createsuperuser''' and enter all required information.
 * restart application.
 * Now, the application should work and have no blogs and no comments.
+
+### Running with Gunicorn (Production)
+
+Gunicorn (Green Unicorn) is a Python WSGI HTTP Server for UNIX environments used to serve the application in production (e.g. Linux servers, Docker containers, Heroku, Render, AWS, etc.).
+
+1. **Start with the configuration file:**
+   ```bash
+   gunicorn -c gunicorn.conf.py
+   ```
+
+2. **Or start directly with command-line arguments:**
+   ```bash
+   gunicorn simpleshop.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120
+   ```
+
+3. **Using Procfile (PaaS like Heroku / Render / Railway):**
+   A `Procfile` is included in the project root:
+   ```
+   web: gunicorn -c gunicorn.conf.py
+   ```
+
+4. **Environment Configuration:**
+   Settings can be customized via environment variables in `.env`:
+   - `PORT`: Port to bind (default: `8000`)
+   - `HOST`: Host to bind (default: `0.0.0.0`)
+   - `WEB_CONCURRENCY`: Number of worker processes (default: `(2 * CPUs) + 1`)
+   - `GUNICORN_THREADS`: Number of threads per worker (default: `2`)
+   - `GUNICORN_TIMEOUT`: Worker timeout in seconds (default: `120`)
+   - `GUNICORN_LOGLEVEL`: Log level (default: `info`)
+
+> **Note for Windows users:** Gunicorn is specifically designed for UNIX-based operating systems (Linux, macOS, WSL) using POSIX system calls. For local development on Windows, use `python manage.py runserver` or run Gunicorn inside WSL / Docker.
 
 # Acknowledgement
 I would like to extend my gratitude to my tutor, Rachel Furlong, and the Code Institute.
